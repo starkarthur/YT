@@ -1,0 +1,136 @@
+# Cloud-Worker: GitHub Actions im ÖFFENTLICHEN Repo starkarthur/YT (Entscheidung des Nutzers 07.11.2026, weil Zweig-Schutz,
+# Umgebungs-Secrets und Pflicht-Reviewer in privaten Repos nur mit Team/Enterprise gehen). Ziel: .github/workflows/taeglich.yml
+# Öffentlich heißt: Code, Inhalte und Bücher sind sichtbar, die Secrets nicht. Keine pull_request-Trigger verwenden!
+# Stand nach Cyber-Agent-Prüfung (CA-2026-11-07-16/-17/-18). Einrichtung nur mit dem Nutzer.
+#
+# Voraussetzungen (Nutzer, einmalig):
+# - Repo öffentlich (Free genügt). Actions: Workflow-Rechte standardmäßig nur Lesen, Fork-Workflows nur nach Genehmigung.
+# - Zweige: main = Code (geschützt, Änderungen nur per Pull Request mit Zustimmung des Nutzers),
+#           inhalt = Shorts/Kanal/Pruefberichte (schreibt der Chef-Agent), buecher = Kosten/Uploads (schreibt nur der Job "buchen").
+# - Umgebungen (alle nur für Zweig main):
+#     produktion                  Secrets FAL_KEY, ELEVENKEY (eingerichtet vom Nutzer am 07.11.2026)
+#     veroeffentlichung-pruefung  Pflicht-Reviewer = Nutzer. Variablen GK_UPLOAD_ERLAUBT=ja, GK_UMGEBUNG=pruefung. Plattform-Secrets
+#     veroeffentlichung-auto      ohne Reviewer (= Vollautomatik, vom Nutzer selbst eingerichtet). Variablen GK_UPLOAD_ERLAUBT=ja,
+#                                 GK_UMGEBUNG=auto. Plattform-Secrets. Nimmt nur Shorts der Stufe "auto" an (prüft lauf.py).
+# - Repo-Variable GK_PAUSE=ja hält alles an (Not-Aus).
+# - Aktionen vor dem Einrichten auf Commit-Hashes pinnen (Chef-Agent liest sie mit dem Nutzer aus, CA-18).
+name: taeglicher-short
+on:
+  schedule:
+    - cron: "0 16 * * *"
+  workflow_dispatch: {}
+concurrency: { group: taeglich, cancel-in-progress: false }
+permissions: { contents: read }
+
+jobs:
+  produzieren:
+    if: vars.GK_PAUSE != 'ja'
+    runs-on: ubuntu-24.04
+    environment: produktion
+    timeout-minutes: 90
+    outputs:
+      short: ${{ steps.wahl.outputs.short }}
+      umgebung: ${{ steps.wahl.outputs.umgebung }}
+    env:
+      GK_ARBEIT: ${{ github.workspace }}/arbeit
+      GK_INHALT: ${{ github.workspace }}/inhalt/07_Geschichtskanal
+      GK_PAUSE: ${{ vars.GK_PAUSE }}
+    steps:
+      - uses: actions/checkout@v4            # TODO: auf Commit-Hash pinnen
+        with: { ref: main, persist-credentials: false }
+      - uses: actions/checkout@v4
+        with: { ref: inhalt, path: inhalt, persist-credentials: false }
+      - uses: actions/checkout@v4
+        with: { ref: buecher, path: buecher, persist-credentials: false }
+      - uses: actions/setup-python@v5        # TODO: auf Commit-Hash pinnen
+        with: { python-version: "3.12" }
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-montserrat
+      - name: Bücher wiederherstellen
+        run: mkdir -p arbeit && cp buecher/*.jsonl arbeit/ 2>/dev/null || true
+      - id: wahl
+        working-directory: 07_Geschichtskanal/produktion
+        run: python lauf.py waehle >> "$GITHUB_OUTPUT"
+      - if: steps.wahl.outputs.short != ''
+        working-directory: 07_Geschichtskanal/produktion
+        env:
+          SHORT: ${{ steps.wahl.outputs.short }}
+          FAL_KEY: ${{ secrets.FAL_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENKEY }}   # Secret heißt in GitHub ELEVENKEY
+        run: python lauf.py produziere "$SHORT"
+      - name: Nur Ergebnis weitergeben (Video, fertig.json, Bücher)
+        if: always()
+        run: |
+          mkdir -p uebergabe/medien
+          cp arbeit/*.jsonl uebergabe/ 2>/dev/null || true
+          if [ -n "${{ steps.wahl.outputs.short }}" ] && [ -d "arbeit/medien/${{ steps.wahl.outputs.short }}" ]; then
+            mkdir -p "uebergabe/medien/${{ steps.wahl.outputs.short }}"
+            cp arbeit/medien/${{ steps.wahl.outputs.short }}/{*_final.mp4,fertig.json} "uebergabe/medien/${{ steps.wahl.outputs.short }}/" 2>/dev/null || true
+          fi
+      - uses: actions/upload-artifact@v4     # TODO: auf Commit-Hash pinnen
+        if: always()
+        with: { name: produktion, path: uebergabe/, retention-days: 14 }
+
+  hochladen:
+    needs: produzieren
+    if: needs.produzieren.outputs.short != '' && vars.GK_PAUSE != 'ja'
+    runs-on: ubuntu-24.04
+    environment: ${{ needs.produzieren.outputs.umgebung }}
+    timeout-minutes: 30
+    env:
+      GK_ARBEIT: ${{ github.workspace }}/arbeit
+      GK_INHALT: ${{ github.workspace }}/inhalt/07_Geschichtskanal
+      GK_PAUSE: ${{ vars.GK_PAUSE }}
+      GK_UPLOAD_ERLAUBT: ${{ vars.GK_UPLOAD_ERLAUBT }}   # kommt aus der Umgebung, nicht aus dieser Datei
+      GK_UMGEBUNG: ${{ vars.GK_UMGEBUNG }}
+      SHORT: ${{ needs.produzieren.outputs.short }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main, persist-credentials: false }
+      - uses: actions/checkout@v4
+        with: { ref: inhalt, path: inhalt, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/download-artifact@v4
+        with: { name: produktion, path: arbeit/ }
+      - working-directory: 07_Geschichtskanal/produktion
+        env:
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          TIKTOK_CLIENT_KEY: ${{ secrets.TIKTOK_CLIENT_KEY }}
+          TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET }}
+          TIKTOK_REFRESH_TOKEN: ${{ secrets.TIKTOK_REFRESH_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: python lauf.py hochladen "$SHORT"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: buecher-nach-upload, path: "arbeit/*.jsonl", retention-days: 30 }
+
+  buchen:   # einziger Job mit Schreibrecht, ohne Geheimnisse (CA-16, CA-18)
+    needs: [produzieren, hochladen]
+    if: always() && needs.produzieren.result != 'skipped'
+    runs-on: ubuntu-24.04
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: buecher, path: buecher }
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with: { name: produktion, path: p/ }
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with: { name: buecher-nach-upload, path: u/ }
+      - name: Bücher zurückschreiben (mit Wiederholung, Fehler bricht ab)
+        working-directory: buecher
+        run: |
+          for f in ../p/*.jsonl; do [ -f "$f" ] && cp "$f" .; done
+          for f in ../u/*.jsonl; do [ -f "$f" ] && cp "$f" .; done
+          git config user.name "gk-bot" && git config user.email "gk-bot@users.noreply.github.com"
+          git add -A && git diff --cached --quiet && exit 0
+          git commit -m "Bücher $(date -u +%F)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin buecher && git push origin HEAD:buecher && exit 0
+            sleep $((i * 10))
+          done
+          echo "::error::Bücher konnten nicht gesichert werden. GK_PAUSE=ja setzen und prüfen!" && exit 1

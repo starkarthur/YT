@@ -1,0 +1,80 @@
+{
+  "_hinweis": "Keine Schlüssel hier. Schlüssel kommen nur als Umgebungsvariablen (Secrets) im Cloud-Worker. Modell-IDs vor dem ersten echten Lauf gegen die Anbieter-Doku prüfen.",
+  "_modus_hinweis": "Den Modus steuert NICHT diese Datei, sondern die GitHub-Umgebungen: veroeffentlichung-pruefung (Pflicht-Reviewer) und veroeffentlichung-auto (ohne Reviewer, nur für Stufe auto). Variablen dort: GK_UPLOAD_ERLAUBT=ja, GK_UMGEBUNG=pruefung|auto. Not-Aus: Repo-Variable GK_PAUSE=ja.",
+  "max_uploads_pro_tag": 1,
+  "budget": {
+    "limit_short_usd": 20,
+    "limit_monat_usd": 500
+  },
+  "laenge_s": {
+    "min": 30,
+    "max": 62
+  },
+  "format": {
+    "breite": 1080,
+    "hoehe": 1920,
+    "fps": 30
+  },
+  "bild": {
+    "anbieter": "fal",
+    "modell": "fal-ai/nano-banana-pro",
+    "preis_usd": 0.15,
+    "versuche": 2,
+    "stil": "cinematic historical film still, dramatic natural light, 35mm film grain, rich muted colours, vertical 9:16 composition, no text, no captions, no watermark",
+    "aufloesung": "2K"
+  },
+  "video": {
+    "anbieter": "fal",
+    "modell": "fal-ai/kling-video/v3/pro/image-to-video",
+    "preis_usd_pro_s": 0.14,
+    "clip_s": 5,
+    "versuche": 2
+  },
+  "stimme": {
+    "anbieter": "elevenlabs",
+    "modell": "eleven_multilingual_v2",
+    "voice_id": "wk7SSMRBBM3GcVN3R9MI",
+    "preis_usd_pro_1000_zeichen": 0.1
+  },
+  "musik": {
+    "ordner": "musik",
+    "lautstaerke_unter_stimme_db": -20
+  },
+  "untertitel": {
+    "schrift": "Montserrat ExtraBold",
+    "groesse": 92,
+    "farbe": "&H00FFFFFF",
+    "betonung": "&H0000D7FF",
+    "woerter_pro_zeile": 3
+  },
+  "plattformen": {
+    "youtube": {
+      "aktiv": true,
+      "made_for_kids": false,
+      "synthetic_media": true,
+      "kategorie": "27",
+      "privacy": "public"
+    },
+    "tiktok": {
+      "aktiv": true,
+      "is_aigc": true
+    },
+    "instagram": {
+      "aktiv": true,
+      "api_version": "v21.0"
+    }
+  },
+  "erste_uploads_privat": 1,
+  "_quelle_modelle": "fal.ai-Modellseiten gelesen am 07.11.2026: Kling 3.0 Pro I2V (start_image_url, duration '3'-'15', Seitenverhältnis aus dem Bild, $0.112-0.14/s), Nano Banana Pro (aspect_ratio 9:16, $0.15/Bild). Veo 3.1 auf fal laut Seite ab 17.11.2026 entfernt.",
+  "test_modelle": {
+    "kling_pro": {
+      "modell": "fal-ai/kling-video/v3/pro/image-to-video",
+      "preis_usd_pro_s": 0.14
+    },
+    "veo_lite": {
+      "modell": "fal-ai/veo3.1/lite/image-to-video",
+      "preis_usd_pro_s": 0.1,
+      "_hinweis": "Preis auf fal nicht bestätigt, vorsichtig angesetzt; Modell laut fal ab 17.11.2026 entfernt"
+    }
+  }
+}
