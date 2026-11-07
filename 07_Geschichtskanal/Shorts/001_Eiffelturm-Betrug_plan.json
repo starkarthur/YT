@@ -1,0 +1,99 @@
+{
+  "id": "001",
+  "titel": "The Man Who Sold the Eiffel Tower",
+  "reihe": "cons",
+  "jahr": 1925,
+  "personen": [
+    "Victor Lustig",
+    "André Poisson"
+  ],
+  "musik": "spannung_jazz_1920.mp3",
+  "betonte_woerter": [
+    "Eiffel",
+    "sold",
+    "again",
+    "police",
+    "Vienna",
+    "America"
+  ],
+  "einstellungen": [
+    {
+      "text": "In 1925, a man sold the Eiffel Tower. Then he came back to sell it again.",
+      "bild_prompt": "The Eiffel Tower in Paris in 1925 at dusk, light rain, Parisians with umbrellas and period clothing on the street below, low angle",
+      "art": "video",
+      "bewegung": "kamerafahrt_vor",
+      "effekt": "punch_zoom",
+      "video_prompt": "slow push in towards the tower, rain falling"
+    },
+    {
+      "text": "His name was Victor Lustig, a con man with a dozen fake names.",
+      "bild_prompt": "A dramatized 1920s con man in a tailored three-piece suit and fedora, confident smirk, smoky Paris cafe, film noir lighting, clearly a staged cinematic reenactment",
+      "art": "video",
+      "bewegung": "langsamer_zoom_rein",
+      "effekt": "keiner",
+      "video_prompt": "he adjusts his hat and smiles subtly"
+    },
+    {
+      "text": "He read in a Paris newspaper that the tower was expensive to repair.",
+      "bild_prompt": "Close-up of hands holding a 1920s French newspaper at a cafe table, coffee cup, morning light, no readable text",
+      "art": "standbild",
+      "bewegung": "schwenk_rechts",
+      "effekt": "keiner"
+    },
+    {
+      "text": "So he posed as a government official and invited scrap-metal dealers to a luxury hotel.",
+      "bild_prompt": "Grand 1920s Paris luxury hotel salon, chandeliers, businessmen in suits arriving, warm golden light",
+      "art": "video",
+      "bewegung": "schwenk_links",
+      "effekt": "keiner",
+      "video_prompt": "slow pan across the room as men take their seats"
+    },
+    {
+      "text": "His story: the tower will be torn down. It's a secret. Make me an offer.",
+      "bild_prompt": "Over-the-shoulder shot of the con man leaning across a polished table speaking quietly to a nervous businessman, cigarette smoke, tension",
+      "art": "video",
+      "bewegung": "statisch",
+      "effekt": "keiner",
+      "video_prompt": "he leans closer and whispers"
+    },
+    {
+      "text": "One dealer, André Poisson, paid. Lustig took the money and fled to Vienna.",
+      "bild_prompt": "A leather briefcase full of 1920s French banknotes on a train seat, steam train compartment, motion blur outside the window",
+      "art": "video",
+      "bewegung": "handkamera",
+      "effekt": "wackler",
+      "video_prompt": "the train rocks gently, landscape rushes past"
+    },
+    {
+      "text": "Poisson was too embarrassed to tell the police.",
+      "bild_prompt": "A middle-aged 1920s businessman sitting alone in a dim office, head in his hands, rain on the window",
+      "art": "standbild",
+      "bewegung": "langsamer_zoom_rein",
+      "effekt": "keiner"
+    },
+    {
+      "text": "So a month later, Lustig came back to Paris and tried the exact same trick.",
+      "bild_prompt": "The con man stepping off a train at a busy 1920s Paris station, steam, confident walk, cinematic wide shot",
+      "art": "video",
+      "bewegung": "kamerafahrt_vor",
+      "effekt": "punch_zoom",
+      "video_prompt": "he walks toward camera through the steam"
+    },
+    {
+      "text": "This time, the buyer went to the police, and Lustig escaped to America.",
+      "bild_prompt": "A 1920s ocean liner leaving a foggy harbor at night, lights glowing, dramatic sky",
+      "art": "video",
+      "bewegung": "aufsicht_drohne",
+      "effekt": "keiner",
+      "video_prompt": "the ship slowly pulls away into the fog"
+    },
+    {
+      "text": "And the Eiffel Tower? Still standing. Still not for sale. Probably.",
+      "bild_prompt": "The Eiffel Tower today at golden hour seen from the Trocadero, vibrant and majestic",
+      "art": "video",
+      "bewegung": "langsamer_zoom_raus",
+      "effekt": "keiner",
+      "video_prompt": "slow pull back revealing the tower"
+    }
+  ]
+}
