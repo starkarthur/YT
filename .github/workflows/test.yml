@@ -1,0 +1,62 @@
+# Test-Workflow: erzeugt einen Short mit einem gewählten Videomodell, OHNE Upload. Nur von Hand startbar.
+# Ergebnis: Artefakt "test-<short>-<modell>" mit fertigem Video und Einzelbildern (14 Tage).
+# Ziel im Repo: .github/workflows/test.yml
+name: test-short
+on:
+  workflow_dispatch:
+    inputs:
+      short:
+        description: "Short-Nummer (dreistellig)"
+        required: true
+        default: "001"
+      modell:
+        description: "Videomodell"
+        required: true
+        type: choice
+        options: [kling_pro, veo_lite]
+permissions: { contents: read }
+concurrency: { group: test-${{ inputs.modell }}, cancel-in-progress: false }
+
+jobs:
+  test:
+    if: vars.GK_PAUSE != 'ja'
+    runs-on: ubuntu-24.04
+    environment: produktion
+    timeout-minutes: 60
+    env:
+      GK_ARBEIT: ${{ github.workspace }}/arbeit
+      GK_INHALT: ${{ github.workspace }}/inhalt/07_Geschichtskanal
+      SHORT: ${{ inputs.short }}
+      MODELL: ${{ inputs.modell }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main, persist-credentials: false }
+      - uses: actions/checkout@v4
+        with: { ref: inhalt, path: inhalt, persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-montserrat
+      - name: Eingaben prüfen
+        run: |
+          [[ "$SHORT" =~ ^[0-9]{3}$ ]] || { echo "Short-Nummer ungültig"; exit 1; }
+      - working-directory: 07_Geschichtskanal/produktion
+        env:
+          FAL_KEY: ${{ secrets.FAL_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENKEY }}
+        run: python lauf.py test "$SHORT" --modell "$MODELL"
+      - name: Kosten anzeigen
+        if: always()
+        run: |
+          echo "## Test $SHORT mit $MODELL" >> "$GITHUB_STEP_SUMMARY"
+          python3 -c "import json,sys;e=[json.loads(z) for z in open('arbeit/kostenbuch.jsonl')];print(f'Kosten: {sum(x[\"usd\"] for x in e):.2f} USD')" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-${{ inputs.short }}-${{ inputs.modell }}
+          path: |
+            arbeit/medien/test_*/*_final.mp4
+            arbeit/medien/test_*/bild_*.png
+            arbeit/kostenbuch.jsonl
+            arbeit/fehler.jsonl
+          retention-days: 14
+          if-no-files-found: warn
