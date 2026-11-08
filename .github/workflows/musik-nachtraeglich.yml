@@ -1,0 +1,65 @@
+# Legt Musik unter ein bereits erzeugtes Test-Video, OHNE Bilder/Videos/Stimme neu zu bezahlen (Kosten: 0 USD).
+# Holt das Artefakt eines früheren test-short-Laufs, mischt die Musik leise unter die Stimme (Ducking),
+# normiert auf -14 LUFS und rechnet das Video kleiner. Kein Upload auf Plattformen.
+# Ziel im Repo: .github/workflows/musik-nachtraeglich.yml
+name: musik-nachtraeglich
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Lauf-ID des test-short-Laufs (Zahl aus der Adresse .../actions/runs/<ID>)"
+        required: true
+      musik:
+        description: "Dateiname in 07_Geschichtskanal/produktion/musik/"
+        required: true
+      lautstaerke_db:
+        description: "Musik-Lautstärke in dB (negativ = leiser)"
+        required: true
+        default: "-16"
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  mischen:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      RUN_ID: ${{ inputs.run_id }}
+      MUSIK: ${{ inputs.musik }}
+      DB: ${{ inputs.lautstaerke_db }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Eingaben prüfen
+        run: |
+          [[ "$RUN_ID" =~ ^[0-9]{5,15}$ ]] || { echo "run_id ungültig"; exit 1; }
+          [[ "$MUSIK" =~ ^[A-Za-z0-9_-]{1,60}\.(mp3|wav|m4a)$ ]] || { echo "Musik-Dateiname ungültig"; exit 1; }
+          [[ "$DB" =~ ^-[0-9]{1,2}$ ]] || { echo "Lautstärke ungültig"; exit 1; }
+          test -f "07_Geschichtskanal/produktion/musik/$MUSIK" || { echo "Musik nicht in der Bibliothek"; exit 1; }
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+          path: alt
+      - name: Musik untermischen
+        run: |
+          VIDEO=$(find alt -name '*_final.mp4' | head -1)
+          test -n "$VIDEO" || { echo "Kein Video im Artefakt"; exit 1; }
+          DAUER=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$VIDEO")
+          AUS=$(python3 -c "print(max(float('$DAUER')-2.0,0))")
+          ffmpeg -y -i "$VIDEO" -stream_loop -1 -i "07_Geschichtskanal/produktion/musik/$MUSIK" -filter_complex \
+            "[1:a]volume=${DB}dB,afade=t=in:d=0.8,afade=t=out:st=${AUS}:d=2[m];[m][0:a]sidechaincompress=threshold=0.03:ratio=6:attack=20:release=350[d];[0:a][d]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]" \
+            -map 0:v -map "[a]" -c:v libx264 -preset slow -crf 21 -pix_fmt yuv420p -c:a aac -b:a 192k \
+            -shortest -movflags +faststart mit_musik.mp4
+          ls -la mit_musik.mp4
+          echo "## Musik: $MUSIK ($DB dB) unter Lauf $RUN_ID" >> "$GITHUB_STEP_SUMMARY"
+          echo "Größe: $(du -h mit_musik.mp4 | cut -f1)" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mit-musik-${{ inputs.run_id }}
+          path: mit_musik.mp4
+          retention-days: 14
