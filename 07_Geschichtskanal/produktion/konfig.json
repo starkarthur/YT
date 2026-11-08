@@ -27,11 +27,12 @@
   },
   "video": {
     "anbieter": "fal",
-    "modell": "fal-ai/kling-video/v3/pro/image-to-video",
-    "preis_usd_pro_s": 0.14,
+    "modell": "alibaba/wan-3.0/image-to-video",
+    "preis_usd_pro_s": 0.2,
     "clip_s": 5,
     "versuche": 1,
-    "_versuche_hinweis": "1 = fehlerhafte Clips (Querformat, Balken) werden nicht neu bezahlt, sondern durch Standbild mit Kamerafahrt ersetzt (Nutzerwunsch 08.11.2026)."
+    "_versuche_hinweis": "1 = fehlerhafte Clips (Querformat, Balken) werden nicht neu bezahlt, sondern durch Standbild mit Kamerafahrt ersetzt (Nutzerwunsch 08.11.2026).",
+    "_modell_hinweis": "Wan 3.0 auf Wunsch des Nutzers (08.11.2026), 1080p $0.20/s laut fal.ai-FAQ; Kling 3.0 Pro bleibt als test_modelle.kling_pro verfügbar."
   },
   "stimme": {
     "anbieter": "elevenlabs",
@@ -78,6 +79,10 @@
       "modell": "fal-ai/veo3.1/lite/image-to-video",
       "preis_usd_pro_s": 0.1,
       "_hinweis": "Preis auf fal nicht bestätigt, vorsichtig angesetzt; Modell laut fal ab 17.11.2026 entfernt"
+    },
+    "wan_3": {
+      "modell": "alibaba/wan-3.0/image-to-video",
+      "preis_usd_pro_s": 0.2
     }
   }
 }

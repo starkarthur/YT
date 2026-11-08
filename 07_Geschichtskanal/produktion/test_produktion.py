@@ -278,6 +278,8 @@ class TestLauf(unittest.TestCase):
         from anbieter import Fal
         k = Fal.video_eingabe("fal-ai/kling-video/v3/pro/image-to-video", "https://x/b.png", "p", 5)
         self.assertEqual((k["start_image_url"], k["duration"]), ("https://x/b.png", "5"))
+        w = Fal.video_eingabe("alibaba/wan-3.0/image-to-video", "https://x/b.png", "p", 5)
+        self.assertEqual((w["start_image_url"], w["duration"], w["aspect_ratio"], w["audio"]), ("https://x/b.png", 5, "9:16", False))
         v = Fal.video_eingabe("fal-ai/veo3.1/lite/image-to-video", "https://x/b.png", "p", 5)
         self.assertEqual((v["image_url"], v["duration"], v["aspect_ratio"]), ("https://x/b.png", "6s", "9:16"))
 
