@@ -78,9 +78,14 @@ def pruefe_plan(plan: dict, sid_aus_datei: str | None = None) -> list[str]:
     if not isinstance(bw, list) or len(bw) > 20 or not all(
             isinstance(w, str) and re.fullmatch(r"[A-Za-z'-]{1,30}", w) for w in bw):
         f.append("betonte_woerter: Liste einzelner Wörter")
+    lang = plan.get("laenge", "kurz")
+    if lang not in ("kurz", "lang"):
+        f.append("laenge muss 'kurz' (bis 20 s) oder 'lang' (bis 30 s) sein")
+    if lang == "lang" and not (isinstance(plan.get("lang_begruendung"), str) and len(plan["lang_begruendung"].strip()) >= 20):
+        f.append("laenge 'lang' braucht eine lang_begruendung (mind. 20 Zeichen)")
     e = plan.get("einstellungen")
-    if not isinstance(e, list) or not 6 <= len(e) <= 16:
-        return f + ["6 bis 16 Einstellungen erwartet"]
+    if not isinstance(e, list) or not 3 <= len(e) <= (8 if lang == "lang" else 6):
+        return f + ["3 bis 6 Einstellungen (lang: bis 8) erwartet"]
     gesamt, woerter, standbilder = 0, 0, 0
     for i, s in enumerate(e, 1):
         if not isinstance(s, dict):
@@ -89,6 +94,8 @@ def pruefe_plan(plan: dict, sid_aus_datei: str | None = None) -> list[str]:
         t = _str(s.get("text"), f"#{i} text", MAX_TEXT, f)
         if any(len(w) > 25 for w in t.split()):
             f.append(f"#{i} text: Wort länger als 25 Zeichen")
+        if len(t.split()) > 15:
+            f.append(f"#{i} text: höchstens 15 Wörter pro Einstellung (ein 5-s-Clip)")
         gesamt += len(t)
         woerter += len(t.split())
         _str(s.get("bild_prompt"), f"#{i} bild_prompt", MAX_PROMPT, f)
@@ -102,10 +109,11 @@ def pruefe_plan(plan: dict, sid_aus_datei: str | None = None) -> list[str]:
         standbilder += s.get("art") == "standbild"
     if gesamt > MAX_GESAMT:
         f.append(f"Text zu lang ({gesamt} Zeichen)")
-    if not 100 <= woerter <= 170:
-        f.append(f"{woerter} Wörter, erwartet 100-170")
-    if standbilder > 4:
-        f.append("höchstens 4 Standbilder")
+    grenze = (30, 85) if plan.get("laenge", "kurz") == "lang" else (30, 58)
+    if not grenze[0] <= woerter <= grenze[1]:
+        f.append(f"{woerter} Wörter, erwartet {grenze[0]}-{grenze[1]} (ca. 2,8 Wörter pro Sekunde)")
+    if standbilder > 3:
+        f.append("höchstens 3 Standbilder")
     return f
 
 

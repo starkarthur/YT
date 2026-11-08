@@ -15,7 +15,10 @@ on:
         type: choice
         options: [kling_pro, veo_lite]
 permissions: { contents: read }
-concurrency: test-${{ inputs.modell }}
+concurrency:
+  group: test-${{ inputs.modell }}
+  cancel-in-progress: false
+
 jobs:
   test:
     if: vars.GK_PAUSE != 'ja'
@@ -55,6 +58,7 @@ jobs:
           path: |
             arbeit/medien/test_*/*_final.mp4
             arbeit/medien/test_*/bild_*.png
+            arbeit/medien/test_*/kontaktbogen.jpg
             arbeit/kostenbuch.jsonl
             arbeit/fehler.jsonl
           retention-days: 14

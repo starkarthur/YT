@@ -1,0 +1,79 @@
+# Lädt ein bereits fertiges Video (Artefakt eines früheren Laufs) EINMAL auf YouTube hoch.
+# Nur von Hand startbar, läuft in der Umgebung mit Pflicht-Klick. Gedacht für das erste Video (Freigabe des Nutzers im Chat).
+# Ziel im Repo: .github/workflows/einmal-upload.yml
+name: einmal-upload
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Lauf-ID, deren Artefakt das fertige Video enthält"
+        required: true
+      artefakt:
+        description: "Name des Artefakts"
+        required: true
+      short:
+        description: "Short-Nummer für die Texte (Kanal/NNN.json)"
+        required: true
+        default: "001"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: einmal-upload
+  cancel-in-progress: false
+
+jobs:
+  youtube:
+    runs-on: ubuntu-24.04
+    environment: veroeffentlichung-pruefung
+    timeout-minutes: 20
+    env:
+      SHORT: ${{ inputs.short }}
+    steps:
+      - name: Eingaben prüfen
+        env:
+          RUN_ID: ${{ inputs.run_id }}
+          ARTEFAKT: ${{ inputs.artefakt }}
+        run: |
+          [[ "$RUN_ID" =~ ^[0-9]{5,15}$ ]] || { echo "run_id ungültig"; exit 1; }
+          [[ "$ARTEFAKT" =~ ^[A-Za-z0-9_.-]{1,80}$ ]] || { echo "Artefaktname ungültig"; exit 1; }
+          [[ "$SHORT" =~ ^[0-9]{3}$ ]] || { echo "Short ungültig"; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: inhalt
+          path: inhalt
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artefakt }}
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+          path: video
+      - name: Auf YouTube hochladen
+        working-directory: 07_Geschichtskanal/produktion
+        env:
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+        run: |
+          python3 - <<'EOF'
+          import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, ".")
+          import upload
+          from plan_schema import lade_metadaten
+          ws = Path(os.environ["GITHUB_WORKSPACE"])
+          videos = sorted((ws / "video").rglob("*.mp4"))
+          if len(videos) != 1:
+              raise SystemExit(f"Erwartet genau ein Video, gefunden: {len(videos)}")
+          meta = lade_metadaten(ws / "inhalt" / "07_Geschichtskanal" / "Kanal" / f"{os.environ['SHORT']}.json")
+          konf = json.loads(Path("konfig.json").read_text(encoding="utf-8"))["plattformen"]["youtube"]
+          r = upload.youtube(videos[0], meta, konf)
+          zeile = f"YouTube: hochgeladen {r['url']} {r.get('hinweis','')}"
+          print(zeile)
+          open(os.environ["GITHUB_STEP_SUMMARY"], "a").write(zeile + "\n")
+          EOF
