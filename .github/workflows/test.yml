@@ -13,7 +13,7 @@ on:
         description: "Videomodell"
         required: true
         type: choice
-        options: [kling_pro, veo_lite]
+        options: [wan_3, kling_pro, veo_lite]
 permissions: { contents: read }
 concurrency:
   group: test-${{ inputs.modell }}
