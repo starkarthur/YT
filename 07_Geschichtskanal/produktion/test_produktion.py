@@ -20,8 +20,9 @@ from buecher import (BudgetUeberschritten, DoppelteVeroeffentlichung, Kostenbuch
 from plan_schema import KENNZEICHNUNG, PlanFehler, lade_metadaten, lade_plan, pruefe_plan, stufe  # noqa: E402
 
 KANAL = HIER.parent
-PLAN = KANAL / "Shorts" / "001_Eiffelturm-Betrug_plan.json"
-META = KANAL / "Kanal" / "001.json"
+TESTDATEN = HIER / "testdaten"
+PLAN = TESTDATEN / "Shorts" / "001_Eiffelturm-Kurz_plan.json"
+META = TESTDATEN / "Kanal" / "001.json"
 
 
 def json_datei(daten) -> Path:
@@ -147,7 +148,7 @@ class TestSchnitt(unittest.TestCase):
         self.assertEqual(len(z), len(self.plan["einstellungen"]))
         for (_, e1), (a2, _) in zip(z, z[1:]):
             self.assertEqual(e1, a2)
-        self.assertTrue(30 <= z[-1][1] <= 62, z[-1][1])
+        self.assertTrue(12 <= z[-1][1] <= 22, z[-1][1])
 
     def test_ass(self):
         ass = schnitt.ass_untertitel(self.woerter, lauf.KONF, {"Eiffel"})
@@ -167,7 +168,7 @@ class TestLauf(unittest.TestCase):
         self.d = Path(tempfile.mkdtemp())
         self.k = Path(tempfile.mkdtemp())
         for o in ("Shorts", "Kanal"):
-            shutil.copytree(KANAL / o, self.k / o)
+            shutil.copytree(TESTDATEN / o, self.k / o)
         (self.k / "Pruefberichte").mkdir()
         os.environ["GK_ARBEIT"] = str(self.d)
         for v in ("GK_UPLOAD_ERLAUBT", "GK_UMGEBUNG", "GK_PAUSE"):
@@ -230,8 +231,8 @@ class TestLauf(unittest.TestCase):
 
     def test_neue_fassung_braucht_neue_pruefung(self):
         self.bericht(1, "freigegeben")
-        v2 = self.k / "Shorts" / "001_Eiffelturm-Betrug_plan_v2.json"
-        v2.write_text(self.plan.read_text(encoding="utf-8").replace("Probably", "Maybe"), encoding="utf-8")
+        v2 = self.k / "Shorts" / "001_Eiffelturm-Kurz_plan_v2.json"
+        v2.write_text(self.plan.read_text(encoding="utf-8").replace("Still not for sale", "Never for sale"), encoding="utf-8")
         self.assertEqual(lauf.plan_pfad("001"), v2)
         with self.assertRaises(lauf.Gesperrt):
             lauf.pruef_freigabe("001", v2)
@@ -279,6 +280,12 @@ class TestLauf(unittest.TestCase):
         self.assertEqual((k["start_image_url"], k["duration"]), ("https://x/b.png", "5"))
         v = Fal.video_eingabe("fal-ai/veo3.1/lite/image-to-video", "https://x/b.png", "p", 5)
         self.assertEqual((v["image_url"], v["duration"], v["aspect_ratio"]), ("https://x/b.png", "6s", "9:16"))
+
+    def test_balken_erkennung(self):
+        log = "[Parsed_cropdetect] x1:0 crop=1080:608:0:656"
+        self.assertTrue(lauf.balken_aus_log(log, 1080, 1920))
+        self.assertEqual(lauf.balken_aus_log("crop=1080:1904:0:8", 1080, 1920), [])
+        self.assertTrue(lauf.balken_aus_log("crop=600:1920:240:0", 1080, 1920))
 
     def test_kostenschaetzung_hoechstfall(self):
         k = lauf.schaetze_kosten(lade_plan(self.plan))

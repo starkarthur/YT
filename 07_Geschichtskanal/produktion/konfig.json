@@ -7,8 +7,10 @@
     "limit_monat_usd": 500
   },
   "laenge_s": {
-    "min": 30,
-    "max": 62
+    "min": 12,
+    "max_normal": 22,
+    "max_ausnahme": 32,
+    "_hinweis": "Normal höchstens 20 s; 30 s nur mit plan.laenge='lang' und Begründung (Entscheidung Nutzer 08.11.2026)"
   },
   "format": {
     "breite": 1080,

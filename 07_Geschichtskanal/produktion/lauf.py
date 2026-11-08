@@ -105,7 +105,8 @@ def schaetze_kosten(plan: dict) -> float:
     v, b, s = KONF["video"], KONF["bild"], KONF["stimme"]
     zeichen = sum(len(e["text"]) for e in plan["einstellungen"])
     bilder = len(plan["einstellungen"]) * b["preis_usd"]
-    videos = sum(10 * v["preis_usd_pro_s"] for e in plan["einstellungen"] if e.get("art", "video") == "video")
+    videos = sum(v["clip_s"] * v["preis_usd_pro_s"] * v.get("versuche", 2) for e in plan["einstellungen"]
+                 if e.get("art", "video") == "video")  # Höchstfall: jeder Clip zweimal
     return round(bilder + videos + zeichen / 1000 * s["preis_usd_pro_1000_zeichen"], 2)  # Höchstfall: 10-s-Clips
 
 
@@ -132,12 +133,57 @@ def ffmpeg_ausfuehren(befehle: list[list[str]], probe: bool) -> None:
             subprocess.run(b, check=True, capture_output=True, timeout=900)
 
 
-def qualitaet(video: Path) -> list[str]:
+VIDEO_ZUSATZ = "Vertical 9:16 full-frame shot, no letterbox, no black bars, no text"
+
+
+def balken_aus_log(log: str, breite: int, hoehe: int) -> list[str]:
+    """Wertet die letzte cropdetect-Zeile aus. Inhalt deutlich kleiner als das Bild = schwarze Balken."""
+    treffer = re.findall(r"crop=(\d+):(\d+):(\d+):(\d+)", log)
+    if not treffer:
+        return []
+    w, h = int(treffer[-1][0]), int(treffer[-1][1])
+    f = []
+    if h < 0.9 * hoehe:
+        f.append(f"schwarze Balken oben/unten (Inhalt {w}x{h} von {breite}x{hoehe})")
+    if w < 0.9 * breite:
+        f.append(f"schwarze Balken links/rechts (Inhalt {w}x{h} von {breite}x{hoehe})")
+    return f
+
+
+def clip_pruefen(clip: Path) -> list[str]:
+    """Jeder KI-Clip muss Hochformat sein und darf keine eingebrannten Balken haben."""
+    info = json.loads(subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
+                                      "stream=width,height", "-of", "json", str(clip)],
+                                     capture_output=True, check=True).stdout)
+    s = info["streams"][0]
+    b, h = int(s["width"]), int(s["height"])
+    if b >= h:
+        return [f"Querformat {b}x{h}"]
+    log = subprocess.run(["ffmpeg", "-i", str(clip), "-vf", "cropdetect=24:2:0", "-f", "null", "-"],
+                         capture_output=True, text=True).stderr
+    return balken_aus_log(log, b, h)
+
+
+def kontaktbogen(video: Path, zeiten: list[tuple[float, float]], ziel: Path) -> None:
+    """Ein Bild mit der Mitte jeder Einstellung, zur Sichtprüfung durch Chef-Agent und Nutzer."""
+    ordner = ziel.parent / "kontakt"
+    ordner.mkdir(exist_ok=True)
+    for n, (a, z) in enumerate(zeiten, 1):
+        subprocess.run(["ffmpeg", "-y", "-ss", f"{(a + z) / 2:.2f}", "-i", str(video), "-frames:v", "1",
+                        "-vf", "scale=360:640", str(ordner / f"f_{n:02d}.jpg")], capture_output=True, check=True)
+    spalten = min(len(zeiten), 5)
+    zeilen = -(-len(zeiten) // spalten)
+    subprocess.run(["ffmpeg", "-y", "-framerate", "1", "-i", str(ordner / "f_%02d.jpg"), "-vf",
+                    f"tile={spalten}x{zeilen}:padding=6:color=white", "-frames:v", "1", str(ziel)],
+                   capture_output=True, check=True)
+
+
+def qualitaet(video: Path, max_s: float | None = None) -> list[str]:
     f = []
     info = json.loads(subprocess.run(["ffprobe", "-v", "error", "-print_format", "json", "-show_format",
                                       "-show_streams", str(video)], capture_output=True, check=True).stdout)
     dauer = float(info["format"]["duration"])
-    if not KONF["laenge_s"]["min"] <= dauer <= KONF["laenge_s"]["max"]:
+    if not KONF["laenge_s"]["min"] <= dauer <= (max_s or KONF["laenge_s"]["max_ausnahme"]):
         f.append(f"Länge {dauer:.1f} s")
     vs = [s for s in info["streams"] if s["codec_type"] == "video"]
     if not vs or (vs[0]["width"], vs[0]["height"]) != (KONF["format"]["breite"], KONF["format"]["hoehe"]):
@@ -147,6 +193,9 @@ def qualitaet(video: Path) -> list[str]:
     log = subprocess.run(["ffmpeg", "-i", str(video), "-vf", "blackdetect=d=1.5:pix_th=0.05",
                           "-af", "silencedetect=n=-45dB:d=1.5", "-f", "null", "-"],
                          capture_output=True, text=True).stderr
+    f += balken_aus_log(subprocess.run(["ffmpeg", "-i", str(video), "-vf", "cropdetect=24:2:0", "-f", "null", "-"],
+                                       capture_output=True, text=True).stderr,
+                        KONF["format"]["breite"], KONF["format"]["hoehe"])
     if "black_start" in log:
         f.append("schwarzes Bild über 1,5 s")
     if "silence_start" in log:
@@ -214,12 +263,25 @@ def produziere(sid: str, probe: bool, test: bool = False, test_modell: str | Non
             bild, bild_url = fal.bild(KONF["bild"]["modell"], prompt, arbeit / f"bild_{n:02d}.png",
                                       KONF["bild"].get("aufloesung", "2K"))
             if e.get("art", "video") == "video":
-                d = 10 if z - a > video_konf["clip_s"] else video_konf["clip_s"]
-                if not probe:
-                    kosten.buchen(konto, f"video_{n}", d * video_konf["preis_usd_pro_s"], "fal")
-                clips.append(fal.video(video_konf["modell"], bild_url,
-                                       f"{e['bewegung'].replace('_', ' ')}. {e.get('video_prompt', '')}",
-                                       d, arbeit / f"clip_{n:02d}.mp4"))
+                d = video_konf["clip_s"]  # immer 5 s; längere Sätze halten das letzte Bild (Kosten)
+                clip = None
+                for versuch in range(1, max(1, video_konf.get("versuche", 2)) + 1):
+                    if not probe:
+                        kosten.buchen(konto, f"video_{n}_v{versuch}", d * video_konf["preis_usd_pro_s"], "fal")
+                    kandidat = fal.video(video_konf["modell"], bild_url,
+                                         f"{e['bewegung'].replace('_', ' ')}. {e.get('video_prompt', '')}. {VIDEO_ZUSATZ}",
+                                         d, arbeit / f"clip_{n:02d}_v{versuch}.mp4")
+                    probleme = [] if probe else clip_pruefen(kandidat)
+                    if not probleme:
+                        clip = kandidat
+                        break
+                    fehler.eintragen(sid, f"clip_{n}_v{versuch}", ", ".join(probleme))
+                if clip is None:  # lieber ein sauberes Standbild mit Kamerafahrt als ein falsches Format
+                    e["art"] = "standbild"
+                    fehler.eintragen(sid, f"clip_{n}", "Ersatz durch Standbild mit Kamerafahrt")
+                    clips.append(bild)
+                else:
+                    clips.append(clip)
             else:
                 clips.append(bild)
         ass = arbeit / "untertitel.ass"
@@ -227,7 +289,8 @@ def produziere(sid: str, probe: bool, test: bool = False, test_modell: str | Non
         ffmpeg_ausfuehren(schnitt.befehle(plan, zeiten, clips, arbeit / "stimme.mp3", musik_pfad(plan, probe or test), ass,
                                           ziel, KONF), probe)
         if not probe:
-            probleme = qualitaet(ziel)
+            kontaktbogen(ziel, zeiten, arbeit / "kontaktbogen.jpg")
+            probleme = qualitaet(ziel, KONF["laenge_s"]["max_ausnahme" if plan.get("laenge") == "lang" else "max_normal"])
             if probleme:
                 raise Gesperrt(f"{sid}: Qualitätsprüfung: {', '.join(probleme)}")
         if test:

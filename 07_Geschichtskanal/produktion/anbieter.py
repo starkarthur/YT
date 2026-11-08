@@ -104,7 +104,7 @@ class Fal:
         """Jedes Modell erwartet andere Feldnamen (fal.ai-Doku, 07.11.2026)."""
         if "kling-video" in modell:   # Seitenverhältnis kommt aus dem Startbild
             return {"start_image_url": bild_url, "prompt": prompt, "duration": str(dauer_s),
-                    "generate_audio": False, "negative_prompt": "blur, distort, low quality, text, watermark"}
+                    "generate_audio": False, "negative_prompt": "blur, distort, low quality, text, watermark, letterbox, black bars, widescreen"}
         if "veo3" in modell:          # nur 4s, 6s, 8s
             d = next((x for x in (4, 6, 8) if x >= dauer_s), 8)  # lieber länger als zu kurz
             return {"image_url": bild_url, "prompt": prompt, "duration": f"{d}s", "aspect_ratio": "9:16",
