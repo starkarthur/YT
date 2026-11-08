@@ -1,0 +1,56 @@
+{
+  "id": "002",
+  "titel": "The Sky Exploded Over Siberia",
+  "reihe": "natures_fury",
+  "jahr": 1908,
+  "personen": [],
+  "laenge": "kurz",
+  "musik": "noir_jazz_detective.mp3",
+  "betonte_woerter": [
+    "exploded",
+    "crater",
+    "Sun",
+    "fell"
+  ],
+  "einstellungen": [
+    {
+      "text": "In 1908, something exploded over Siberia. It left no crater.",
+      "bild_prompt": "Vast Siberian taiga forest at early morning, dark pine trees, thin mist, a blinding white streak of light cutting across the pale sky, vertical 9:16 composition, no people",
+      "art": "video",
+      "bewegung": "kamerafahrt_vor",
+      "effekt": "punch_zoom",
+      "video_prompt": "the white streak races across the sky above the quiet forest, mist drifts, slow push in"
+    },
+    {
+      "text": "Witnesses saw a fireball and a flash brighter than the Sun.",
+      "bild_prompt": "A huge glowing fireball low over a distant forest horizon, intense white and orange light flooding the sky and treetops, dramatic silhouettes of pines, no people",
+      "art": "video",
+      "bewegung": "statisch",
+      "effekt": "blitz_weiss",
+      "video_prompt": "the fireball swells and floods the sky with blinding light, treetops sway"
+    },
+    {
+      "text": "It flattened about 2,000 square kilometers of forest.",
+      "bild_prompt": "High aerial view of an endless forest where thousands of tree trunks lie flattened in a radial pattern pointing outward from one center, soft grey light, no people",
+      "art": "video",
+      "bewegung": "aufsicht_drohne",
+      "effekt": "keiner",
+      "video_prompt": "slow aerial glide over the fallen trunks, light mist moving between them"
+    },
+    {
+      "text": "In 1927, explorers reached the center. No crater, no large fragments.",
+      "bild_prompt": "Empty swampy clearing in the Siberian wilderness at dusk, scattered fallen bare tree trunks, flat ground with no crater, moody overcast sky, no people",
+      "art": "standbild",
+      "bewegung": "langsamer_zoom_rein",
+      "effekt": "keiner"
+    },
+    {
+      "text": "Experts say a space rock burst miles up. Nothing landed, yet a forest fell.",
+      "bild_prompt": "A bright rock streaking through the upper atmosphere over a dark curved Earth horizon, breaking apart in a flash of light, forest far below, no people",
+      "art": "video",
+      "bewegung": "langsamer_zoom_raus",
+      "effekt": "zeitlupe",
+      "video_prompt": "the glowing rock breaks apart high above the clouds in a bright flash, the light fades over the calm forest"
+    }
+  ]
+}
