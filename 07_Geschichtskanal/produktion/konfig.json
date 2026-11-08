@@ -30,7 +30,8 @@
     "modell": "fal-ai/kling-video/v3/pro/image-to-video",
     "preis_usd_pro_s": 0.14,
     "clip_s": 5,
-    "versuche": 2
+    "versuche": 1,
+    "_versuche_hinweis": "1 = fehlerhafte Clips (Querformat, Balken) werden nicht neu bezahlt, sondern durch Standbild mit Kamerafahrt ersetzt (Nutzerwunsch 08.11.2026)."
   },
   "stimme": {
     "anbieter": "elevenlabs",

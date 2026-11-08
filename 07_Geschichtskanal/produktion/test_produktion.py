@@ -289,7 +289,7 @@ class TestLauf(unittest.TestCase):
 
     def test_kostenschaetzung_hoechstfall(self):
         k = lauf.schaetze_kosten(lade_plan(self.plan))
-        self.assertTrue(5 < k < lauf.KONF["budget"]["limit_short_usd"], k)
+        self.assertTrue(2 < k < lauf.KONF["budget"]["limit_short_usd"], k)
 
 
 if __name__ == "__main__":
