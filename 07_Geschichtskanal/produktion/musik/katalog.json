@@ -1,0 +1,23 @@
+{
+  "_hinweis": "Musik-Katalog. Der geschichte-autor wählt per 'stimmung' passend zur Reihe, nicht zweimal hintereinander dasselbe Stück. Nur Stücke mit belegter Lizenz.",
+  "stuecke": {
+    "noir_jazz_detective.mp3": {
+      "titel": "Noir Jazz Detective Midnight Mystery",
+      "kuenstler": "Alex Morgan",
+      "quelle": "https://pixabay.com/music/crime-scene-noir-jazz-detective-midnight-mystery-587403/",
+      "lizenz": "Pixabay Content License (kommerziell, ohne Namensnennung)",
+      "content_id_hinweis": "keiner auf der Seite (geprüft 08.11.2026)",
+      "stimmung": [
+        "spannung",
+        "krimi",
+        "1920er"
+      ],
+      "reihen": [
+        "cons"
+      ],
+      "dauer_s": 143,
+      "sha256": "e6aad2a9cd4d8de3cd26e4109ec0cfce3732a8035e3a5d6174226b2334665588",
+      "geladen": "2026-11-08"
+    }
+  }
+}
