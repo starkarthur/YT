@@ -58,8 +58,17 @@ jobs:
           ls -la mit_musik.mp4
           echo "## Musik: $MUSIK ($DB dB) unter Lauf $RUN_ID" >> "$GITHUB_STEP_SUMMARY"
           echo "Größe: $(du -h mit_musik.mp4 | cut -f1)" >> "$GITHUB_STEP_SUMMARY"
+      - name: Kontaktbogen und Balkenprüfung (alle 2 Sekunden ein Bild)
+        run: |
+          ffmpeg -y -i mit_musik.mp4 -vf "fps=1/2,scale=216:384,tile=6x5:padding=4:color=white" -frames:v 1 kontaktbogen.jpg
+          ffmpeg -i mit_musik.mp4 -vf "fps=1/2,cropdetect=24:2:0" -f null - 2>&1 | grep -o "crop=[0-9:]*" | sort | uniq -c > balken.txt || true
+          echo "### Erkannte Bildbereiche (Anzahl × crop=Breite:Höhe:x:y)" >> "$GITHUB_STEP_SUMMARY"
+          cat balken.txt >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
           name: mit-musik-${{ inputs.run_id }}
-          path: mit_musik.mp4
+          path: |
+            mit_musik.mp4
+            kontaktbogen.jpg
+            balken.txt
           retention-days: 14

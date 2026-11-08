@@ -1,0 +1,43 @@
+# Prüft, ob die Plattform-Zugangsdaten funktionieren, OHNE etwas hochzuladen.
+# YouTube: holt mit dem Refresh-Token ein kurzlebiges Zugriffstoken und zeigt nur „OK“ und den Gültigkeitsbereich.
+# Es wird kein Token ausgegeben. Ziel im Repo: .github/workflows/verbindung-testen.yml
+name: verbindung-testen
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: read
+
+jobs:
+  youtube:
+    runs-on: ubuntu-24.04
+    environment: veroeffentlichung-pruefung
+    timeout-minutes: 5
+    steps:
+      - name: YouTube-Zugangsdaten prüfen
+        env:
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+        run: |
+          python3 - <<'EOF'
+          import json, os, urllib.parse, urllib.request, urllib.error
+          fehlt = [n for n in ("YT_CLIENT_ID", "YT_CLIENT_SECRET", "YT_REFRESH_TOKEN") if not os.environ.get(n)]
+          if fehlt:
+              raise SystemExit("Fehlende Secrets: " + ", ".join(fehlt))
+          daten = urllib.parse.urlencode({"client_id": os.environ["YT_CLIENT_ID"],
+                                          "client_secret": os.environ["YT_CLIENT_SECRET"],
+                                          "refresh_token": os.environ["YT_REFRESH_TOKEN"],
+                                          "grant_type": "refresh_token"}).encode()
+          try:
+              with urllib.request.urlopen("https://oauth2.googleapis.com/token", daten, timeout=30) as r:
+                  j = json.load(r)
+          except urllib.error.HTTPError as e:
+              fehler = json.loads(e.read() or b"{}")
+              raise SystemExit(f"YouTube: FEHLER {e.code} {fehler.get('error')} – {fehler.get('error_description', '')}")
+          ok = "youtube.upload" in j.get("scope", "")
+          meldung = f"YouTube: OK – Zugriff erneuert, Berechtigung Upload: {'ja' if ok else 'NEIN'}"
+          print(meldung)
+          open(os.environ["GITHUB_STEP_SUMMARY"], "a").write(meldung + "\n")
+          if not ok:
+              raise SystemExit(1)
+          EOF
