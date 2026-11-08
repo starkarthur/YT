@@ -1,0 +1,58 @@
+{
+  "id": "001",
+  "titel": "He Sold the Eiffel Tower",
+  "reihe": "cons",
+  "jahr": 1925,
+  "personen": [
+    "Victor Lustig"
+  ],
+  "laenge": "kurz",
+  "musik": "noir_jazz_detective.mp3",
+  "betonte_woerter": [
+    "Eiffel",
+    "sold",
+    "again",
+    "police"
+  ],
+  "einstellungen": [
+    {
+      "text": "In 1925, a man sold the Eiffel Tower.",
+      "bild_prompt": "The Eiffel Tower in Paris in 1925 at dusk, light rain, Parisians with umbrellas below, low angle",
+      "art": "video",
+      "bewegung": "kamerafahrt_vor",
+      "effekt": "punch_zoom",
+      "video_prompt": "slow push in towards the tower, rain falling"
+    },
+    {
+      "text": "Con man Victor Lustig told scrap dealers it was being torn down.",
+      "bild_prompt": "A dramatized 1920s con man in a three-piece suit leaning across a hotel table toward nervous businessmen, cinematic reenactment",
+      "art": "video",
+      "bewegung": "langsamer_zoom_rein",
+      "effekt": "keiner",
+      "video_prompt": "he leans closer and whispers"
+    },
+    {
+      "text": "One buyer paid. Lustig fled with the money.",
+      "bild_prompt": "A leather briefcase full of 1920s banknotes on a train seat, landscape blurring outside the window",
+      "art": "video",
+      "bewegung": "handkamera",
+      "effekt": "wackler",
+      "video_prompt": "the train rocks gently"
+    },
+    {
+      "text": "Then he came back and tried it again.",
+      "bild_prompt": "The con man stepping off a train at a busy 1920s Paris station through steam, confident walk",
+      "art": "video",
+      "bewegung": "kamerafahrt_vor",
+      "effekt": "punch_zoom",
+      "video_prompt": "he walks toward camera through the steam"
+    },
+    {
+      "text": "The Eiffel Tower is still standing. Still not for sale.",
+      "bild_prompt": "The Eiffel Tower today at golden hour seen from the Trocadero",
+      "art": "standbild",
+      "bewegung": "langsamer_zoom_raus",
+      "effekt": "keiner"
+    }
+  ]
+}
