@@ -114,6 +114,29 @@ class Fal:
                     "resolution": "1080p", "generate_audio": False}
         return {"image_url": bild_url, "prompt": prompt, "duration": str(dauer_s), "generate_audio": False}
 
+    SICHT_FRAGE = ("This is one frame of a vertical 9:16 history short. Check it strictly. Answer ONLY with JSON "
+                   '{"upright": true|false, "text": true|false, "reason": "short"}. '
+                   "upright=false if the scene is rotated, sideways or upside down (horizon or ground running "
+                   "vertically, people/animals/trees lying sideways, gravity pointing left or right). "
+                   "text=true if readable letters, captions, logos or watermarks are visible.")
+
+    def sicht(self, jpg: Path, modell: str) -> dict:
+        """Bild-KI prüft, ob die Szene aufrecht steht und keine Schrift zeigt (Bild als data-URL, ca. 0,1 Cent)."""
+        if self.probe:
+            return {"upright": True, "text": False, "reason": "probe", "usd": 0.0}
+        url = "data:image/jpeg;base64," + base64.b64encode(jpg.read_bytes()).decode()
+        r = self._lauf("openrouter/router/vision", {"image_urls": [url], "prompt": self.SICHT_FRAGE,
+                                                    "model": modell, "temperature": 0, "max_tokens": 120},
+                       max_warten_s=120)
+        text = str(r.get("output", ""))
+        a, b = text.find("{"), text.rfind("}")
+        try:
+            d = json.loads(text[a:b + 1])
+        except ValueError:
+            raise AnbieterFehler(f"Sichtprüfung: unlesbare Antwort {text[:80]!r}") from None
+        return {"upright": d.get("upright") is True, "text": d.get("text") is True,
+                "reason": str(d.get("reason", ""))[:200], "usd": float((r.get("usage") or {}).get("cost") or 0)}
+
     def video(self, modell: str, bild_url: str, prompt: str, dauer_s: int, ziel: Path) -> Path:
         if self.probe:
             ziel.parent.mkdir(parents=True, exist_ok=True)

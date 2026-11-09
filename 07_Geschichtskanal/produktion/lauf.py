@@ -154,7 +154,7 @@ def ffmpeg_ausfuehren(befehle: list[list[str]], probe: bool) -> None:
             subprocess.run(b, check=True, capture_output=True, timeout=900)
 
 
-VIDEO_ZUSATZ = "Vertical 9:16 full-frame shot, no letterbox, no black bars, no text"
+VIDEO_ZUSATZ = "Vertical 9:16 full-frame shot, upright camera, level horizon, no rotation, no letterbox, no black bars, no text"
 
 
 def balken_aus_log(log: str, breite: int, hoehe: int) -> list[str]:
@@ -183,6 +183,36 @@ def clip_pruefen(clip: Path) -> list[str]:
     log = subprocess.run(["ffmpeg", "-i", str(clip), "-vf", "cropdetect=24:2:0", "-f", "null", "-"],
                          capture_output=True, text=True).stderr
     return balken_aus_log(log, b, h)
+
+
+def standbild_jpg(quelle: Path, ziel: Path, sekunde: float | None = None) -> Path:
+    """Kleines JPG für die Sichtprüfung (aus Bild oder aus der Mitte eines Clips)."""
+    vor = ["-ss", f"{sekunde:.2f}"] if sekunde is not None else []
+    subprocess.run(["ffmpeg", "-y", *vor, "-i", str(quelle), "-frames:v", "1", "-vf", "scale=360:-2", "-q:v", "4",
+                    str(ziel)], capture_output=True, check=True)
+    return ziel
+
+
+def sicht_pruefen(fal: Fal, quelle: Path, kosten: Kostenbuch, konto: str, posten: str,
+                  fehler: Fehlerbuch, sid: str, sekunde: float | None = None) -> list[str]:
+    """Bild-KI schaut hin: gedrehte Szene oder Schrift im Bild sind Fehler. Fällt die Prüfung selbst aus,
+    wird das vermerkt, aber nicht blockiert (der Chef-Agent prüft danach ohnehin den Kontaktbogen)."""
+    konf = KONF.get("sichtpruefung", {})
+    if not konf.get("aktiv", False) or fal.probe:
+        return []
+    try:
+        jpg = standbild_jpg(quelle, quelle.with_name(quelle.stem + "_sicht.jpg"), sekunde)
+        r = fal.sicht(jpg, konf["modell"])
+        kosten.buchen(konto, posten, r["usd"], "fal")
+    except Exception as ex:
+        fehler.eintragen(sid, posten, f"Sichtprüfung nicht möglich: {ex}")
+        return []
+    probleme = []
+    if not r["upright"]:
+        probleme.append(f"Szene gedreht ({r['reason']})")
+    if r["text"]:
+        probleme.append(f"Schrift im Bild ({r['reason']})")
+    return probleme
 
 
 def kontaktbogen(video: Path, zeiten: list[tuple[float, float]], ziel: Path) -> None:
@@ -282,8 +312,17 @@ def produziere(sid: str, probe: bool, test: bool = False, test_modell: str | Non
             prompt = f"{e['bild_prompt']}. {KONF['bild']['stil']}"
             if not probe:
                 kosten.buchen(konto, f"bild_{n}", KONF["bild"]["preis_usd"], "fal")
-            bild, bild_url = fal.bild(KONF["bild"]["modell"], prompt, arbeit / f"bild_{n:02d}.png",
-                                      KONF["bild"].get("aufloesung", "2K"))
+            for bv in range(1, max(1, KONF["bild"].get("versuche", 2)) + 1):
+                if not probe and bv > 1:
+                    kosten.buchen(konto, f"bild_{n}_v{bv}", KONF["bild"]["preis_usd"], "fal")
+                bild, bild_url = fal.bild(KONF["bild"]["modell"], prompt, arbeit / f"bild_{n:02d}.png",
+                                          KONF["bild"].get("aufloesung", "2K"))
+                bild_probleme = sicht_pruefen(fal, bild, kosten, konto, f"sicht_bild_{n}_v{bv}", fehler, sid)
+                if not bild_probleme:
+                    break
+                fehler.eintragen(sid, f"bild_{n}_v{bv}", ", ".join(bild_probleme))
+            else:  # auch der letzte Versuch fiel durch: lieber abbrechen als ein gedrehtes Bild verwenden
+                raise Gesperrt(f"{sid}: Startbild {n} nach {bv} Versuchen fehlerhaft ({', '.join(bild_probleme)})")
             if e.get("art", "video") == "video":
                 d = video_konf["clip_s"]  # immer 5 s; längere Sätze halten das letzte Bild (Kosten)
                 clip = None
@@ -294,6 +333,9 @@ def produziere(sid: str, probe: bool, test: bool = False, test_modell: str | Non
                                          f"{e['bewegung'].replace('_', ' ')}. {e.get('video_prompt', '')}. {VIDEO_ZUSATZ}",
                                          d, arbeit / f"clip_{n:02d}_v{versuch}.mp4")
                     probleme = [] if probe else clip_pruefen(kandidat)
+                    if not probleme:
+                        probleme = sicht_pruefen(fal, kandidat, kosten, konto, f"sicht_clip_{n}_v{versuch}",
+                                                 fehler, sid, sekunde=d / 2)
                     if not probleme:
                         clip = kandidat
                         break
