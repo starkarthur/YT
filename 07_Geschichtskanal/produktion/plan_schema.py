@@ -106,6 +106,9 @@ def pruefe_plan(plan: dict, sid_aus_datei: str | None = None) -> list[str]:
             f.append(f"#{i}: effekt unbekannt")
         if s.get("art", "video") not in ART:
             f.append(f"#{i}: art unbekannt")
+        g = s.get("geraeusch")
+        if g is not None and (not isinstance(g, str) or not MUSIK.fullmatch(g)):
+            f.append(f"#{i} geraeusch: nur Dateiname wie wind_1.mp3")
         standbilder += s.get("art") == "standbild"
     if gesamt > MAX_GESAMT:
         f.append(f"Text zu lang ({gesamt} Zeichen)")

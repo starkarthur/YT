@@ -125,6 +125,27 @@ def musik_pfad(plan: dict, probe: bool = False) -> Path | None:
     return p
 
 
+def geraeusch_pfade(plan: dict, probe: bool = False) -> list[Path | None]:
+    """Ein Geräusch je Einstellung (oder None). Nur aus musik/geraeusche/, wie bei der Musik."""
+    ordner = (HIER / KONF["musik"]["ordner"] / "geraeusche").resolve()
+    pfade = []
+    for i, e in enumerate(plan["einstellungen"], 1):
+        name = e.get("geraeusch")
+        if not name:
+            pfade.append(None)
+            continue
+        p = (ordner / name).resolve()
+        if not p.is_relative_to(ordner):
+            raise PlanFehler(f"#{i}: Geräusch {name!r} liegt außerhalb der Bibliothek")
+        if not p.is_file():
+            if probe:
+                pfade.append(None)
+                continue
+            raise PlanFehler(f"#{i}: Geräusch {name!r} nicht in der Bibliothek")
+        pfade.append(p)
+    return pfade
+
+
 def ffmpeg_ausfuehren(befehle: list[list[str]], probe: bool) -> None:
     for b in befehle:
         if b[0] == "#schreibe":
@@ -208,6 +229,7 @@ def vorpruefung(sid: str, plan: dict, kosten: Kostenbuch, buch: Veroeffentlichun
     """Alles Kostenlose vor der ersten Zahlung (CA-15)."""
     lade_metadaten(meta_pfad(sid))
     musik_pfad(plan, probe)
+    geraeusch_pfade(plan, probe)
     rest_monat = KONF["budget"]["limit_monat_usd"] - kosten.summe(monat=datetime.now(timezone.utc).strftime("%Y-%m"))
     rest_short = KONF["budget"]["limit_short_usd"] - kosten.summe(short=konto or sid)
     if schaetze_kosten(plan) > min(rest_monat, rest_short):
@@ -287,7 +309,7 @@ def produziere(sid: str, probe: bool, test: bool = False, test_modell: str | Non
         ass = arbeit / "untertitel.ass"
         ass.write_text(schnitt.ass_untertitel(woerter, KONF, set(plan.get("betonte_woerter", []))), encoding="utf-8")
         ffmpeg_ausfuehren(schnitt.befehle(plan, zeiten, clips, arbeit / "stimme.mp3", musik_pfad(plan, probe or test), ass,
-                                          ziel, KONF), probe)
+                                          ziel, KONF, geraeusch_pfade(plan, probe or test)), probe)
         if not probe:
             kontaktbogen(ziel, zeiten, arbeit / "kontaktbogen.jpg")
             probleme = qualitaet(ziel, KONF["laenge_s"]["max_ausnahme" if plan.get("laenge") == "lang" else "max_normal"])

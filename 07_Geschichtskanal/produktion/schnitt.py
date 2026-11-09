@@ -58,7 +58,8 @@ def ass_untertitel(woerter: list[dict], konf: dict, betont: set[str] | None = No
 
 
 def befehle(plan: dict, zeiten: list[tuple[float, float]], clips: list[Path], stimme: Path,
-            musik: Path | None, ass: Path, ziel: Path, konf: dict) -> list[list[str]]:
+            musik: Path | None, ass: Path, ziel: Path, konf: dict,
+            geraeusche: list[Path | None] | None = None) -> list[list[str]]:
     f = konf["format"]
     b, h, fps = f["breite"], f["hoehe"], f["fps"]
     arbeit = ziel.parent
@@ -86,17 +87,28 @@ def befehle(plan: dict, zeiten: list[tuple[float, float]], clips: list[Path], st
     bild = arbeit / "bild.mp4"
     out.append(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(liste), "-c", "copy", str(bild)])
     ass_pfad = ass.as_posix().replace(":", "\\:")
+    korn = int(konf.get("filmkorn", {}).get("staerke", 0))
+    vf = (f"noise=alls={korn}:allf=t," if korn > 0 else "") + f"ass='{ass_pfad}'"  # Korn unter den Untertiteln
+    eingaenge = ["-i", str(bild), "-i", str(stimme)]
+    graph, mix = [], ["[1:a]"]
     if musik:
         m = konf["musik"]["lautstaerke_unter_stimme_db"]
-        af = (f"[2:a]volume={m}dB[mu];[mu][1:a]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=400[duck];"
-              f"[1:a][duck]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]")
-        out.append(["ffmpeg", "-y", "-i", str(bild), "-i", str(stimme), "-stream_loop", "-1", "-i", str(musik),
-                    "-filter_complex", af, "-map", "0:v", "-map", "[a]", "-vf", f"ass='{ass_pfad}'",
-                    "-c:v", "libx264", "-crf", "17", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
-                    "-shortest", "-movflags", "+faststart", str(ziel)])
-    else:
-        out.append(["ffmpeg", "-y", "-i", str(bild), "-i", str(stimme), "-map", "0:v", "-map", "1:a",
-                    "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-vf", f"ass='{ass_pfad}'",
-                    "-c:v", "libx264", "-crf", "17", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
-                    "-shortest", "-movflags", "+faststart", str(ziel)])
+        eingaenge += ["-stream_loop", "-1", "-i", str(musik)]
+        graph.append(f"[2:a]volume={m}dB[mu];[mu][1:a]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=400[duck]")
+        mix.append("[duck]")
+    g_db = konf.get("geraeusche", {}).get("lautstaerke_db", -14)
+    for n, ((s, e), g) in enumerate(zip(zeiten, geraeusche or []), 1):
+        if not g:
+            continue
+        idx = eingaenge.count("-i")  # Nummer der nächsten Eingabe
+        dauer = max(e - s, 0.5)
+        eingaenge += ["-i", str(g)]
+        ms = int(s * 1000)
+        graph.append(f"[{idx}:a]atrim=0:{dauer:.3f},asetpts=PTS-STARTPTS,afade=t=in:d=0.15,"
+                     f"afade=t=out:st={max(dauer - 0.4, 0):.3f}:d=0.4,volume={g_db}dB,adelay={ms}|{ms}[g{n}]")
+        mix.append(f"[g{n}]")
+    graph.append(f"{''.join(mix)}amix=inputs={len(mix)}:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]")
+    out.append(["ffmpeg", "-y", *eingaenge, "-filter_complex", ";".join(graph), "-map", "0:v", "-map", "[a]",
+                "-vf", vf, "-c:v", "libx264", "-crf", "17", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
+                "-shortest", "-movflags", "+faststart", str(ziel)])
     return out
