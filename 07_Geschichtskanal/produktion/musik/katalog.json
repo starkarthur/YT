@@ -15,7 +15,7 @@
       "reihen": [
         "cons"
       ],
-      "dauer_s": 143,
+      "dauer_s": 143.0,
       "sha256": "e6aad2a9cd4d8de3cd26e4109ec0cfce3732a8035e3a5d6174226b2334665588",
       "geladen": "2026-11-08"
     },
@@ -35,9 +35,9 @@
         "natures_fury",
         "really_happened"
       ],
-      "dauer_s": null,
-      "sha256": null,
-      "geladen": null
+      "dauer_s": 156.0,
+      "sha256": "8d12bd6a7f5960b4a260864196670fdb10609c40b4b80acf19003e47749f45c4",
+      "geladen": "2026-11-09"
     },
     "dark_mystery_piano.mp3": {
       "titel": "Dark Mystery Piano",
@@ -56,9 +56,9 @@
         "really_happened",
         "time_is_weird"
       ],
-      "dauer_s": null,
-      "sha256": null,
-      "geladen": null
+      "dauer_s": 60.3,
+      "sha256": "66be6b07fa04e3517f64fdcc5ff6192dba9fcba11b10562642a1f96516e0f2a1",
+      "geladen": "2026-11-09"
     },
     "quirky.mp3": {
       "titel": "Quirky - Quirky Music",
@@ -77,9 +77,9 @@
         "accidents",
         "time_is_weird"
       ],
-      "dauer_s": null,
-      "sha256": null,
-      "geladen": null
+      "dauer_s": 81.3,
+      "sha256": "742a9b7e29cdc128e6aafdb1f783f605da3324cb7741c3b773cf5627f4eff12a",
+      "geladen": "2026-11-09"
     },
     "horn_and_drums.mp3": {
       "titel": "Epic medieval horn and drum",
@@ -96,9 +96,9 @@
       "reihen": [
         "really_happened"
       ],
-      "dauer_s": null,
-      "sha256": null,
-      "geladen": null
+      "dauer_s": 29.7,
+      "sha256": "9d8eeda52f2bf49d001bb344130d2b7c0007acee8c9fceb7ae60cbd0f3681a24",
+      "geladen": "2026-11-09"
     },
     "sad_piano_rain.mp3": {
       "titel": "Sad Piano Emotional Rain Story",
@@ -116,9 +116,9 @@
         "natures_fury",
         "accidents"
       ],
-      "dauer_s": null,
-      "sha256": null,
-      "geladen": null
+      "dauer_s": 199.2,
+      "sha256": "8029e4b2b0cdf72a10760a84a66d1ccc29c50d169d271e7dc8d182086c532811",
+      "geladen": "2026-11-09"
     }
   },
   "geraeusche": {
@@ -134,9 +134,9 @@
         "kaelte",
         "einsamkeit"
       ],
-      "dauer_s": null,
-      "sha256": null,
-      "geladen": null
+      "dauer_s": 82.0,
+      "sha256": "75010bb134152296cbf53c3fcc0ed4728a4bb46bb764e64c2c3815c4542525fc",
+      "geladen": "2026-11-09"
     },
     "explosion.mp3": {
       "titel": "Big Explosion sfx",
@@ -150,9 +150,9 @@
         "einschlag",
         "vulkan"
       ],
-      "dauer_s": null,
-      "sha256": null,
-      "geladen": null
+      "dauer_s": 5.3,
+      "sha256": "fbb38724f33a2cccc9ff5944b7e56f0cbf945b0079c5bb0b4acb6d015bd549e5",
+      "geladen": "2026-11-09"
     },
     "erdbeben.mp3": {
       "titel": "Earthquake Rumble & Cracking",
@@ -166,9 +166,9 @@
         "grollen",
         "einsturz"
       ],
-      "dauer_s": null,
-      "sha256": null,
-      "geladen": null
+      "dauer_s": 7.1,
+      "sha256": "8de4dba7da0eda26ebf145038ebc4f4648460335d7af69745ddb01ef8e2c4696",
+      "geladen": "2026-11-09"
     },
     "feuer.mp3": {
       "titel": "Fire Crackling Sound",
@@ -182,9 +182,9 @@
         "brand",
         "lager"
       ],
-      "dauer_s": null,
-      "sha256": null,
-      "geladen": null
+      "dauer_s": 79.5,
+      "sha256": "9d09a90643613853468a0f847d9dc3bd67601c233d7babc5962b3ee0d2fe6a5a",
+      "geladen": "2026-11-09"
     },
     "wellen.mp3": {
       "titel": "Rough Ocean Waves",
@@ -198,9 +198,9 @@
         "tsunami",
         "schiff"
       ],
-      "dauer_s": null,
-      "sha256": null,
-      "geladen": null
+      "dauer_s": 146.8,
+      "sha256": "e615b88ecaf8811e87f73d4c98557da7e49e9b42f58fc11881f32220e6fe3637",
+      "geladen": "2026-11-09"
     },
     "donner.mp3": {
       "titel": "Thunder clap",
@@ -214,9 +214,9 @@
         "sturm",
         "schock"
       ],
-      "dauer_s": null,
-      "sha256": null,
-      "geladen": null
+      "dauer_s": 7.2,
+      "sha256": "51b7b8fe3d2550bd8c1459213c720870e0fa90faf0850f41465d13037b7bfde5",
+      "geladen": "2026-11-09"
     },
     "menge.mp3": {
       "titel": "Crowd Murmuring",
@@ -230,9 +230,9 @@
         "stadt",
         "versammlung"
       ],
-      "dauer_s": null,
-      "sha256": null,
-      "geladen": null
+      "dauer_s": 22.7,
+      "sha256": "9a471b6996f111a4ee7cb64b67da7f1241597812b2e28e1a97e7984f18fc8748",
+      "geladen": "2026-11-09"
     },
     "whoosh.mp3": {
       "titel": "Whoosh Cinematic",
@@ -246,9 +246,9 @@
         "hook",
         "schnitt"
       ],
-      "dauer_s": null,
-      "sha256": null,
-      "geladen": null
+      "dauer_s": 3.0,
+      "sha256": "16f60afb18924c9c444741e0ccf06ebbab2921192c33a93747a036c015d3b119",
+      "geladen": "2026-11-09"
     },
     "mg_ferne.mp3": {
       "titel": "Rapid Fire Sub Machine Gun distant",
@@ -262,9 +262,9 @@
         "gefecht",
         "emu-krieg"
       ],
-      "dauer_s": null,
-      "sha256": null,
-      "geladen": null
+      "dauer_s": 21.0,
+      "sha256": "0eba090a9bc67841a805f8507a1daa35aef66bb3161c811693838305979afe93",
+      "geladen": "2026-11-09"
     }
   }
 }
