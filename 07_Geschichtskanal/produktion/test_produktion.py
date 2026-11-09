@@ -340,5 +340,37 @@ class TestAnalyse(unittest.TestCase):
         self.assertEqual(aktiv, ["youtube"])  # TikTok/Instagram erst mit eingerichteter Schnittstelle
 
 
+class TestKornUndGeraeusche(unittest.TestCase):
+    def test_befehl_mit_musik_und_geraeuschen(self):
+        plan = lade_plan(PLAN)
+        z = [(0.0, 3.0), (3.0, 6.5), (6.5, 10.0), (10.0, 14.0), (14.0, 17.6)][:len(plan["einstellungen"])]
+        g = [Path("wind.mp3"), None, Path("explosion.mp3")] + [None] * (len(z) - 3)
+        b = schnitt.befehle(plan, z, [Path("c")] * len(z), Path("s.mp3"), Path("m.mp3"), Path("a.ass"),
+                            Path("ziel.mp4"), lauf.KONF, g)[-1]
+        fc = b[b.index("-filter_complex") + 1]
+        self.assertEqual(b.count("-i"), 5)  # Bild, Stimme, Musik, 2 Geräusche
+        self.assertIn("[3:a]atrim", fc)
+        self.assertIn("[4:a]atrim", fc)
+        self.assertIn("adelay=6500|6500", fc)
+        self.assertIn("amix=inputs=4", fc)
+        self.assertTrue(b[b.index("-vf") + 1].startswith("noise=alls="))
+
+    def test_ohne_musik_ohne_geraeusch(self):
+        plan = lade_plan(PLAN)
+        z = [(float(i), float(i + 1)) for i in range(len(plan["einstellungen"]))]
+        b = schnitt.befehle(plan, z, [Path("c")] * len(z), Path("s.mp3"), None, Path("a.ass"), Path("z.mp4"), lauf.KONF)[-1]
+        self.assertIn("[1:a]amix=inputs=1", b[b.index("-filter_complex") + 1])
+
+    def test_schema_geraeusch(self):
+        p = json.loads(PLAN.read_text(encoding="utf-8"))
+        p["einstellungen"][0]["geraeusch"] = "../geheim.mp3"
+        self.assertTrue(any("geraeusch" in x for x in pruefe_plan(p, "001")))
+        p["einstellungen"][0]["geraeusch"] = "wind_1.mp3"
+        self.assertEqual(pruefe_plan(p, "001"), [])
+        with self.assertRaises(PlanFehler):
+            lauf.geraeusch_pfade(p, probe=False)  # Datei fehlt in der Bibliothek
+        self.assertEqual(lauf.geraeusch_pfade(p, probe=True)[0], None)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

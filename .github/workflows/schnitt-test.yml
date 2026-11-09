@@ -1,0 +1,31 @@
+# Kostenloser Echt-Test des Schnitts (Filmkorn, Musik, Geräusche) mit ffmpeg, ohne APIs und ohne Secrets.
+# Ziel im Repo: .github/workflows/schnitt-test.yml
+name: schnitt-test
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-montserrat
+      - name: Unit-Tests
+        working-directory: 07_Geschichtskanal/produktion
+        run: python test_produktion.py
+      - name: Schnitt mit echtem ffmpeg
+        working-directory: 07_Geschichtskanal/produktion
+        run: python schnitt_probe.py "$RUNNER_TEMP/probe" | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: schnitt-probe
+          path: ${{ runner.temp }}/probe/probe_final.mp4
+          retention-days: 3

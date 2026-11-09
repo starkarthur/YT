@@ -85,5 +85,13 @@
       "preis_usd_pro_s": 0.2
     }
   },
-  "_plattformen_hinweis": "TikTok/Instagram aus, bis die Schnittstellen eingerichtet sind; bis dahin lädt der Chef-Agent dort von Hand hoch (09.11.2026)."
+  "_plattformen_hinweis": "TikTok/Instagram aus, bis die Schnittstellen eingerichtet sind; bis dahin lädt der Chef-Agent dort von Hand hoch (09.11.2026).",
+  "filmkorn": {
+    "staerke": 6,
+    "_hinweis": "ffmpeg noise, zeitlich wechselnd; 0 = aus. Liegt unter den Untertiteln."
+  },
+  "geraeusche": {
+    "lautstaerke_db": -14,
+    "_hinweis": "Geräusch je Einstellung (plan: einstellungen[].geraeusch), Dateien in musik/geraeusche/, Lizenz in musik/katalog.json"
+  }
 }
