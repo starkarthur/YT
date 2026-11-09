@@ -1,0 +1,60 @@
+{
+  "id": "003",
+  "titel": "Australia Sent Machine Guns To Fight Birds",
+  "reihe": "really_happened",
+  "jahr": 1932,
+  "personen": [],
+  "laenge": "kurz",
+  "musik": "quirky.mp3",
+  "betonte_woerter": [
+    "machine",
+    "birds",
+    "twenty",
+    "scattered",
+    "jammed",
+    "won"
+  ],
+  "einstellungen": [
+    {
+      "text": "Australia sent machine guns to fight birds.",
+      "bild_prompt": "a lone tall emu stands in a golden wheat field at sunrise and stares straight into the camera, in the far background tiny silhouettes of soldiers with a machine gun on a tripod, cinematic, vertical 9:16, no text",
+      "art": "video",
+      "bewegung": "kamerafahrt_vor",
+      "effekt": "punch_zoom",
+      "video_prompt": "the emu tilts its head and blinks, slow push in, wheat sways in the wind",
+      "geraeusch": "whoosh.mp3"
+    },
+    {
+      "text": "In 1932, about twenty thousand emus were wrecking Western Australian wheat farms.",
+      "bild_prompt": "wide view over a dusty outback wheat farm with a crooked wire fence, a huge crowd of emus streaming across the golden fields toward the camera, warm afternoon light, vertical 9:16, no people, no text",
+      "art": "video",
+      "bewegung": "aufsicht_drohne",
+      "effekt": "keiner",
+      "video_prompt": "the emus run through the wheat in a long stream, dust rises, slow aerial glide"
+    },
+    {
+      "text": "Soldiers opened fire, but the emus scattered into small groups.",
+      "bild_prompt": "seen from far behind, two soldiers in old khaki uniforms crouch beside a tripod-mounted machine gun at the edge of a scrubby field, ahead of them many emus run apart in every direction, dust clouds, vertical 9:16, no text, no close-ups of faces",
+      "art": "video",
+      "bewegung": "handkamera",
+      "effekt": "wackler",
+      "video_prompt": "the emus split into small groups and sprint off in all directions, dust swirls, the soldiers stay small and distant",
+      "geraeusch": "mg_ferne.mp3"
+    },
+    {
+      "text": "A gun jammed, and within weeks the army gave up.",
+      "bild_prompt": "an old army truck with a machine gun mounted on the back stuck on a bumpy dirt track in the outback, thin smoke rising from the gun, seen from far away, emus walking calmly past in the background, vertical 9:16, no people in focus, no text",
+      "art": "standbild",
+      "bewegung": "langsamer_zoom_rein",
+      "effekt": "keiner"
+    },
+    {
+      "text": "Machine guns against birds? The birds won.",
+      "bild_prompt": "a proud emu stands tall on a small dusty hill at golden sunset, chest forward like a victory pose, an abandoned tripod machine gun far behind it, vertical 9:16, cinematic, no people, no text",
+      "art": "video",
+      "bewegung": "langsamer_zoom_raus",
+      "effekt": "punch_zoom",
+      "video_prompt": "the emu raises its head proudly and looks into the camera, slow pull back, dust glows in the sunset light"
+    }
+  ]
+}
