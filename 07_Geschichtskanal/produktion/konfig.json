@@ -60,11 +60,11 @@
       "privacy": "public"
     },
     "tiktok": {
-      "aktiv": true,
+      "aktiv": false,
       "is_aigc": true
     },
     "instagram": {
-      "aktiv": true,
+      "aktiv": false,
       "api_version": "v21.0"
     }
   },
@@ -84,5 +84,6 @@
       "modell": "alibaba/wan-3.0/image-to-video",
       "preis_usd_pro_s": 0.2
     }
-  }
+  },
+  "_plattformen_hinweis": "TikTok/Instagram aus, bis die Schnittstellen eingerichtet sind; bis dahin lädt der Chef-Agent dort von Hand hoch (09.11.2026)."
 }

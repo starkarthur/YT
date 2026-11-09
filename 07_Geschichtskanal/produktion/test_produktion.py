@@ -190,7 +190,7 @@ class TestLauf(unittest.TestCase):
         ziel = lauf.produziere("001", probe=True)
         self.assertTrue((ziel.parent / "untertitel.ass").exists())
         r = lauf.hochladen("001", probe=True)
-        self.assertEqual({x["plattform"] for x in r}, {"youtube", "tiktok", "instagram"})
+        self.assertEqual({x["plattform"] for x in r}, {"youtube"})  # TikTok/Instagram derzeit aus
         self.assertFalse((self.d / "kostenbuch.jsonl").exists())
 
     def test_freigabe_passt(self):
@@ -292,6 +292,52 @@ class TestLauf(unittest.TestCase):
     def test_kostenschaetzung_hoechstfall(self):
         k = lauf.schaetze_kosten(lade_plan(self.plan))
         self.assertTrue(2 < k < lauf.KONF["budget"]["limit_short_usd"], k)
+
+
+class TestAnalyse(unittest.TestCase):
+    def setUp(self):
+        import analyse
+        self.a = analyse
+        self.tmp = Path(tempfile.mkdtemp())
+        (self.tmp / "inhalt" / "Kanal").mkdir(parents=True)
+        shutil.copy(META, self.tmp / "inhalt" / "Kanal" / "001.json")
+        analyse.KANAL, analyse.ARBEIT = self.tmp / "inhalt", self.tmp / "arbeit"
+
+    def test_probe_schreibt_bericht_und_schnappschuss(self):
+        z = self.a.lauf(probe=True, jetzt=datetime(2026, 11, 10, 8, tzinfo=timezone.utc))
+        self.assertEqual(z[0]["short"], "001")
+        md = (self.tmp / "arbeit" / "analyse" / "001_youtube.md").read_text(encoding="utf-8")
+        self.assertIn("Hinweise für den StoryAgent", md)
+        self.assertTrue((self.tmp / "arbeit" / "analyse" / "001_48h.md").exists())
+        self.assertTrue(any("Hook" in h for h in z[0]["hinweise"]))  # 54 % -> Hook-Hinweis
+
+    def test_kennzahlen_lassen_abgelehnte_metrik_weg(self):
+        from anbieter import AnbieterFehler
+        aufrufe = []
+
+        def falsch(methode, url, kopf, body=None, zeit=120):
+            aufrufe.append(url)
+            if "subscribersGained" in url:
+                raise AnbieterFehler("GET x → HTTP 400: unknown metric")
+            return {"rows": [[1, 2, 3, 4, 5, 6, 7]]}
+        alt = self.a.http_json
+        self.a.http_json = falsch
+        try:
+            k = self.a.kennzahlen("t", "VID", "2026-11-08", "2026-11-10")
+        finally:
+            self.a.http_json = alt
+        self.assertEqual(len(aufrufe), 2)
+        self.assertNotIn("subscribersGained", k)
+        self.assertEqual(k["views"], 1)
+
+    def test_dauer_und_bindung(self):
+        self.assertEqual(self.a.dauer_s("PT21S"), 21)
+        self.assertEqual(self.a.dauer_s("PT1M2S"), 62)
+        self.assertEqual(self.a.an_punkten([[0.0, 1.0], [0.5, 0.5], [1.0, 0.2]])["50%"], 0.5)
+
+    def test_nur_aktive_plattformen(self):
+        aktiv = [p for p, k in lauf.KONF["plattformen"].items() if k.get("aktiv")]
+        self.assertEqual(aktiv, ["youtube"])  # TikTok/Instagram erst mit eingerichteter Schnittstelle
 
 
 if __name__ == "__main__":
