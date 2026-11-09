@@ -1,5 +1,5 @@
 {
-  "_hinweis": "Musik-Katalog. Der geschichte-autor wählt per 'stimmung' passend zur Reihe, nicht zweimal hintereinander dasselbe Stück. Nur Stücke mit belegter Lizenz.",
+  "_hinweis": "Musik-Katalog. Der StoryAgent wählt Musik per 'stimmung' passend zur Reihe (nicht zweimal hintereinander dasselbe Stück) und optional je Einstellung ein Geräusch aus 'geraeusche' (Feld einstellungen[].geraeusch). Nur Stücke mit belegter Lizenz und ohne Content-ID-Registrierung. dauer_s/sha256/geladen trägt der Workflow musik-laden ein.",
   "stuecke": {
     "noir_jazz_detective.mp3": {
       "titel": "Noir Jazz Detective Midnight Mystery",
@@ -18,6 +18,253 @@
       "dauer_s": 143,
       "sha256": "e6aad2a9cd4d8de3cd26e4109ec0cfce3732a8035e3a5d6174226b2334665588",
       "geladen": "2026-11-08"
+    },
+    "epic_cinematic.mp3": {
+      "titel": "Epic Cinematic",
+      "kuenstler": "The_Mountain",
+      "quelle": "https://pixabay.com/music/build-up-scenes-epic-cinematic-576567/",
+      "download": "https://cdn.pixabay.com/download/audio/2026/07/29/audio_d0253367c3.mp3",
+      "lizenz": "Pixabay Content License (kommerziell, ohne Namensnennung)",
+      "content_id_hinweis": "nicht Content-ID-registriert (Seite geprüft 09.11.2026)",
+      "stimmung": [
+        "episch",
+        "drama",
+        "katastrophe"
+      ],
+      "reihen": [
+        "natures_fury",
+        "really_happened"
+      ],
+      "dauer_s": null,
+      "sha256": null,
+      "geladen": null
+    },
+    "dark_mystery_piano.mp3": {
+      "titel": "Dark Mystery Piano",
+      "kuenstler": "Universfield",
+      "quelle": "https://pixabay.com/music/solo-piano-dark-mystery-piano-161660/",
+      "download": "https://cdn.pixabay.com/download/audio/2023/08/11/audio_dc7e00a3c6.mp3",
+      "lizenz": "Pixabay Content License (kommerziell, ohne Namensnennung)",
+      "content_id_hinweis": "nicht Content-ID-registriert (Seite geprüft 09.11.2026)",
+      "stimmung": [
+        "mysterium",
+        "unheimlich",
+        "raetsel"
+      ],
+      "reihen": [
+        "natures_fury",
+        "really_happened",
+        "time_is_weird"
+      ],
+      "dauer_s": null,
+      "sha256": null,
+      "geladen": null
+    },
+    "quirky.mp3": {
+      "titel": "Quirky - Quirky Music",
+      "kuenstler": "MaksymMalko",
+      "quelle": "https://pixabay.com/music/eccentric-quirky-quirky-quirky-music-616896/",
+      "download": "https://cdn.pixabay.com/download/audio/2026/10/07/audio_979ec418f7.mp3",
+      "lizenz": "Pixabay Content License (kommerziell, ohne Namensnennung)",
+      "content_id_hinweis": "nicht Content-ID-registriert (Seite geprüft 09.11.2026)",
+      "stimmung": [
+        "skurril",
+        "witzig",
+        "leicht"
+      ],
+      "reihen": [
+        "really_happened",
+        "accidents",
+        "time_is_weird"
+      ],
+      "dauer_s": null,
+      "sha256": null,
+      "geladen": null
+    },
+    "horn_and_drums.mp3": {
+      "titel": "Epic medieval horn and drum",
+      "kuenstler": "fidelfortune",
+      "quelle": "https://pixabay.com/music/main-title-epic-medieval-horn-and-drum-perfect-for-cinematic-or-game-scenes-215431/",
+      "download": "https://cdn.pixabay.com/download/audio/2024/06/07/audio_bd3606f594.mp3",
+      "lizenz": "Pixabay Content License (kommerziell, ohne Namensnennung)",
+      "content_id_hinweis": "nicht Content-ID-registriert (Seite geprüft 09.11.2026)",
+      "stimmung": [
+        "krieg",
+        "schlacht",
+        "trommeln"
+      ],
+      "reihen": [
+        "really_happened"
+      ],
+      "dauer_s": null,
+      "sha256": null,
+      "geladen": null
+    },
+    "sad_piano_rain.mp3": {
+      "titel": "Sad Piano Emotional Rain Story",
+      "kuenstler": "alex-morgan",
+      "quelle": "https://pixabay.com/music/modern-classical-sad-piano-emotional-rain-story-575883/",
+      "download": "https://cdn.pixabay.com/download/audio/2026/07/28/audio_d4cb72c217.mp3",
+      "lizenz": "Pixabay Content License (kommerziell, ohne Namensnennung)",
+      "content_id_hinweis": "nicht Content-ID-registriert (Seite geprüft 09.11.2026)",
+      "stimmung": [
+        "traurig",
+        "nachdenklich",
+        "verlust"
+      ],
+      "reihen": [
+        "natures_fury",
+        "accidents"
+      ],
+      "dauer_s": null,
+      "sha256": null,
+      "geladen": null
+    }
+  },
+  "geraeusche": {
+    "wind.mp3": {
+      "titel": "Strong Howling Wind",
+      "kuenstler": "Liecio",
+      "quelle": "https://pixabay.com/sound-effects/film-special-effects-strong-howling-wind-132281/",
+      "download": "https://cdn.pixabay.com/download/audio/2023/01/06/audio_fbe41457c1.mp3",
+      "lizenz": "Pixabay Content License (kommerziell, ohne Namensnennung)",
+      "content_id_hinweis": "Soundeffekt, keine Content-ID-Angabe (geprüft 09.11.2026)",
+      "passt_zu": [
+        "sturm",
+        "kaelte",
+        "einsamkeit"
+      ],
+      "dauer_s": null,
+      "sha256": null,
+      "geladen": null
+    },
+    "explosion.mp3": {
+      "titel": "Big Explosion sfx",
+      "kuenstler": "Kave_msri",
+      "quelle": "https://pixabay.com/sound-effects/film-special-effects-big-explosion-sfx-369789/",
+      "download": "https://cdn.pixabay.com/download/audio/2025/07/04/audio_9c9e050d93.mp3",
+      "lizenz": "Pixabay Content License (kommerziell, ohne Namensnennung)",
+      "content_id_hinweis": "Soundeffekt, keine Content-ID-Angabe (geprüft 09.11.2026)",
+      "passt_zu": [
+        "explosion",
+        "einschlag",
+        "vulkan"
+      ],
+      "dauer_s": null,
+      "sha256": null,
+      "geladen": null
+    },
+    "erdbeben.mp3": {
+      "titel": "Earthquake Rumble & Cracking",
+      "kuenstler": "TheMediaGuy",
+      "quelle": "https://pixabay.com/sound-effects/nature-earthquake-rumble-amp-cracking-379298/",
+      "download": "https://cdn.pixabay.com/download/audio/2025/07/23/audio_757dc769bf.mp3",
+      "lizenz": "Pixabay Content License (kommerziell, ohne Namensnennung)",
+      "content_id_hinweis": "Soundeffekt, keine Content-ID-Angabe (geprüft 09.11.2026)",
+      "passt_zu": [
+        "erdbeben",
+        "grollen",
+        "einsturz"
+      ],
+      "dauer_s": null,
+      "sha256": null,
+      "geladen": null
+    },
+    "feuer.mp3": {
+      "titel": "Fire Crackling Sound",
+      "kuenstler": "SoundReality",
+      "quelle": "https://pixabay.com/sound-effects/nature-fire-crackling-sound-499636/",
+      "download": "https://cdn.pixabay.com/download/audio/2026/03/10/audio_5894d22731.mp3",
+      "lizenz": "Pixabay Content License (kommerziell, ohne Namensnennung)",
+      "content_id_hinweis": "Soundeffekt, keine Content-ID-Angabe (geprüft 09.11.2026)",
+      "passt_zu": [
+        "feuer",
+        "brand",
+        "lager"
+      ],
+      "dauer_s": null,
+      "sha256": null,
+      "geladen": null
+    },
+    "wellen.mp3": {
+      "titel": "Rough Ocean Waves",
+      "kuenstler": "DRAGON-STUDIO",
+      "quelle": "https://pixabay.com/sound-effects/nature-rough-ocean-waves-353203/",
+      "download": "https://cdn.pixabay.com/download/audio/2025/06/02/audio_a42d13f6fe.mp3",
+      "lizenz": "Pixabay Content License (kommerziell, ohne Namensnennung)",
+      "content_id_hinweis": "Soundeffekt, keine Content-ID-Angabe (geprüft 09.11.2026)",
+      "passt_zu": [
+        "meer",
+        "tsunami",
+        "schiff"
+      ],
+      "dauer_s": null,
+      "sha256": null,
+      "geladen": null
+    },
+    "donner.mp3": {
+      "titel": "Thunder clap",
+      "kuenstler": "u_q2hb2391vb",
+      "quelle": "https://pixabay.com/sound-effects/film-special-effects-thunder-clap-521194/",
+      "download": "https://cdn.pixabay.com/download/audio/2026/04/17/audio_18fe74c15d.mp3",
+      "lizenz": "Pixabay Content License (kommerziell, ohne Namensnennung)",
+      "content_id_hinweis": "Soundeffekt, keine Content-ID-Angabe (geprüft 09.11.2026)",
+      "passt_zu": [
+        "gewitter",
+        "sturm",
+        "schock"
+      ],
+      "dauer_s": null,
+      "sha256": null,
+      "geladen": null
+    },
+    "menge.mp3": {
+      "titel": "Crowd Murmuring",
+      "kuenstler": "freesound_community",
+      "quelle": "https://pixabay.com/sound-effects/people-crowd-murmuring-60721/",
+      "download": "https://cdn.pixabay.com/download/audio/2022/03/14/audio_a922f9cf53.mp3",
+      "lizenz": "Pixabay Content License (kommerziell, ohne Namensnennung)",
+      "content_id_hinweis": "Soundeffekt, keine Content-ID-Angabe (geprüft 09.11.2026)",
+      "passt_zu": [
+        "menschenmenge",
+        "stadt",
+        "versammlung"
+      ],
+      "dauer_s": null,
+      "sha256": null,
+      "geladen": null
+    },
+    "whoosh.mp3": {
+      "titel": "Whoosh Cinematic",
+      "kuenstler": "LordSonny",
+      "quelle": "https://pixabay.com/sound-effects/film-special-effects-whoosh-cinematic-161021/",
+      "download": "https://cdn.pixabay.com/download/audio/2023/08/06/audio_766a043a34.mp3",
+      "lizenz": "Pixabay Content License (kommerziell, ohne Namensnennung)",
+      "content_id_hinweis": "Soundeffekt, keine Content-ID-Angabe (geprüft 09.11.2026)",
+      "passt_zu": [
+        "uebergang",
+        "hook",
+        "schnitt"
+      ],
+      "dauer_s": null,
+      "sha256": null,
+      "geladen": null
+    },
+    "mg_ferne.mp3": {
+      "titel": "Rapid Fire Sub Machine Gun distant",
+      "kuenstler": "freesound_community",
+      "quelle": "https://pixabay.com/sound-effects/film-special-effects-rapid-fire-sub-machine-gun-distant-30193/",
+      "download": "https://cdn.pixabay.com/download/audio/2022/03/10/audio_e9202b590c.mp3",
+      "lizenz": "Pixabay Content License (kommerziell, ohne Namensnennung)",
+      "content_id_hinweis": "Soundeffekt, keine Content-ID-Angabe (geprüft 09.11.2026)",
+      "passt_zu": [
+        "krieg",
+        "gefecht",
+        "emu-krieg"
+      ],
+      "dauer_s": null,
+      "sha256": null,
+      "geladen": null
     }
   }
 }
