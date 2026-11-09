@@ -1,0 +1,33 @@
+# Lädt Musik und Geräusche aus musik/katalog.json vom Pixabay-CDN, prüft sie und legt sie als neuen Zweig
+# "musik-<Lauf>" ab. Daraus macht der Chef-Agent einen Pull Request (main bleibt geschützt).
+# Ziel im Repo: .github/workflows/musik-laden.yml
+name: musik-laden
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: read
+
+jobs:
+  laden:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Laden und prüfen
+        working-directory: 07_Geschichtskanal/produktion
+        run: python musik_laden.py | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Als Zweig sichern
+        run: |
+          git config user.name "gk-bot" && git config user.email "gk-bot@users.noreply.github.com"
+          git checkout -b "musik-${{ github.run_number }}"
+          git add 07_Geschichtskanal/produktion/musik
+          git diff --cached --quiet && { echo "nichts Neues"; exit 0; }
+          git commit -m "Musik und Geräusche geladen (Lauf ${{ github.run_number }})"
+          git push origin "musik-${{ github.run_number }}"
+          echo "Zweig: musik-${{ github.run_number }}" >> "$GITHUB_STEP_SUMMARY"
