@@ -354,6 +354,7 @@ class TestKornUndGeraeusche(unittest.TestCase):
         self.assertIn("adelay=6500|6500", fc)
         self.assertIn("amix=inputs=4", fc)
         self.assertTrue(b[b.index("-vf") + 1].startswith("noise=alls="))
+        self.assertEqual(b[b.index("-maxrate") + 1], "12M")  # Korn bläht sonst die Datei auf
 
     def test_ohne_musik_ohne_geraeusch(self):
         plan = lade_plan(PLAN)
