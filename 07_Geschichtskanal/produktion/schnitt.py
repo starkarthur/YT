@@ -109,6 +109,6 @@ def befehle(plan: dict, zeiten: list[tuple[float, float]], clips: list[Path], st
         mix.append(f"[g{n}]")
     graph.append(f"{''.join(mix)}amix=inputs={len(mix)}:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]")
     out.append(["ffmpeg", "-y", *eingaenge, "-filter_complex", ";".join(graph), "-map", "0:v", "-map", "[a]",
-                "-vf", vf, "-c:v", "libx264", "-crf", "17", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
+                "-vf", vf, "-c:v", "libx264", "-crf", "18", "-maxrate", "12M", "-bufsize", "24M", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
                 "-shortest", "-movflags", "+faststart", str(ziel)])
     return out
