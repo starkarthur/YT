@@ -433,7 +433,8 @@ def main(argv=None) -> int:
             sid = naechster(a.probe)
             st = stufe(lade_plan(plan_pfad(sid))) if sid else ""
             print(f"short={sid or ''}")
-            print(f"umgebung={'veroeffentlichung-pruefung' if st == 'pruefung' else 'veroeffentlichung-auto'}")
+            auto = st == "auto" and KONF.get("vollautomatik") is True  # Nutzer muss sie ausdrücklich einschalten
+            print(f"umgebung={'veroeffentlichung-auto' if auto else 'veroeffentlichung-pruefung'}")
         elif a.befehl == "produziere":
             print(produziere(a.short, a.probe))
         elif a.befehl == "test":
