@@ -22,7 +22,7 @@
     "modell": "fal-ai/nano-banana-pro",
     "preis_usd": 0.15,
     "versuche": 2,
-    "stil": "cinematic historical film still, dramatic natural light, 35mm film grain, rich muted colours, vertical 9:16 composition, no text, no captions, no watermark",
+    "stil": "cinematic historical film still, dramatic natural light, 35mm film grain, rich muted colours, vertical 9:16 composition, upright camera, level horizon, no text, no captions, no watermark",
     "aufloesung": "2K"
   },
   "video": {
@@ -93,5 +93,10 @@
   "geraeusche": {
     "lautstaerke_db": -14,
     "_hinweis": "Geräusch je Einstellung (plan: einstellungen[].geraeusch), Dateien in musik/geraeusche/, Lizenz in musik/katalog.json"
+  },
+  "sichtpruefung": {
+    "aktiv": true,
+    "modell": "google/gemini-2.5-flash",
+    "_hinweis": "Bild-KI (fal openrouter/router/vision) prüft jedes Startbild und die Mitte jedes Clips: gedreht? Schrift? ca. 0,1 Cent je Prüfung. Eingeführt 09.11.2026 nach gedrehter Szene in Short 003."
   }
 }

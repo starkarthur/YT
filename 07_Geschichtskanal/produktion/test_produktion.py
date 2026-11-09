@@ -388,5 +388,53 @@ class TestUmgebung(unittest.TestCase):
         self.assertIn("umgebung=veroeffentlichung-pruefung", out.getvalue())
 
 
+class TestSichtpruefung(unittest.TestCase):
+    class FalschesFal:
+        probe = False
+        def __init__(self, antwort=None, fehler=None):
+            self.antwort, self.fehler = antwort, fehler
+        def sicht(self, jpg, modell):
+            if self.fehler:
+                raise self.fehler
+            return self.antwort
+
+    def setUp(self):
+        self.d = Path(tempfile.mkdtemp())
+        self.k = Kostenbuch(self.d / "k.jsonl", 10, 100)
+        from buecher import Fehlerbuch
+        self.f = Fehlerbuch(self.d / "f.jsonl")
+        self.alt = lauf.standbild_jpg
+        lauf.standbild_jpg = lambda q, z, s=None: z
+
+    def tearDown(self):
+        lauf.standbild_jpg = self.alt
+
+    def test_gedreht_wird_erkannt(self):
+        fal = self.FalschesFal({"upright": False, "text": False, "reason": "sideways", "usd": 0.001})
+        p = lauf.sicht_pruefen(fal, self.d / "b.png", self.k, "003", "sicht_bild_2_v1", self.f, "003")
+        self.assertTrue(p and "gedreht" in p[0])
+        self.assertAlmostEqual(self.k.summe(short="003"), 0.001)
+
+    def test_aufrecht_ohne_schrift_ist_ok(self):
+        fal = self.FalschesFal({"upright": True, "text": False, "reason": "", "usd": 0.0})
+        self.assertEqual(lauf.sicht_pruefen(fal, self.d / "b.png", self.k, "003", "s", self.f, "003"), [])
+
+    def test_ausfall_blockiert_nicht(self):
+        from anbieter import AnbieterFehler
+        fal = self.FalschesFal(fehler=AnbieterFehler("HTTP 500"))
+        self.assertEqual(lauf.sicht_pruefen(fal, self.d / "b.png", self.k, "003", "s", self.f, "003"), [])
+        self.assertIn("nicht möglich", (self.d / "f.jsonl").read_text(encoding="utf-8"))
+
+    def test_antwort_auswerten(self):
+        from anbieter import Fal
+        f = Fal(probe=False)
+        f._lauf = lambda m, e, max_warten_s=300: {"output": 'Sure: {"upright": false, "text": true, "reason": "rotated 90"}',
+                                                  "usage": {"cost": 0.0006}}
+        jpg = self.d / "x.jpg"
+        jpg.write_bytes(b"jpgtest")
+        r = f.sicht(jpg, "google/gemini-2.5-flash")
+        self.assertEqual((r["upright"], r["text"], r["usd"]), (False, True, 0.0006))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
