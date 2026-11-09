@@ -1,0 +1,86 @@
+# Feedback-Schleife: holt jeden Morgen die YouTube-Zahlen aller Shorts (nur lesend) und legt sie im Zweig
+# "buecher" unter analyse/ ab. Daraus liest der InfluencerAgent die 48-h-Auswertung für den StoryAgent.
+# Ziel im Repo: .github/workflows/analyse.yml
+# Umgebung "analyse" (nur Zweig main, ohne Reviewer, weil nur gelesen wird):
+#   Secrets YT_ANALYSE_CLIENT_ID, YT_ANALYSE_CLIENT_SECRET, YT_ANALYSE_REFRESH_TOKEN
+#   (eigener Google-Client "History Shorts Analyse", Scopes youtube.readonly + yt-analytics.readonly,
+#    getrennt vom Upload-Client, damit dieses Token nichts hochladen kann)
+name: analyse
+on:
+  schedule:
+    - cron: "0 7 * * *"
+  workflow_dispatch: {}
+concurrency:
+  group: analyse
+  cancel-in-progress: false
+permissions:
+  contents: read
+
+jobs:
+  messen:
+    if: vars.GK_PAUSE != 'ja'
+    runs-on: ubuntu-24.04
+    environment: analyse
+    timeout-minutes: 10
+    env:
+      GK_ARBEIT: ${{ github.workspace }}/arbeit
+      GK_INHALT: ${{ github.workspace }}/inhalt/07_Geschichtskanal
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: inhalt
+          path: inhalt
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: buecher
+          path: buecher
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Bisherige Auswertungen übernehmen
+        run: mkdir -p arbeit/analyse && cp -r buecher/analyse/. arbeit/analyse/ 2>/dev/null || true
+      - name: Zahlen holen
+        working-directory: 07_Geschichtskanal/produktion
+        env:
+          YT_ANALYSE_CLIENT_ID: ${{ secrets.YT_ANALYSE_CLIENT_ID }}
+          YT_ANALYSE_CLIENT_SECRET: ${{ secrets.YT_ANALYSE_CLIENT_SECRET }}
+          YT_ANALYSE_REFRESH_TOKEN: ${{ secrets.YT_ANALYSE_REFRESH_TOKEN }}
+        run: python analyse.py | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: analyse
+          path: arbeit/analyse/
+          retention-days: 30
+
+  sichern:   # einziger Job mit Schreibrecht, ohne Geheimnisse
+    needs: messen
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: buecher
+          path: buecher
+      - uses: actions/download-artifact@v4
+        with:
+          name: analyse
+          path: neu/
+      - name: In den Zweig buecher schreiben
+        working-directory: buecher
+        run: |
+          mkdir -p analyse && cp ../neu/* analyse/
+          git config user.name "gk-bot" && git config user.email "gk-bot@users.noreply.github.com"
+          git add analyse && git diff --cached --quiet && exit 0
+          git commit -m "Analyse $(date -u +%F)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin buecher && git push origin HEAD:buecher && exit 0
+            sleep $((i * 10))
+          done
+          exit 1
