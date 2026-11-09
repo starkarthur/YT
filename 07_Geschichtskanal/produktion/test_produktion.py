@@ -373,5 +373,20 @@ class TestKornUndGeraeusche(unittest.TestCase):
         self.assertEqual(lauf.geraeusch_pfade(p, probe=True)[0], None)
 
 
+class TestUmgebung(unittest.TestCase):
+    def test_ohne_vollautomatik_immer_pruefung(self):
+        import io, contextlib
+        self.assertIsNot(lauf.KONF.get("vollautomatik"), True)
+        alt_n, alt_p, alt_s = lauf.naechster, lauf.plan_pfad, lauf.stufe
+        lauf.naechster, lauf.plan_pfad, lauf.stufe = (lambda probe: "001"), (lambda sid: PLAN), (lambda plan: "auto")
+        try:
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                lauf.main(["waehle", "--probe"])
+        finally:
+            lauf.naechster, lauf.plan_pfad, lauf.stufe = alt_n, alt_p, alt_s
+        self.assertIn("umgebung=veroeffentlichung-pruefung", out.getvalue())
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
