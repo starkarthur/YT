@@ -256,6 +256,9 @@ def produziere(sid: str, probe: bool) -> Path:
         for n, s in enumerate(plan["szenen"], 1):
             prompt = f"{s['bild']}. {LK['stil_text']}"
             ziel = arbeit / f"bild_{n:03d}.png"
+            if ziel.exists() and ziel.stat().st_size > 10_000:  # aus einem früheren Lauf übernommen: nicht neu bezahlen
+                bilder.append(ziel)
+                continue
             for v in (1, 2):
                 if not probe:
                     kosten.buchen(sid, f"bild_{n}_v{v}", LK["bild_preis_usd"], "fal")
