@@ -114,7 +114,7 @@ class Fal:
                     "resolution": "1080p", "generate_audio": False}
         return {"image_url": bild_url, "prompt": prompt, "duration": str(dauer_s), "generate_audio": False}
 
-    SICHT_FRAGE = ("This is one frame of a vertical 9:16 history short. Check it strictly. Answer ONLY with JSON "
+    SICHT_FRAGE = ("This is one frame of a history video. Check it strictly. Answer ONLY with JSON "
                    '{"upright": true|false, "text": true|false, "reason": "short"}. '
                    "upright=false if the scene is rotated, sideways or upside down (horizon or ground running "
                    "vertically, people/animals/trees lying sideways, gravity pointing left or right). "

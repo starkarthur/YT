@@ -436,5 +436,46 @@ class TestSichtpruefung(unittest.TestCase):
         self.assertEqual((r["upright"], r["text"], r["usd"]), (False, True, 0.0006))
 
 
+class TestLangvideo(unittest.TestCase):
+    def setUp(self):
+        import lang
+        self.lang = lang
+        self.plan = json.loads((TESTDATEN / "Shorts" / "L999_Probe_plan.json").read_text(encoding="utf-8"))
+
+    def test_probeplan_gueltig(self):
+        self.assertEqual(self.lang.pruefe_langplan(self.plan), [])
+        self.assertLess(self.lang.schaetze_kosten(self.plan), 5)
+
+    def test_fehler_werden_erkannt(self):
+        p = json.loads(json.dumps(self.plan))
+        p["szenen"][0]["bewegung"] = "rakete"
+        p["szenen"][1]["wort"] = "X" * 40
+        p["szenen"] = p["szenen"][:30]
+        f = self.lang.pruefe_langplan(p)
+        self.assertTrue(any("40" in x or "szenen" in x for x in f))
+
+    def test_woerter_und_kapitel(self):
+        z = [(i * 7.0, i * 7.0 + 7.0) for i in range(len(self.plan["szenen"]))]
+        a = self.lang.ass_woerter(self.plan, z)
+        self.assertIn("TEST 0", a)
+        self.assertIn("TWO", a)  # Kapiteltitel ab Szene 20
+
+    def test_mix_indizes(self):
+        z = [(i * 7.0, i * 7.0 + 7.0) for i in range(3)]
+        b = self.lang.mix_befehl(Path("b.mp4"), Path("s.mp3"), Path("m.mp3"), [Path("g.mp3"), None, Path("h.mp3")], z,
+                                 Path("w.ass"), Path("z.mp4"))
+        fc = b[b.index("-filter_complex") + 1]
+        self.assertIn("[3:a]atrim", fc)
+        self.assertIn("[4:a]atrim", fc)
+        self.assertIn("amix=inputs=4", fc)
+        self.assertIn("adelay=14000|14000", fc)
+
+    def test_szenen_befehle(self):
+        z = [(0.0, 6.0), (6.0, 13.5)]
+        b = self.lang.szenen_befehle({"szenen": self.plan["szenen"][:2]}, z, [Path("a.png"), Path("b.png")], Path("."))
+        self.assertEqual(b[0][b[0].index("-frames:v") + 1], "180")
+        self.assertEqual(b[1][b[1].index("-frames:v") + 1], "225")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
