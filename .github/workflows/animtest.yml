@@ -1,0 +1,116 @@
+# Animationstest L001 (ca. 1 Minute): 2,5D-Animation der vorhandenen L001-Bilder + 3 realistische KI-Einschübe (Wan 3.0).
+# Nur von Hand startbar, OHNE Upload. Kosten: höchstens ca. 3,50 USD (Grenze im Skript 6 USD), mit clips_lauf 0 USD.
+# Ziel im Repo: .github/workflows/animtest.yml
+name: animtest
+on:
+  workflow_dispatch:
+    inputs:
+      l001_lauf:
+        description: "Lauf-Nummer (run id) des Langvideo-Laufs von L001 (Bilder + fertiges Video)"
+        required: true
+      clips_lauf:
+        description: "Optional: Lauf-Nummer eines früheren animtest-Laufs, dessen Clips übernommen werden"
+        required: false
+        default: ""
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: animtest
+  cancel-in-progress: false
+
+jobs:
+  animtest:
+    if: vars.GK_PAUSE != 'ja'
+    runs-on: ubuntu-24.04
+    environment: produktion
+    timeout-minutes: 90
+    env:
+      GK_ARBEIT: ${{ github.workspace }}/arbeit
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Eingaben prüfen
+        env:
+          L001_LAUF: ${{ inputs.l001_lauf }}
+          CLIPS_LAUF: ${{ inputs.clips_lauf }}
+        run: |
+          [[ "$L001_LAUF" =~ ^[0-9]{6,15}$ ]] || { echo "Lauf-Nummer ungültig"; exit 1; }
+          [[ -z "$CLIPS_LAUF" || "$CLIPS_LAUF" =~ ^[0-9]{6,15}$ ]] || { echo "Clip-Lauf ungültig"; exit 1; }
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-montserrat
+      - name: Renderer installieren
+        working-directory: 07_Geschichtskanal/produktion/animation
+        run: npm install --no-save --no-audit --no-fund puppeteer-core@23.11.1
+      - name: L001-Bilder übernehmen
+        uses: actions/download-artifact@v4
+        with:
+          name: langvideo-bilder-L001
+          path: arbeit/bilder
+          run-id: ${{ inputs.l001_lauf }}
+          github-token: ${{ github.token }}
+      - name: L001-Video übernehmen (für Ton und Szenenzeiten)
+        uses: actions/download-artifact@v4
+        with:
+          name: langvideo-produziere
+          path: arbeit/l001
+          run-id: ${{ inputs.l001_lauf }}
+          github-token: ${{ github.token }}
+      - name: Clips eines früheren Laufs übernehmen
+        if: inputs.clips_lauf != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: animtest-clips
+          path: arbeit/clips
+          run-id: ${{ inputs.clips_lauf }}
+          github-token: ${{ github.token }}
+      - name: Szenenzeiten messen
+        working-directory: 07_Geschichtskanal/produktion
+        run: python animtest.py zeiten
+      - name: Realistische Clips (Wan 3.0)
+        working-directory: 07_Geschichtskanal/produktion
+        env:
+          FAL_KEY: ${{ secrets.FAL_KEY }}
+        run: python animtest.py clips
+      - name: Clips sichern (auch bei späteren Fehlern)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: animtest-clips
+          path: |
+            arbeit/clips/*.mp4
+            arbeit/clips/*_start.png
+          retention-days: 30
+          if-no-files-found: ignore
+      - name: Clip-Bilder
+        working-directory: 07_Geschichtskanal/produktion
+        run: python animtest.py frames
+      - name: Animation rendern
+        working-directory: 07_Geschichtskanal/produktion/animation
+        run: node render.mjs
+      - name: Zusammensetzen
+        working-directory: 07_Geschichtskanal/produktion
+        run: python animtest.py mix
+      - name: Kosten anzeigen
+        if: always()
+        run: |
+          python3 -c "import json;e=[json.loads(z) for z in open('arbeit/kostenbuch.jsonl')];print(f'Kosten: {sum(x[\"usd\"] for x in e):.2f} USD')" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: animtest-ergebnis
+          path: |
+            arbeit/ergebnis/*
+            arbeit/zeiten.json
+            arbeit/clips.json
+            arbeit/kostenbuch.jsonl
+            arbeit/fehler.jsonl
+          retention-days: 14
+          if-no-files-found: warn
