@@ -98,5 +98,51 @@
     "aktiv": true,
     "modell": "google/gemini-2.5-flash",
     "_hinweis": "Bild-KI (fal openrouter/router/vision) prüft jedes Startbild und die Mitte jedes Clips: gedreht? Schrift? ca. 0,1 Cent je Prüfung. Eingeführt 09.11.2026 nach gedrehter Szene in Short 003."
+  },
+  "lang": {
+    "_hinweis": "Langvideos 8–12 min, 16:9, flache 2D-Illustration (Format 'Why You'd Never Survive …'), Nutzerwunsch 11.11.2026",
+    "bild_modell": "fal-ai/recraft/v3/text-to-image",
+    "bild_stil": "digital_illustration/2d_art_poster",
+    "bild_preis_usd": 0.04,
+    "stiltest_stile": [
+      "digital_illustration/2d_art_poster",
+      "vector_illustration/emotional_flat",
+      "digital_illustration/grain"
+    ],
+    "stil_text": "flat 2D illustration, simple clean shapes, soft gradients, muted cinematic colours, atmospheric lighting, subtle grain, wide 16:9 composition, no text, no letters, no watermark, no faces in detail",
+    "farben": [
+      {
+        "r": 29,
+        "g": 59,
+        "b": 74
+      },
+      {
+        "r": 64,
+        "g": 52,
+        "b": 76
+      },
+      {
+        "r": 217,
+        "g": 119,
+        "b": 59
+      },
+      {
+        "r": 236,
+        "g": 222,
+        "b": 196
+      },
+      {
+        "r": 20,
+        "g": 24,
+        "b": 30
+      }
+    ],
+    "schrift": "Montserrat ExtraBold",
+    "musik_db": -22,
+    "woerter_min": 1100,
+    "woerter_max": 1700,
+    "dauer_min_s": 420,
+    "dauer_max_s": 780,
+    "limit_video_usd": 15
   }
 }
