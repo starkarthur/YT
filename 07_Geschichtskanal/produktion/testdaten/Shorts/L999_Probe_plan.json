@@ -1,0 +1,383 @@
+{
+ "id": "L999",
+ "titel": "Probe Langvideo",
+ "reihe": "natures_fury",
+ "format": "lang",
+ "musik": "dark_mystery_piano.mp3",
+ "kapitel": [
+  {
+   "titel": "One",
+   "ab_szene": 1
+  },
+  {
+   "titel": "Two",
+   "ab_szene": 20
+  },
+  {
+   "titel": "Three",
+   "ab_szene": 35
+  }
+ ],
+ "szenen": [
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": "TEST 0",
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": "erdbeben.mp3"
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "schwenk_links",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": "TEST 3",
+   "bewegung": "schwenk_rechts",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": "TEST 6",
+   "bewegung": "zoom_raus",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "schwenk_links",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "schwenk_rechts",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": "TEST 9",
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": "erdbeben.mp3"
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": "TEST 12",
+   "bewegung": "schwenk_links",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "schwenk_rechts",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": "TEST 15",
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "schwenk_links",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": "TEST 18",
+   "bewegung": "schwenk_rechts",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": "erdbeben.mp3"
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": "TEST 21",
+   "bewegung": "zoom_raus",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "schwenk_links",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "schwenk_rechts",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": "TEST 24",
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": "TEST 27",
+   "bewegung": "schwenk_links",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "schwenk_rechts",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": "TEST 30",
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": "erdbeben.mp3"
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "schwenk_links",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": "TEST 33",
+   "bewegung": "schwenk_rechts",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": "TEST 36",
+   "bewegung": "zoom_raus",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "schwenk_links",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "schwenk_rechts",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": "TEST 39",
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": "erdbeben.mp3"
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": "TEST 42",
+   "bewegung": "schwenk_links",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "schwenk_rechts",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You stand in the old town and watch the mountain while the ground shakes beneath your feet and people begin to run toward the harbour.",
+   "bild": "a simple flat illustration of a Roman street with a mountain behind",
+   "wort": null,
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  }
+ ]
+}
