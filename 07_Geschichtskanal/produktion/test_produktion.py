@@ -470,6 +470,12 @@ class TestLangvideo(unittest.TestCase):
         self.assertIn("amix=inputs=4", fc)
         self.assertIn("adelay=14000|14000", fc)
 
+    def test_kapitelmarken(self):
+        z = [(i * 7.0, i * 7.0 + 7.0) for i in range(len(self.plan["szenen"]))]
+        k = self.lang.kapitelmarken(self.plan, z).splitlines()
+        self.assertEqual(k[0], "0:00 One")
+        self.assertEqual(k[1], "2:13 Two")  # Szene 20 beginnt bei 19*7 s
+
     def test_szenen_befehle(self):
         z = [(0.0, 6.0), (6.0, 13.5)]
         b = self.lang.szenen_befehle({"szenen": self.plan["szenen"][:2]}, z, [Path("a.png"), Path("b.png")], Path("."))

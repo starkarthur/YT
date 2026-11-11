@@ -72,6 +72,7 @@ jobs:
             arbeit/medien/*/*_final.mp4
             arbeit/medien/*/kontaktbogen.jpg
             arbeit/medien/*/fertig.json
+            arbeit/medien/*/kapitel.txt
             arbeit/medien/stiltest/*
             arbeit/kostenbuch.jsonl
             arbeit/fehler.jsonl
