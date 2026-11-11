@@ -143,6 +143,8 @@
     "woerter_max": 1700,
     "dauer_min_s": 420,
     "dauer_max_s": 780,
-    "limit_video_usd": 15
+    "limit_video_usd": 15,
+    "voice_id": "j3VVEWUzmXMcWPJl9xAg",
+    "_voice_hinweis": "Erzählstimme für Langvideos, vom Nutzer gewählt am 11.11.2026; Shorts nutzen stimme.voice_id"
   }
 }
