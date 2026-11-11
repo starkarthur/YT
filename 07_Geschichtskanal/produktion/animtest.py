@@ -24,7 +24,7 @@ SID = "A001"            # eigenes Konto im Kostenbuch
 LIMIT_USD = 6.0         # harte Grenze für diesen Test
 FPS = 30
 SZENEN = 14             # Szenen 1–14 von L001 (Ende = Beginn von Szene 15)
-BEKANNT = [0.0, 1.7, 4.9, 9.8, 15.3, 19.5, 23.4, 28.2]  # von Hand gemessene erste Schnitte
+KAPITEL2_S = 28  # Kapitelmarke 0:28 (kapitel.txt von L001) = Beginn von Szene 8
 
 STIL = ("photorealistic cinematic film still, 16:9 widescreen, upright camera, level horizon, natural light, "
         "35mm documentary realism, historically plausible 1st century Roman Italy, no modern objects, "
@@ -108,11 +108,10 @@ def zeiten() -> None:
         if hell[i] < 0.45 * hell[i - 1] and hell[i - 1] > 20 and i / FPS - starts[-1] > 0.8:
             starts.append(round(i / FPS, 3))
     print("Szenenanfänge:", starts[:SZENEN + 2])
-    for a, b in zip(starts, BEKANNT):
-        if abs(a - b) > 0.25:
-            sys.exit(f"Schnitterkennung unplausibel: {a} statt ~{b}")
     if len(starts) < SZENEN + 1:
         sys.exit(f"nur {len(starts)} Szenen erkannt")
+    if int(starts[7]) != KAPITEL2_S or any(b - a < 1.0 for a, b in zip(starts, starts[1:SZENEN + 1])):
+        sys.exit(f"Schnitterkennung unplausibel (Szene 8 bei {starts[7]} s statt 0:{KAPITEL2_S})")
     (ARBEIT / "zeiten.json").write_text(json.dumps(starts[:SZENEN + 1]))
 
 

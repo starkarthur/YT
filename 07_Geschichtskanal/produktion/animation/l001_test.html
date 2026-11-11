@@ -118,8 +118,8 @@ const KONF = Object.assign({
   bilder: "../L001/bilder/",   // bild_NNN.png
   clips: null,                 // Ordner mit e1/0001.jpg … (null = Platzhalter)
   clipInfo: {},                // {"4": {"name": "e1", "frames": 150}, …}
-  // Szenenanfänge 1–14 + Ende (lokal geschätzt; in der Cloud aus L001_final.mp4 gemessen)
-  zeiten: [0, 1.7, 4.9, 9.8, 15.3, 19.5, 23.4, 28.2, 33.6, 39.4, 44.4, 48.6, 54.8, 59.8, 63.9],
+  // Szenenanfänge 1–14 + Ende (gemessen am 11.11.2026; die Cloud misst bei jedem Lauf neu)
+  zeiten: [0, 1.6, 4.133, 9.4, 15.2, 19.0, 24.333, 28.467, 34.467, 40.2, 45.8, 50.0, 56.733, 63.0, 68.367],
 }, window.KONF || {});
 const Z = KONF.zeiten, ENDE = Z[Z.length - 1];
 
