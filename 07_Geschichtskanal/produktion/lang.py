@@ -128,7 +128,7 @@ def stimme(plan: dict, arbeit: Path, probe: bool) -> tuple[Path, list[dict]]:
         if not text:
             continue
         ziel = arbeit / f"stimme_{n:02d}.mp3"
-        w = ElevenLabs(probe).sprechen(text, st["voice_id"], st["modell"], ziel)
+        w = ElevenLabs(probe).sprechen(text, LK.get("voice_id") or st["voice_id"], st["modell"], ziel)
         if probe:
             subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", f"anullsrc=r=44100:cl=mono", "-t",
                             f"{(w[-1]['ende'] if w else 1) + 0.4:.2f}", str(ziel)], capture_output=True, check=True)
