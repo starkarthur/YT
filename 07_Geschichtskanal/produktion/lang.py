@@ -247,12 +247,7 @@ def produziere(sid: str, probe: bool) -> Path:
     arbeit.mkdir(parents=True, exist_ok=True)
     fal = Fal(probe)
     try:
-        if not probe:
-            kosten.buchen(sid, "stimme", sum(len(s["text"]) for s in plan["szenen"]) / 1000
-                          * KONF["stimme"]["preis_usd_pro_1000_zeichen"], "elevenlabs")
-        sprache, woerter = stimme(plan, arbeit, probe)
-        zeiten = schnitt.zeiten_je_einstellung({"einstellungen": plan["szenen"]}, woerter)
-        bilder = []
+        bilder = []  # zuerst die Bilder: scheitert fal (z. B. Guthaben), ist noch keine Stimme verbraucht
         for n, s in enumerate(plan["szenen"], 1):
             prompt = f"{s['bild']}. {LK['stil_text']}"
             ziel = arbeit / f"bild_{n:03d}.png"
@@ -268,6 +263,11 @@ def produziere(sid: str, probe: bool) -> Path:
                     break
                 fehler.eintragen(sid, f"bild_{n}_v{v}", ", ".join(probleme))
             bilder.append(ziel)  # zweiter Fehlversuch: Bild bleibt, der Kontaktbogen zeigt es dem Chef-Agenten
+        if not probe:
+            kosten.buchen(sid, "stimme", sum(len(s["text"]) for s in plan["szenen"]) / 1000
+                          * KONF["stimme"]["preis_usd_pro_1000_zeichen"], "elevenlabs")
+        sprache, woerter = stimme(plan, arbeit, probe)
+        zeiten = schnitt.zeiten_je_einstellung({"einstellungen": plan["szenen"]}, woerter)
         ass = arbeit / "woerter.ass"
         ass.write_text(ass_woerter(plan, zeiten), encoding="utf-8")
         lauf.ffmpeg_ausfuehren(szenen_befehle(plan, zeiten, bilder, arbeit), False)
