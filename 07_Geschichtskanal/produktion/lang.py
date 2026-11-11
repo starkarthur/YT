@@ -206,6 +206,19 @@ def mix_befehl(bild_mp4: Path, stimme_mp3: Path, musik: Path | None, geraeusche:
             "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", str(ziel)]
 
 
+def kapitelmarken(plan: dict, zeiten: list[tuple[float, float]]) -> str:
+    """YouTube-Kapitel: erste Marke 0:00, mindestens 10 s Abstand. Wird beim Upload an die Beschreibung angehängt."""
+    zeilen, letzte = [], -999.0
+    for k in sorted(plan.get("kapitel", []), key=lambda k: k["ab_szene"]):
+        t = 0.0 if not zeilen else zeiten[k["ab_szene"] - 1][0]
+        if t - letzte < 10:
+            continue
+        m, s = divmod(int(t), 60)
+        zeilen.append(f"{m}:{s:02d} {k['titel']}")
+        letzte = t
+    return "\n".join(zeilen) if len(zeilen) >= 3 else ""
+
+
 def kontaktbogen(video: Path, ziel: Path, n: int = 24) -> None:
     d = dauer(video)
     ordner = ziel.parent / "kontakt"
@@ -259,6 +272,7 @@ def produziere(sid: str, probe: bool) -> Path:
         subprocess.run(mix_befehl(arbeit / "bild.mp4", sprache, musik, geraeusche, zeiten, ass, ziel),
                        capture_output=True, check=True)
         kontaktbogen(ziel, arbeit / "kontaktbogen.jpg")
+        (arbeit / "kapitel.txt").write_text(kapitelmarken(plan, zeiten), encoding="utf-8")
         d = dauer(ziel)
         if not probe and not LK["dauer_min_s"] <= d <= LK["dauer_max_s"]:
             raise lauf.Gesperrt(f"{sid}: Länge {d:.0f} s außerhalb {LK['dauer_min_s']}–{LK['dauer_max_s']} s")
