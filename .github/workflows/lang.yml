@@ -1,0 +1,79 @@
+# Langvideos (8–12 min, 16:9, 2D-Illustration). Nur von Hand startbar, OHNE Upload.
+# befehl: probe = kostenloser Durchlauf mit Testplan L999 und Platzhalterbildern
+#         stiltest = 6 Testbilder in 3 Stilen (ca. 0,25 USD)
+#         produziere = echtes Video für sid (z. B. L001), braucht Prüfbericht auf Zweig inhalt
+# Ziel im Repo: .github/workflows/lang.yml
+name: langvideo
+on:
+  workflow_dispatch:
+    inputs:
+      befehl:
+        description: "probe | stiltest | produziere"
+        required: true
+        type: choice
+        options: [probe, stiltest, produziere]
+      sid:
+        description: "Langvideo-Nummer (z. B. L001), nur bei produziere"
+        required: false
+        default: "L001"
+permissions:
+  contents: read
+concurrency:
+  group: langvideo
+  cancel-in-progress: false
+
+jobs:
+  lang:
+    if: vars.GK_PAUSE != 'ja'
+    runs-on: ubuntu-24.04
+    environment: produktion
+    timeout-minutes: 150
+    env:
+      GK_ARBEIT: ${{ github.workspace }}/arbeit
+      BEFEHL: ${{ inputs.befehl }}
+      SID: ${{ inputs.sid }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: inhalt
+          path: inhalt
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-montserrat
+      - name: Eingaben prüfen
+        run: |
+          [[ "$SID" =~ ^L[0-9]{3}$ ]] || { echo "Nummer ungültig"; exit 1; }
+      - name: Langvideo
+        working-directory: 07_Geschichtskanal/produktion
+        env:
+          FAL_KEY: ${{ secrets.FAL_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENKEY }}
+        run: |
+          case "$BEFEHL" in
+            probe)      GK_INHALT="$PWD/testdaten" python lang.py produziere L999 --probe ;;
+            stiltest)   python lang.py stiltest ;;
+            produziere) GK_INHALT="$GITHUB_WORKSPACE/inhalt/07_Geschichtskanal" python lang.py produziere "$SID" ;;
+          esac
+      - name: Kosten anzeigen
+        if: always()
+        run: |
+          python3 -c "import json;e=[json.loads(z) for z in open('arbeit/kostenbuch.jsonl')];print(f'Kosten: {sum(x[\"usd\"] for x in e):.2f} USD')" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: langvideo-${{ inputs.befehl }}
+          path: |
+            arbeit/medien/*/*_final.mp4
+            arbeit/medien/*/kontaktbogen.jpg
+            arbeit/medien/*/fertig.json
+            arbeit/medien/stiltest/*
+            arbeit/kostenbuch.jsonl
+            arbeit/fehler.jsonl
+          retention-days: 14
+          if-no-files-found: warn
