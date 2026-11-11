@@ -16,8 +16,13 @@ on:
         description: "Langvideo-Nummer (z. B. L001), nur bei produziere"
         required: false
         default: "L001"
+      bilder_lauf:
+        description: "Optional: Lauf-Nummer (run id) eines früheren Laufs, dessen Bilder übernommen werden"
+        required: false
+        default: ""
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: langvideo
   cancel-in-progress: false
@@ -47,8 +52,19 @@ jobs:
           python-version: "3.12"
       - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-montserrat
       - name: Eingaben prüfen
+        env:
+          BILDER_LAUF: ${{ inputs.bilder_lauf }}
         run: |
           [[ "$SID" =~ ^L[0-9]{3}$ ]] || { echo "Nummer ungültig"; exit 1; }
+          [[ -z "$BILDER_LAUF" || "$BILDER_LAUF" =~ ^[0-9]{6,15}$ ]] || { echo "Lauf-Nummer ungültig"; exit 1; }
+      - name: Bilder eines früheren Laufs übernehmen
+        if: inputs.bilder_lauf != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: langvideo-bilder-${{ inputs.sid }}
+          path: arbeit/medien/${{ inputs.sid }}
+          run-id: ${{ inputs.bilder_lauf }}
+          github-token: ${{ github.token }}
       - name: Langvideo
         working-directory: 07_Geschichtskanal/produktion
         env:
@@ -64,6 +80,14 @@ jobs:
         if: always()
         run: |
           python3 -c "import json;e=[json.loads(z) for z in open('arbeit/kostenbuch.jsonl')];print(f'Kosten: {sum(x[\"usd\"] for x in e):.2f} USD')" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+      - name: Bilder sichern (auch bei Fehlern, damit ein neuer Lauf sie nicht neu bezahlt)
+        if: always() && inputs.befehl == 'produziere'
+        uses: actions/upload-artifact@v4
+        with:
+          name: langvideo-bilder-${{ inputs.sid }}
+          path: arbeit/medien/${{ inputs.sid }}/bild_*.png
+          retention-days: 30
+          if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
         if: always()
         with:
