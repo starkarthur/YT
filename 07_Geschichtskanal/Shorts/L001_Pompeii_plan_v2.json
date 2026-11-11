@@ -1,0 +1,787 @@
+{
+ "id": "L001",
+ "titel": "Why You'd Never Survive Pompeii",
+ "reihe": "natures_fury",
+ "format": "lang",
+ "musik": "epic_cinematic.mp3",
+ "kapitel": [
+  {
+   "titel": "You wake up in Pompeii",
+   "ab_szene": 1
+  },
+  {
+   "titel": "The city at the foot of a mountain",
+   "ab_szene": 8
+  },
+  {
+   "titel": "The warnings nobody understood",
+   "ab_szene": 17
+  },
+  {
+   "titel": "Day one: a pine tree in the sky",
+   "ab_szene": 25
+  },
+  {
+   "titel": "The rain of stone",
+   "ab_szene": 37
+  },
+  {
+   "titel": "The cloud that outran everyone",
+   "ab_szene": 51
+  },
+  {
+   "titel": "What would you do?",
+   "ab_szene": 64
+  },
+  {
+   "titel": "The twist",
+   "ab_szene": 77
+  }
+ ],
+ "szenen": [
+  {
+   "text": "You wake up in Pompeii.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, muted earthy palette. Wide shot at sunrise: terracotta flat roofs and stone columns of Pompeii in warm golden light; in the foreground you – a simple dark silhouette of a young Roman in a beige tunic stands on a roof terrace, seen from behind; the cone-shaped Mount Vesuvius in muted purple-grey rises huge and calm on the horizon. No text, no faces.",
+   "wort": "POMPEII",
+   "bewegung": "zoom_rein",
+   "stimmung": "ehrfurcht",
+   "geraeusch": "whoosh.mp3"
+  },
+  {
+   "text": "It is a normal day, and the sun is warm.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, muted earthy palette. Medium shot of a sunny Roman courtyard: a terracotta wall in warm golden light, a potted olive tree, a clay cup on a stone ledge, long soft shadows. No people. No text.",
+   "wort": null,
+   "bewegung": "schwenk_rechts",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  },
+  {
+   "text": "Behind the city sits a green, quiet mountain. Nobody around you is afraid of it.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, muted earthy palette. Wide view of the cone-shaped Mount Vesuvius in muted purple-grey with green vineyard slopes, a small Roman town with terracotta roofs in front of it, calm pale blue sky. No people. No text.",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  },
+  {
+   "text": "By tomorrow morning, that mountain will have destroyed your city and buried it under rock and ash.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, dramatic palette. The cone-shaped Mount Vesuvius in muted purple-grey with a huge dark ash column and red-orange glow at the top, the same terracotta town below half covered in grey ash, blood-orange sky. No people. No text.",
+   "wort": "BURIED",
+   "bewegung": "zoom_rein",
+   "stimmung": "gefahr",
+   "geraeusch": "whoosh.mp3"
+  },
+  {
+   "text": "You will have about eighteen hours between the first blast and the end.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Simple infographic: a large round clock face with tick marks but no numerals, a thick orange arc covering most of the dial, and a small icon of the cone-shaped Mount Vesuvius in muted purple-grey beside it, dark beige background. No text.",
+   "wort": "18 HOURS",
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Some Pompeians escaped. Others waited too long. Which one would you be?",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon. Medium shot, split composition: on the left several simple dark silhouettes in beige tunics walk away along a road, on the right a few silhouettes stand still in a street; behind both the cone-shaped Mount Vesuvius in muted purple-grey with a growing grey cloud. Muted earthy palette. No text, no faces.",
+   "wort": null,
+   "bewegung": "schwenk_rechts",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Let's walk through the day, hour by hour, and see what you would do.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Detail close-up of a Roman sundial on a stone surface casting a long shadow, blurred terracotta rooftops and the cone-shaped Mount Vesuvius in muted purple-grey in the background, warm golden light. No text, no faces.",
+   "wort": null,
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Pompeii is a busy Roman town near the Bay of Naples, about six miles from Mount Vesuvius.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, bird's-eye total view as a simple map made of flat shapes: blue bay, beige coast, the cone-shaped Mount Vesuvius in muted purple-grey as a triangle, Pompeii as a cluster of tiny terracotta roofs with an orange dot, a dotted line with a small ruler-like bracket between them. No text, no labels.",
+   "wort": "6 MILES",
+   "bewegung": "zoom_raus",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  },
+  {
+   "text": "Scholars think ten to fifteen thousand people live here, and you pass hundreds of them every day.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Infographic: a dense grid of tiny identical beige person silhouettes filling the frame, one single silhouette in dark colour highlighted (you – a simple dark silhouette of a young Roman in a beige tunic). Dark beige background. No text, no faces.",
+   "wort": "10-15,000 PEOPLE",
+   "bewegung": "statisch",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  },
+  {
+   "text": "The streets are loud. Carts rattle over stone, and shop owners shout over each other.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, warm golden light. Medium shot of a busy Roman street with stone paving and stepping stones, a wooden cart, striped shop awnings, many simple dark silhouettes of people. Terracotta and beige palette. No text, no faces.",
+   "wort": null,
+   "bewegung": "schwenk_links",
+   "stimmung": "ruhig",
+   "geraeusch": "menge.mp3"
+  },
+  {
+   "text": "You buy bread from a bakery and eat lunch at a street-side food counter.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, warm light. Close-up of a Roman stone food counter with round loaves of bread, clay bowls and amphorae, a little steam rising. you – a simple dark silhouette of a young Roman in a beige tunic leans on the counter. No text, no faces.",
+   "wort": null,
+   "bewegung": "zoom_rein",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  },
+  {
+   "text": "There is an amphitheater for fights and games, public baths, and a forum where people trade and argue.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, bird's-eye total view. An oval Roman amphitheater with tiered seats beside a columned forum square with tiny silhouettes, terracotta rooftops around, the cone-shaped Mount Vesuvius in muted purple-grey far behind. No text, no faces.",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "The soil here is rich, the wine is famous, and the view across the bay is beautiful.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, golden hour. Medium shot: rows of grapevines on a hillside, a clay amphora in the foreground, the shimmering blue bay in the distance and the cone-shaped Mount Vesuvius in muted purple-grey with green slopes. No text, no people.",
+   "wort": null,
+   "bewegung": "schwenk_rechts",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  },
+  {
+   "text": "Nobody has taught you to fear it. To you, Vesuvius is simply home.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, soft evening light. Close shot from behind: the shoulders of you – a simple dark silhouette of a young Roman in a beige tunic – in the foreground, sitting on a low stone wall, while the huge cone-shaped Mount Vesuvius in muted purple-grey fills the frame. No text, no faces.",
+   "wort": null,
+   "bewegung": "zoom_rein",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "Your life is ordinary. You work, you shop, you talk with neighbors. At first, today feels the same.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, warm light. Medium shot: you – a simple dark silhouette of a young Roman in a beige tunic chats with two neighbour silhouettes beside a stone street fountain, market awnings around. No text, no faces.",
+   "wort": null,
+   "bewegung": "statisch",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  },
+  {
+   "text": "But your city has an old wound. To understand it, we need to go back seventeen years.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, dusty beige light with darker corners. Wide view of the terracotta skyline of Pompeii with half-finished walls and wooden scaffolding poles, a long jagged crack running across the ground in the foreground. No people. No text.",
+   "wort": "17 YEARS",
+   "bewegung": "zoom_raus",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "In 62 AD, a strong earthquake shakes the whole region. Pompeii is badly damaged.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon. Wide view of Roman buildings tilting, columns falling, big dust clouds, jagged shake lines, brown-orange sky, the cone-shaped Mount Vesuvius in muted purple-grey small in the background. No people. No text.",
+   "wort": "62 AD",
+   "bewegung": "zoom_rein",
+   "stimmung": "gefahr",
+   "geraeusch": "erdbeben.mp3"
+  },
+  {
+   "text": "Public buildings collapse and the water supply breaks down. Seventeen years later, the city is still being repaired.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Medium shot: a broken stone water channel with fallen blocks and water spilling over the ground, wooden scaffolding on a half-repaired building behind, a few simple dark silhouettes carrying clay jugs. Dusty beige palette. No text, no faces.",
+   "wort": null,
+   "bewegung": "schwenk_links",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Nobody connects the quake to the mountain. The Romans do not recognize it as a warning.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Close shot: a cracked Roman house wall in the foreground, the calm cone-shaped Mount Vesuvius in muted purple-grey behind it, a faint dotted line from the crack to the mountain that nobody in the scene looks at. No text, no faces.",
+   "wort": "NOT A WARNING",
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Scientists think the ground nearby was rising, and gas was escaping from it.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Simple cutaway diagram: layers of brown ground, the cone-shaped Mount Vesuvius in muted purple-grey on top, an orange magma shape underneath, arrows showing the ground bulging upward, thin wisps of gas rising from small cracks. No text, no labels.",
+   "wort": "RISING GROUND",
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "In the days before the eruption, small tremors roll through the region. You feel them, and you shrug.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Detail close-up of a clay jug on a wooden table with the water inside rippling in concentric circles, small shake lines around it, warm dim indoor light. No text, no people.",
+   "wort": null,
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Today we call this volcanic unrest. Back then, nobody had a way to read it.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. A parchment-coloured background with a flat horizontal line that suddenly turns into small zigzag spikes, like a seismograph trace, no numbers, no letters, a tiny icon of the cone-shaped Mount Vesuvius in muted purple-grey in the corner. No text.",
+   "wort": "VOLCANIC UNREST",
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "So the last quiet night passes as usual. You sleep, and the mountain keeps its secret.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, deep blue night. Wide view of Pompeii rooftops under a starry sky, one small warm window glowing, the cone-shaped Mount Vesuvius as a dark purple-grey silhouette against the stars. No people. No text.",
+   "wort": null,
+   "bewegung": "schwenk_rechts",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  },
+  {
+   "text": "Then, around one o'clock in the afternoon, someone points at the sky.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, bright afternoon light. Medium shot: you – a simple dark silhouette of a young Roman in a beige tunic and a few neighbour silhouettes stand in a street and point upward; above the cone-shaped Mount Vesuvius in muted purple-grey a small dark cloud begins to grow. No text, no faces.",
+   "wort": null,
+   "bewegung": "schwenk_links",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "A huge explosion rips open Vesuvius.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, dramatic light. Wide view of the cone-shaped Mount Vesuvius in muted purple-grey with a blinding orange flash at the crater, flying rock fragments and a dark burst of ash against a pale sky. No people. No text.",
+   "wort": "ERUPTION",
+   "bewegung": "zoom_rein",
+   "stimmung": "gefahr",
+   "geraeusch": "explosion.mp3"
+  },
+  {
+   "text": "A column of ash and gas shoots into the sky.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, dramatic light. Medium shot: dark terracotta rooftops in the foreground, above them a massive straight column of dark ash and gas rising from the cone-shaped Mount Vesuvius in muted purple-grey far up into a pale sky. No people. No text.",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "Within hours, the column climbs about twenty miles high. That is more than three times higher than Mount Everest.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Scale infographic on a pale sky: a white-capped Mount Everest triangle, a tiny passenger jet silhouette near its peak, and next to them a far taller grey ash column rising from the cone-shaped Mount Vesuvius in muted purple-grey, reaching the top of the frame. No text, no numbers.",
+   "wort": "20 MILES HIGH",
+   "bewegung": "statisch",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "Across the bay, a teenage boy watches it from the town of Misenum. His name is Pliny.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, golden afternoon light. Wide view of a Roman harbour with silhouettes of warships in the foreground; young Pliny – a simple dark silhouette of a teenage boy in a white tunic stands small on the shore and looks across the water at a distant towering ash column over the cone-shaped Mount Vesuvius in muted purple-grey. No text, no faces.",
+   "wort": "MISENUM",
+   "bewegung": "schwenk_links",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "His mother points out a strange cloud. Pliny later writes that it looks like a pine tree.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Medium shot: young Pliny – a simple dark silhouette of a teenage boy in a white tunic and his mother – a simple dark silhouette of a woman in a long robe stand on a terrace and look at a tall grey cloud shaped like an umbrella pine: a thin trunk and a wide flat crown. Warm sky. No text, no faces.",
+   "wort": "PINE TREE",
+   "bewegung": "zoom_rein",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "His uncle, Pliny the Elder, commands the Roman fleet there. He orders a ship ready to take a closer look.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, warm light. Medium shot of a Roman naval dock with a warship silhouette moored close; Pliny the Elder – a simple dark silhouette of an older man in a white robe stands on the dock and points, sailor silhouettes hurry around him. No text, no faces.",
+   "wort": null,
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Then a desperate message arrives from people near the volcano. His uncle turns his trip into a rescue.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, orange-tinted light. Wide view: a small Roman ship sails across the bay toward the far cone-shaped Mount Vesuvius in muted purple-grey, which has a huge dark column above it. The sea is drawn as flat blue waves. No people visible. No text.",
+   "wort": null,
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": "wellen.mp3"
+  },
+  {
+   "text": "Meanwhile, you are standing in Pompeii, about six miles from the volcano, staring at the same cloud.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Medium shot: you – a simple dark silhouette of a young Roman in a beige tunic stands in a Pompeii street between terracotta houses and looks up at a giant dark cloud above the cone-shaped Mount Vesuvius in muted purple-grey. Neighbour silhouettes beside you. No text, no faces.",
+   "wort": null,
+   "bewegung": "schwenk_rechts",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Soon small, light stones begin to fall from the sky. They are pumice, and they are full of air.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Detail close-up of many light white-grey porous pumice stones falling like hail onto a stone-paved Roman street, a few lying in the foreground, grey sky. No people. No text.",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Unlucky for you, the wind pushes the cloud toward Pompeii.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Simple map of the Bay of Naples in flat shapes: the cone-shaped Mount Vesuvius in muted purple-grey, a big grey cloud shape stretching from its top toward a small orange dot for Pompeii, curved white wind arrows. No text, no labels.",
+   "wort": "DOWNWIND",
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Your neighbors stand in the street and argue. Is this a storm? A sign from the gods? Should we go?",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, grey-toned light. Medium shot: a group of simple dark silhouettes in tunics in a Roman street gesturing with raised arms, white pumice stones scattered on the ground, a grey sky above. No text, no faces.",
+   "wort": null,
+   "bewegung": "schwenk_links",
+   "stimmung": "spannung",
+   "geraeusch": "menge.mp3"
+  },
+  {
+   "text": "Pliny's uncle sails toward the danger, and you have a choice. Stay, or leave right now.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Wide shot: you – a simple dark silhouette of a young Roman in a beige tunic stands small at a fork in a Roman street: one path leads to a house door, the other to an open town gate and a road; behind, the cone-shaped Mount Vesuvius in muted purple-grey with a dark cloud. No signs, no text, no faces.",
+   "wort": "STAY OR LEAVE",
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "You decide to wait and see.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, grey light. Wide view over Pompeii: terracotta rooftops and empty streets under a heavy grey sky with thin white streaks of falling pumice, the cone-shaped Mount Vesuvius in muted purple-grey with a dark column behind. No people. No text.",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Inside your house, you hear pumice drumming on the roof like hail.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, dim warm light. Close shot of a Roman room with a small window; white-grey pumice stones are piling on the window ledge; you – a simple dark silhouette of a young Roman in a beige tunic sits on a bench and listens. No text, no faces.",
+   "wort": null,
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Roughly four to six inches of pumice pile up every hour.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Infographic: a white pumice pile drawn as a stack that grows in steps from small to tall, a small clock icon without numerals beside each step, dark beige background. No text, no numbers.",
+   "wort": "4-6 INCHES/HOUR",
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Hour after hour, the streets turn white and the ground rises.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, grey light. Medium shot at street level: a Roman street covered in white pumice that reaches the door steps, a simple dark silhouette in a tunic wading through it for scale, grey sky. No text, no faces.",
+   "wort": null,
+   "bewegung": "schwenk_links",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Pumice is light and not very hot, and a single piece weighs almost nothing. So you feel safe.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Detail close-up of one white porous pumice stone resting on the open palm of a simple dark silhouette hand, soft grey background, calm light. No text, no face.",
+   "wort": "NOT VERY HOT",
+   "bewegung": "zoom_rein",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  },
+  {
+   "text": "But they keep falling for about eighteen hours. Every roof in town has to carry that weight.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon. Wide bird's-eye view over the terracotta rooftops of Pompeii, each covered by a thick growing layer of white-grey pumice, thick grey sky, the cone-shaped Mount Vesuvius in muted purple-grey behind. No people. No text.",
+   "wort": "18 HOURS",
+   "bewegung": "zoom_raus",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "After roughly five hours, the first roofs begin to collapse.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Detail close-up of a wooden roof beam bending under a heap of white-grey pumice, roof tiles sagging and sliding, thin crack lines in the wall, dusty light. No people. No text.",
+   "wort": "ROOFS COLLAPSE",
+   "bewegung": "zoom_rein",
+   "stimmung": "gefahr",
+   "geraeusch": "erdbeben.mp3"
+  },
+  {
+   "text": "Inside, you hear beams crack. Dust falls from the ceiling. Your shelter has become a trap.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, dim orange light. Medium shot of a Roman room with cracked ceiling beams and falling dust; you – a simple dark silhouette of a young Roman in a beige tunic looks up with arms raised. No text, no faces.",
+   "wort": null,
+   "bewegung": "statisch",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "At Stabiae, Pliny's uncle and his men tie pillows to their heads and step out into the falling stones.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, grey sky. Medium shot: Pliny the Elder – a simple dark silhouette of an older man in a white robe and a few companion silhouettes walk in single file along a seashore, each with a rounded white pillow tied on the head, white stones falling around them. No text, no faces.",
+   "wort": "PILLOWS ON HEADS",
+   "bewegung": "schwenk_links",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "A pillow against falling rock sounds silly, but it was the only protection they had.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Detail close-up of a simple white pillow on a stone bench with white pumice stones landing around and on it, grey background, soft shadows. No people. No text.",
+   "wort": null,
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Night falls. Flames glow on the mountain, and they look brighter against the dark.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, deep indigo night. Wide view of the cone-shaped Mount Vesuvius in muted purple-grey with glowing orange flames and red glow along its slopes, a dark smoky column above it, stars hidden. No people. No text.",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "gefahr",
+   "geraeusch": "feuer.mp3"
+  },
+  {
+   "text": "All night, earthquakes keep shaking the region. Pliny describes buildings that seem to rock back and forth.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, indigo night with orange glow. Medium shot: Pompeii buildings drawn with doubled offset outlines to show shaking, columns leaning, dust rising. No people. No text.",
+   "wort": "ALL NIGHT",
+   "bewegung": "statisch",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "By around one in the morning, about a meter and a half of pumice lies over Pompeii.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Side-on cross-section of a Roman street with a thick layer of white-grey pumice rising to chest height of a simple dark silhouette standing beside it for scale, doors half buried, indigo sky with an orange glow. No text, no numbers, no faces.",
+   "wort": "1.5 METERS",
+   "bewegung": "schwenk_rechts",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "And the worst has not started.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, indigo night. Close shot of a half-buried Roman door in white-grey pumice, a thin trickle of grey dust falling from the lintel, a faint red glow on the stones. No people. No text.",
+   "wort": null,
+   "bewegung": "statisch",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "Sometime in the night, the giant column can no longer hold itself up. It starts to collapse.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, orange-lit night. Wide view: the tall ash column above the cone-shaped Mount Vesuvius in muted purple-grey folds over at the top and falls, a grey-brown mass spilling down the slopes. No people. No text.",
+   "wort": "COLUMN COLLAPSE",
+   "bewegung": "zoom_rein",
+   "stimmung": "gefahr",
+   "geraeusch": "donner.mp3"
+  },
+  {
+   "text": "Instead of rising, a mix of hot gas, ash and rock rushes down the slopes.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Medium shot of a dark grey-brown cloud hugging the ground and rushing down the slope of the cone-shaped Mount Vesuvius in muted purple-grey toward small terracotta houses, speed lines. No people. No text.",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "Scientists call it a pyroclastic surge.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Diagram view in flat shapes: a side cross-section of the cone-shaped Mount Vesuvius in muted purple-grey, a thick arrow curving from the collapsing column down along the slope, a colour gradient from red to grey inside the arrow. No text, no labels.",
+   "wort": "PYROCLASTIC SURGE",
+   "bewegung": "statisch",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "Picture an avalanche made of hot gas and dust, moving faster than any runner.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Medium shot: a tiny running silhouette far to the left on an open field while a huge grey-brown ground-hugging cloud wave rolls in from the right and is clearly faster, speed lines, dim orange light. No faces, no text.",
+   "wort": null,
+   "bewegung": "schwenk_rechts",
+   "stimmung": "gefahr",
+   "geraeusch": "wind.mp3"
+  },
+  {
+   "text": "The first surge overwhelms the town of Herculaneum within minutes. In the end, more than twenty meters of deposits cover it.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon. Wide view of a white seaside Roman town, Herculaneum, on the coast with a huge grey-brown cloud rolling over its rooftops from the mountain behind. No people. No text.",
+   "wort": null,
+   "bewegung": "zoom_rein",
+   "stimmung": "gefahr",
+   "geraeusch": "whoosh.mp3"
+  },
+  {
+   "text": "Scientists think the surge that reached Pompeii was roughly three hundred degrees Celsius. Water boils at one hundred.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Infographic: a tall simple thermometer with red fill reaching nearly the top, beside it a small cooking pot with bubbling water on a fire; dark beige background, no scale numbers. No text.",
+   "wort": "300 DEGREES",
+   "bewegung": "statisch",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "Early on the second day, one surge after another sweeps over Pompeii.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, dim dawn. Medium shot at street level between terracotta houses of Pompeii: a grey-brown surge cloud rolls toward the viewer along the street, a second cloud wave visible behind it. No people. No text.",
+   "wort": null,
+   "bewegung": "schwenk_links",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "From the volcano to Pompeii, the surge needs only minutes.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Map in flat shapes: a dotted line from the cone-shaped Mount Vesuvius in muted purple-grey to the orange dot of Pompeii, and next to it a clock icon with only a very short filled arc, no numerals. No text.",
+   "wort": "MINUTES",
+   "bewegung": "zoom_raus",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "If you see it coming, it is already too late.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, dim orange-grey light. Close shot from behind: you – a simple dark silhouette of a young Roman in a beige tunic stands small in a street and faces a towering wall of grey-brown cloud filling the frame. No text, no faces.",
+   "wort": null,
+   "bewegung": "statisch",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "A black cloud rolls across the sea toward Misenum, split by flashes of fire.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon. Wide view of a giant black cloud rolling over dark water toward a small coastal town, cut by forked orange lightning flashes. No people. No text.",
+   "wort": null,
+   "bewegung": "zoom_rein",
+   "stimmung": "gefahr",
+   "geraeusch": "donner.mp3"
+  },
+  {
+   "text": "Pliny's mother begs him to leave her behind and save himself. He refuses and stays with her.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, dim brown light. Medium shot: young Pliny – a simple dark silhouette of a teenage boy in a white tunic stands beside his mother – a simple dark silhouette of a woman in a long robe on a road; she gestures him onward, he stays; a dark cloud approaches behind. No text, no faces.",
+   "wort": null,
+   "bewegung": "statisch",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "Then darkness covers everything. Pliny writes that it was blacker and denser than any night.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Close shot of an almost completely black frame with a few tiny orange lamp flames as dots and very faint outlines of silhouettes. No text, no faces.",
+   "wort": "DARKER THAN NIGHT",
+   "bewegung": "zoom_rein",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "Ash falls like snow. In the dark, you hear people shouting for their families, and nobody can see anyone.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, grey-brown light. Medium shot: grey ash falling like snow over the rooftops of a coastal Roman town, a few simple dark silhouettes standing with raised arms in a street, low visibility. No text, no faces.",
+   "wort": null,
+   "bewegung": "schwenk_links",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "Time to decide. It is the first afternoon, and pumice is falling. Let's go through your options, one by one.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon. Wide shot: you – a simple dark silhouette of a young Roman in a beige tunic stands small before four paths fanning out: one to a house door, one to a harbour with a ship, one to a long road, one to an empty horizon. The cone-shaped Mount Vesuvius in muted purple-grey with a dark cloud behind. No text, no faces.",
+   "wort": "YOUR OPTIONS",
+   "bewegung": "zoom_raus",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Option one: stay inside and wait. Many people do, because pumice is light and not very hot.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, dim warm light. Close shot: you – a simple dark silhouette of a young Roman in a beige tunic sits in a closed Roman room beside a small oil lamp, a stack of white pumice outside the window. No text, no faces.",
+   "wort": "OPTION 1",
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Staying put is a gamble. Roofs collapse, and later the surge flows into houses, too.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Medium shot of a Roman house with its roof partly caved in, roof tiles sliding, heaps of white-grey pumice in the street, grey sky. No people. No text.",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "Option two: escape by sea.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, orange-grey sky. Wide view of a Roman harbour with a small ship at the quay, calm-looking dark water, the cone-shaped Mount Vesuvius in muted purple-grey with a dark cloud far across the bay. No people. No text.",
+   "wort": "OPTION 2",
+   "bewegung": "schwenk_rechts",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "But Pliny's uncle tries this at Stabiae and finds the water too rough to leave.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, dark orange-grey sky. Medium shot: a small Roman ship tied at a rocky shore with big dark flat-style waves crashing, a few simple dark silhouettes standing on the beach. No text, no faces.",
+   "wort": null,
+   "bewegung": "schwenk_links",
+   "stimmung": "gefahr",
+   "geraeusch": "wellen.mp3"
+  },
+  {
+   "text": "On the other shore, Pliny sees the sea pulled backward by the shaking ground.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, ominous orange sky. Wide view of a beach with a long stretch of bare wet sand where the water has pulled back, small boats stranded, the sea far away at the horizon. No people. No text.",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Option three: leave on foot. Your feet sink into pumice, and every step is slower than you hoped.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Medium shot: a long road covered in thick white pumice with a line of simple dark silhouettes walking slowly with bundles, their feet sunk in; the cone-shaped Mount Vesuvius in muted purple-grey with a dark cloud behind. No text, no faces.",
+   "wort": "OPTION 3",
+   "bewegung": "schwenk_links",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Then the earthquakes.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Detail close-up of a single crack racing across a white pumice-covered stone street, small stones jumping, shake lines, grey light. No people. No text.",
+   "wort": "EARTHQUAKE",
+   "bewegung": "zoom_rein",
+   "stimmung": "gefahr",
+   "geraeusch": "erdbeben.mp3"
+  },
+  {
+   "text": "Archaeologists found two men in Pompeii who were probably crushed by a wall that an earthquake shook down.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Medium shot of a tall brick wall tilting and collapsing into an empty narrow Roman street, a big dust cloud, grey sky. No people. No text.",
+   "wort": null,
+   "bewegung": "schwenk_rechts",
+   "stimmung": "gefahr",
+   "geraeusch": null
+  },
+  {
+   "text": "Nobody is coming to rescue you. Even Pliny's uncle, the fleet commander, dies at Stabiae trying.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, dark sky. Wide view of a lone Roman warship at sea far from a small coastal town under a heavy dark orange-grey sky, nothing else on the water. No people. No text.",
+   "wort": "NO RESCUE",
+   "bewegung": "statisch",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "He collapses on the beach. His body shows no wounds. Some scholars think a stroke or heart attack is possible.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, quiet orange-grey light. Medium shot: Pliny the Elder – a simple dark silhouette of an older man in a white robe sits resting on the sand of a calm beach, a ship silhouette far away. Sad, quiet composition. No text, no faces.",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "Think about the numbers. About eleven hundred victims have been found in Pompeii, but ten to fifteen thousand people lived there.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Infographic: a large grid of one hundred tiny beige person icons with only about ten of them in dark colour, dark beige background. No text, no numbers, no faces.",
+   "wort": "1,100 FOUND",
+   "bewegung": "statisch",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "Many historians think a large share of Pompeians escaped early, perhaps even most. Nobody knows the exact number.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, early light. Medium shot: many simple dark silhouettes with bundles stream out of an open town gate onto a road leading away from the city, the cone-shaped Mount Vesuvius in muted purple-grey with a smoking top behind. No text, no faces.",
+   "wort": "MANY ESCAPED",
+   "bewegung": "schwenk_rechts",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "So here is the truth about surviving Pompeii. It was never about being strong or smart.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, quiet light. Wide shot: you – a simple dark silhouette of a young Roman in a beige tunic stands alone on a hilltop and looks back at a distant city covered in grey ash under the cone-shaped Mount Vesuvius in muted purple-grey. No text, no faces.",
+   "wort": null,
+   "bewegung": "zoom_rein",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "It was about timing.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Infographic: a clock face with tick marks but no numerals; the first part of the dial is a green arc, the later part a red arc, a small cone-shaped Mount Vesuvius in muted purple-grey icon beside it, dark beige background. No text.",
+   "wort": "TIMING",
+   "bewegung": "statisch",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "People who left during the pumice fall had a far better chance than those who waited.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon. Medium shot, two groups of simple dark silhouettes in beige tunics: on the left a few walk away on a clear road under a bright sky, on the right others linger in a street full of white pumice under a grey sky. No text, no faces.",
+   "wort": null,
+   "bewegung": "schwenk_rechts",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "So here is the twist. Pompeii was not unsurvivable. If you left early, you probably made it.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, sunrise light. Wide shot: you – a simple dark silhouette of a young Roman in a beige tunic walks away along a road from the cone-shaped Mount Vesuvius in muted purple-grey, which smokes small in the distance behind. No text, no faces.",
+   "wort": "THE TWIST",
+   "bewegung": "zoom_raus",
+   "stimmung": "ehrfurcht",
+   "geraeusch": "whoosh.mp3"
+  },
+  {
+   "text": "The tragedy is that nobody understood the signs. Nobody read the earthquake, the tremors, or the gas as a warning.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, dusk light. Close shot of a cracked Roman wall in the foreground with faint glowing dotted lines linking it to the cone-shaped Mount Vesuvius in muted purple-grey, drawn like constellations. No people. No text.",
+   "wort": "NOBODY KNEW",
+   "bewegung": "zoom_rein",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "Today, we do read them. Scientists at the Vesuvius Observatory watch the volcano twenty-four hours a day.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, daylight. Medium shot of a modern observatory building with a small satellite dish and blank monitor screens in a window, the cone-shaped Mount Vesuvius in muted purple-grey calm behind it. One or two simple dark silhouettes at a desk. No text, no faces.",
+   "wort": "24 HOURS A DAY",
+   "bewegung": "schwenk_rechts",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  },
+  {
+   "text": "When this video was made, its alert level was green. That means nothing unusual.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, calm light. Detail close-up of a control panel with one large glowing green round light, the calm cone-shaped Mount Vesuvius in muted purple-grey visible through a window behind it. No text.",
+   "wort": "ALERT: GREEN",
+   "bewegung": "statisch",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  },
+  {
+   "text": "Vesuvius last erupted in 1944.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Infographic: a long horizontal timeline bar in beige with evenly spaced tick marks and no numerals, a tiny orange flame icon at the far right end, a small cone-shaped Mount Vesuvius in muted purple-grey icon above it, dark beige background. No text.",
+   "wort": "1944",
+   "bewegung": "zoom_rein",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  },
+  {
+   "text": "But about seven hundred thousand people live on its slopes, and Naples is only twelve kilometers away.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, bird's-eye total view. A dense modern city of tiny buildings around a blue bay (Naples), houses climbing the lower slopes of the cone-shaped Mount Vesuvius in muted purple-grey nearby. Muted palette. No text, no people.",
+   "wort": "700,000 PEOPLE",
+   "bewegung": "zoom_raus",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "So Italy has a plan. The most dangerous area, called the red zone, covers twenty-five towns and parts of Naples.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Flat map: the cone-shaped Mount Vesuvius in muted purple-grey in the centre, a red irregular zone around it, a wider yellow zone outside, small dots for towns, blue bay on one side. No text, no labels.",
+   "wort": "RED ZONE",
+   "bewegung": "statisch",
+   "stimmung": "spannung",
+   "geraeusch": null
+  },
+  {
+   "text": "If the warning signs appear, everyone in the red zone is asked to leave before any eruption.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Medium shot of long lines of simple cars and buses moving along a highway away from the cone-shaped Mount Vesuvius in muted purple-grey, sunrise sky. No text, no faces.",
+   "wort": null,
+   "bewegung": "schwenk_links",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  },
+  {
+   "text": "The plan allows seventy-two hours.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Infographic: a large clock icon with tick marks but no numerals, three equal thick arcs around the dial in three colours, a tiny car icon beside it, dark beige background. No text.",
+   "wort": "72 HOURS",
+   "bewegung": "statisch",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  },
+  {
+   "text": "It is exactly the lesson of Pompeii: do not wait for the worst. Leave while you still can.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, sunrise. Split frame: on the left an ancient Roman street with white pumice and one silhouette walking away, on the right a modern road with cars, both leading away from the cone-shaped Mount Vesuvius in muted purple-grey under the same sun. No text, no faces.",
+   "wort": null,
+   "bewegung": "zoom_raus",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "Experts still debate how much warning there would be, and whether so many people would leave in time.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape. Medium shot of several simple dark silhouettes of scientists standing around a table with a large map of the volcano, some with a hand on the chin, a plain wall clock above. No text, no faces.",
+   "wort": null,
+   "bewegung": "statisch",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  },
+  {
+   "text": "Pliny survived. About twenty-five years later, the historian Tacitus asked him what he had seen, and he wrote it all down.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, candlelight. Close shot: an older man – a simple dark silhouette in a white robe – writes on a scroll at a wooden desk, a single candle flame, a window with the faint cone-shaped Mount Vesuvius in muted purple-grey far behind. No text, no faces.",
+   "wort": "25 YEARS LATER",
+   "bewegung": "zoom_rein",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "So, would you survive Pompeii? Yes, if you leave early.",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, soft sunrise light. Medium shot: you – a simple dark silhouette of a young Roman in a beige tunic walks along a sunlit road lined with cypress trees, the cone-shaped Mount Vesuvius in muted purple-grey small behind. No text, no faces.",
+   "wort": null,
+   "bewegung": "schwenk_rechts",
+   "stimmung": "ehrfurcht",
+   "geraeusch": null
+  },
+  {
+   "text": "Now try again: you wake up in Pompeii. What do you do?",
+   "bild": "Flat 2D vector illustration, 16:9 landscape, level horizon, same view as the first scene. Wide shot at sunrise: terracotta flat roofs and stone columns of Pompeii in warm golden light; in the foreground you – a simple dark silhouette of a young Roman in a beige tunic stands on a roof terrace, seen from behind; the cone-shaped Mount Vesuvius in muted purple-grey rises huge and calm on the horizon. No text, no faces.",
+   "wort": "WHAT DO YOU DO?",
+   "bewegung": "zoom_raus",
+   "stimmung": "ruhig",
+   "geraeusch": null
+  }
+ ]
+}
