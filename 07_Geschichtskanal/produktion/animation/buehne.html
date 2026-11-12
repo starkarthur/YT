@@ -31,7 +31,13 @@ function ladeBaustein(name) {
       const c = document.createElement("canvas"); c.width = im.naturalWidth; c.height = im.naturalHeight;
       const x = c.getContext("2d", { willReadFrequently: true }); x.drawImage(im, 0, 0);
       const d = x.getImageData(0, 0, c.width, c.height), p = d.data; let x0 = c.width, y0 = c.height, x1 = 0, y1 = 0;
-      for (let i = 0; i < p.length; i += 4) { const a = 255 - (p[i] * .3 + p[i + 1] * .59 + p[i + 2] * .11); const al = a < 40 ? 0 : Math.min(255, a * 1.25);
+      // Hintergrund: alles, was vom Bildrand aus erreichbar ist und der Randfarbe ähnelt (auch farbige Flächen)
+      const bw = c.width, bh = c.height, hg = new Uint8Array(bw * bh), stapel = [], ref = [p[0], p[1], p[2]];
+      const aehnlich = (k) => Math.abs(p[k * 4] - ref[0]) + Math.abs(p[k * 4 + 1] - ref[1]) + Math.abs(p[k * 4 + 2] - ref[2]) < 110;
+      const rein = (k) => { if (!hg[k] && aehnlich(k)) { hg[k] = 1; stapel.push(k); } };
+      for (let q = 0; q < bw; q++) { rein(q); rein((bh - 1) * bw + q); } for (let q = 0; q < bh; q++) { rein(q * bw); rein(q * bw + bw - 1); }
+      while (stapel.length) { const k = stapel.pop(), kx = k % bw; if (kx > 0) rein(k - 1); if (kx < bw - 1) rein(k + 1); if (k >= bw) rein(k - bw); if (k < bw * (bh - 1)) rein(k + bw); }
+      for (let i = 0; i < p.length; i += 4) { const a = 255 - (p[i] * .3 + p[i + 1] * .59 + p[i + 2] * .11); const al = hg[i / 4] || a < 40 ? 0 : Math.min(255, a * 1.25);
         p[i] = p[i + 1] = p[i + 2] = 255; p[i + 3] = al;
         if (al > 60) { const px = (i / 4) % c.width, py = Math.floor(i / 4 / c.width); if (px < x0) x0 = px; if (px > x1) x1 = px; if (py < y0) y0 = py; if (py > y1) y1 = py; } }
       x.putImageData(d, 0, 0);
@@ -58,7 +64,7 @@ function raum(t, licht) {
   ctx.fillStyle = "#07090d"; ctx.fillRect(-600, BODEN, W + 1200, 700);                                   // Boden
   ctx.strokeStyle = "#2a313c"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(-600, BODEN); ctx.lineTo(W + 600, BODEN); ctx.stroke();
   for (let i = -2; i < 12; i++) { ctx.strokeStyle = "#141a22"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(i * 220, BODEN - 500); ctx.lineTo(i * 220, BODEN); ctx.stroke(); }   // Wandpaneele
-  const fx = 840, fy = 150, fw = 280, fh = 360;                                                            // Fenster
+  const fx = 880, fy = 70, fw = 230, fh = 260;                                                            // Fenster
   const p = licht * (.92 + .08 * Math.sin(t * 1.7));
   ctx.save(); ctx.globalAlpha = .34 * p; ctx.fillStyle = F.weiss; ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(fx + fw, fy); ctx.lineTo(fx + fw - 620, BODEN + 250); ctx.lineTo(fx - 1050, BODEN + 250); ctx.fill(); ctx.restore();
   ctx.fillStyle = `rgba(244,245,247,${.2 + .75 * p})`; ctx.fillRect(fx, fy, fw, fh);
