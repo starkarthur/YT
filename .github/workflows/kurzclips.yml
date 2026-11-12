@@ -1,0 +1,97 @@
+# Schneidet aus einem fertigen Langvideo (Artefakt eines früheren Laufs) Hochkant-Kurzclips für TikTok und Instagram.
+# Nur von Hand startbar, OHNE Upload und ohne Secrets. Kosten: 0.
+# Ziel im Repo: .github/workflows/kurzclips.yml
+name: kurzclips
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Lauf-ID, deren Artefakt das fertige Langvideo enthält"
+        required: true
+      artefakt:
+        description: "Name des Artefakts"
+        required: true
+        default: "animtest-ergebnis"
+      titel:
+        description: "Titel des Videos (wird oben eingeblendet)"
+        required: true
+        default: "Why You'd Never Survive Pompeii"
+      bereiche:
+        description: "Ausschnitte in Sekunden: von-bis,von-bis (je 5–60 s)"
+        required: true
+      thumb_artefakt:
+        description: "Optional: Artefakt mit dem Bild für das Vorschaubild (z. B. animtest-clips)"
+        required: false
+        default: ""
+      thumb_bild:
+        description: "Optional: Dateinamen der Bilder im Artefakt, mit Komma getrennt (z. B. e1_start.png,e4_start.png)"
+        required: false
+        default: ""
+      thumb_text:
+        description: "Optional: zwei Zeilen, getrennt mit | (z. B. YOU HAVE|18 HOURS)"
+        required: false
+        default: ""
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  schneiden:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Eingaben prüfen
+        env:
+          RUN_ID: ${{ inputs.run_id }}
+          ARTEFAKT: ${{ inputs.artefakt }}
+          BEREICHE: ${{ inputs.bereiche }}
+        run: |
+          [[ "$RUN_ID" =~ ^[0-9]{5,15}$ ]] || { echo "run_id ungültig"; exit 1; }
+          [[ "$ARTEFAKT" =~ ^[A-Za-z0-9_.-]{1,80}$ ]] || { echo "Artefaktname ungültig"; exit 1; }
+          [[ "$BEREICHE" =~ ^[0-9.,-]{3,200}$ ]] || { echo "Bereiche ungültig"; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-montserrat
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artefakt }}
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+          path: video
+      - name: Kurzclips schneiden
+        env:
+          TITEL: ${{ inputs.titel }}
+          BEREICHE: ${{ inputs.bereiche }}
+        run: |
+          mapfile -t VIDEOS < <(find video -name '*.mp4')
+          [[ ${#VIDEOS[@]} -eq 1 ]] || { echo "Erwartet genau ein Video"; exit 1; }
+          python3 07_Geschichtskanal/produktion/kurzclips.py "${VIDEOS[0]}" clips "$TITEL" "$BEREICHE"
+      - name: Bild für das Vorschaubild holen
+        if: inputs.thumb_artefakt != '' && inputs.thumb_bild != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.thumb_artefakt }}
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+          path: thumb
+      - name: Vorschaubild bauen
+        if: inputs.thumb_artefakt != '' && inputs.thumb_bild != ''
+        env:
+          THUMB_ARTEFAKT: ${{ inputs.thumb_artefakt }}
+          THUMB_BILD: ${{ inputs.thumb_bild }}
+          THUMB_TEXT: ${{ inputs.thumb_text }}
+        run: |
+          [[ "$THUMB_ARTEFAKT" =~ ^[A-Za-z0-9_.-]{1,80}$ && "$THUMB_BILD" =~ ^[A-Za-z0-9_.,-]{1,200}$ ]] || { echo "Vorschaubild-Angaben ungültig"; exit 1; }
+          IFS=',' read -ra NAMEN <<< "$THUMB_BILD"
+          for NAME in "${NAMEN[@]}"; do
+            BILD=$(find thumb -name "$NAME" | head -1)
+            [[ -n "$BILD" ]] || { echo "Bild nicht gefunden: $NAME"; exit 1; }
+            python3 07_Geschichtskanal/produktion/thumbnail.py "$BILD" "clips/thumbnail_${NAME%%.*}.jpg" "${THUMB_TEXT%%|*}" "${THUMB_TEXT#*|}"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kurzclips
+          path: clips/*
+          retention-days: 14
