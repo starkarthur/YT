@@ -45,7 +45,7 @@ async function arbeiter(w) {
   page.on("console", m => { if (m.type() === "error" && !m.text().includes("404")) console.log(`Seite ${w}:`, m.text()); });
   page.on("pageerror", e => { console.log(`Seitenfehler ${w}:`, e.message); process.exitCode = 1; });
   await page.evaluateOnNewDocument(k => { window.KONF = k; }, konf);
-  await page.goto(`${BASIS}/seite/anim.html`, { waitUntil: "load" });
+  await page.goto(`${BASIS}/seite/${process.env.SEITE || "anim.html"}`, { waitUntil: "load" });
   await page.waitForFunction("window.bereit === true", { timeout: 180000 });
   for (let i = von; i < bis; i++) {
     const url = await page.evaluate(async t => { await window.zeige(t); return document.getElementById("c").toDataURL("image/jpeg", 0.9); }, i / FPS);
