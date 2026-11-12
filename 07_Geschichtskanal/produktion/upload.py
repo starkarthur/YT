@@ -60,7 +60,7 @@ def youtube(video: Path, meta: dict, konf: dict) -> dict:
     r = json.loads(roh)
     status = r.get("status", {}).get("privacyStatus")
     hinweis = "" if status == konf["privacy"] else f"YouTube setzte '{status}' (API-Projekt noch nicht geprüft?)"
-    return {"id": r["id"], "url": f"https://youtube.com/shorts/{r['id']}", "hinweis": hinweis}
+    return {"id": r["id"], "url": f"https://youtu.be/{r['id']}", "hinweis": hinweis}   # gilt für Shorts und Langvideos
 
 
 # --- TikTok -------------------------------------------------------------

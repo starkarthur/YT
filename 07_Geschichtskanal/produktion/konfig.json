@@ -105,10 +105,12 @@
     "bild_stil": "digital_illustration/2d_art_poster",
     "bild_preis_usd": 0.04,
     "stiltest_stile": [
-      "digital_illustration/2d_art_poster",
+      "vector_illustration",
       "vector_illustration/emotional_flat",
-      "digital_illustration/grain"
+      "vector_illustration/roundish_flat",
+      "digital_illustration/hard_comics"
     ],
+    "stiltest_text": "flat vector illustration, solid flat colours, crisp clean edges, no texture, no grain, no brush strokes, no gradients, minimal composition with simple geometric shapes and generous negative space, wide 16:9 composition, no text, no letters, no watermark, no faces in detail",
     "stil_text": "flat 2D illustration, simple clean shapes, soft gradients, muted cinematic colours, atmospheric lighting, subtle grain, wide 16:9 composition, no text, no letters, no watermark, no faces in detail",
     "farben": [
       {
