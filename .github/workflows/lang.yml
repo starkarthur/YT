@@ -50,7 +50,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-montserrat
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-montserrat librsvg2-bin
       - name: Eingaben prüfen
         env:
           BILDER_LAUF: ${{ inputs.bilder_lauf }}
@@ -97,7 +97,8 @@ jobs:
             arbeit/medien/*/kontaktbogen.jpg
             arbeit/medien/*/fertig.json
             arbeit/medien/*/kapitel.txt
-            arbeit/medien/stiltest/*
+            arbeit/medien/stiltest/*.png
+            arbeit/medien/stiltest/*.svg
             arbeit/kostenbuch.jsonl
             arbeit/fehler.jsonl
           retention-days: 14
