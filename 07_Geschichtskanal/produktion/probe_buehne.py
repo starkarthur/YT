@@ -17,16 +17,17 @@ from anbieter import AnbieterFehler, ElevenLabs, Fal, lade_datei
 from probe_comic import MODELL, MUSIK, STIMME, dauer, ff
 
 SID = "P003"
-LIMIT_USD = 1.0
-STILE = ["vector_illustration/sharp_contrast", "vector_illustration"]
+LIMIT_USD = 0.5          # 4 Bausteine + höchstens 2 Wiederholungen
+STILE = ["vector_illustration", "vector_illustration"]
 FARBEN = [{"r": 0, "g": 0, "b": 0}, {"r": 255, "g": 255, "b": 255}]
-STIL = ("one single solid black silhouette, flat vector shape, side view, completely isolated on a pure white background, "
-        "centered, the whole object visible, no ground, no shadow, no frame, no other objects, no text")
+STIL = ("Simple flat icon, one single solid black silhouette shape, side view, isolated cutout on a completely empty plain white "
+        "background, centered with wide white margin on all four sides, nothing touches the image edge, no floor, no wall, "
+        "no window, no room, no scenery, no shadow, no frame, no border, no colors, no text")
 BAUSTEINE = {
-    "frau": "a woman in a long plain 1880s dress with her hair in a bun, sitting upright with hands in her lap, facing right",
-    "arzt": "a 19th century doctor with a beard in a long coat sitting on a wooden chair, holding a notebook, facing left",
-    "bett": "a simple narrow iron hospital bed with a thin mattress and a pillow, seen exactly from the side",
-    "tisch": "a small round wooden table with one plate and one glass standing on it, seen exactly from the side",
+    "frau": "a seated woman in a long old-fashioned dress with her hair in a bun, hands in her lap, facing right",
+    "arzt": "a bearded man in a long coat sitting on a wooden chair and writing in a notebook, facing left",
+    "bett": "a narrow iron bed frame with a thin mattress and a pillow",
+    "tisch": "a small round side table with one plate and one glass on it",
 }
 SAETZE = [   # eine Szene je Eintrag, alle im selben Raum
     "Picture a hospital room in Paris, in 1880.",
@@ -43,34 +44,62 @@ def ordner() -> Path:
     return o
 
 
+def freigestellt(roh: bytes, n: int = 100) -> float:
+    """Anteil des Bildrands (4 px), der hell und einfarbig ist. roh = n×n Pixel RGB. 1.0 = sauber freigestellt."""
+    rand = [(x, y) for y in range(n) for x in range(n) if x < 4 or y < 4 or x >= n - 4 or y >= n - 4]
+    farbe = lambda x, y: roh[(y * n + x) * 3:(y * n + x) * 3 + 3]
+    stufen: dict = {}
+    for x, y in rand:
+        k = tuple(v // 32 for v in farbe(x, y))
+        stufen[k] = stufen.get(k, 0) + 1
+    haupt = max(stufen, key=stufen.get)
+    if sum(haupt) * 32 / 3 < 150:          # dunkler Rand = kein freier Hintergrund
+        return 0.0
+    return stufen[haupt] / len(rand)
+
+
+def pruefe(png: Path) -> float:
+    roh = png.with_suffix(".rgb")
+    ff("-i", str(png), "-vf", "scale=100:100", "-f", "rawvideo", "-pix_fmt", "rgb24", str(roh))
+    wert = freigestellt(roh.read_bytes())
+    roh.unlink()
+    return wert
+
+
 def bausteine() -> None:
     kosten, *_ = lauf.buecher()
-    fal, o, stil = Fal(), ordner(), None
+    fal, o = Fal(), ordner()
     for name, was in BAUSTEINE.items():
         ziel = o / "bilder" / f"{name}.png"
         if ziel.exists() and ziel.stat().st_size > 2_000:
             continue
-        if kosten.summe(short=SID) + 0.08 > LIMIT_USD:
-            sys.exit(f"Grenze {LIMIT_USD} USD erreicht")
-        r = None
-        for kandidat in ([stil] if stil else STILE):
-            try:
-                r = fal._lauf(MODELL, {"prompt": f"{was}. {STIL}", "image_size": "square_hd", "style": kandidat, "colors": FARBEN})
-                stil = kandidat
+        bester = -1.0
+        for versuch, kandidat in enumerate(STILE, 1):
+            if kosten.summe(short=SID) + 0.08 > LIMIT_USD:
+                print(f"Grenze {LIMIT_USD} USD erreicht, kein weiterer Versuch")
                 break
+            try:
+                r = fal._lauf(MODELL, {"prompt": f"{STIL}. Subject: {was}.", "image_size": "square_hd", "style": kandidat, "colors": FARBEN})
             except AnbieterFehler as ex:
                 print(f"Stil {kandidat} nicht möglich: {str(ex)[:120]}")
-        if r is None:
-            sys.exit("kein Stil hat funktioniert")
-        kosten.buchen(SID, f"baustein_{name}", 0.08, "fal")
-        roh = lade_datei(r["images"][0]["url"], ziel.with_suffix(".roh"))
-        if roh.read_bytes()[:300].lstrip().startswith((b"<svg", b"<?xml")):
-            subprocess.run(["rsvg-convert", "-w", "1400", "-b", "white", "-o", str(ziel), str(roh)], check=True)
-            roh.replace(ziel.with_suffix(".svg"))
-        else:
-            ff("-i", str(roh), str(ziel))
+                continue
+            kosten.buchen(SID, f"baustein_{name}_{versuch}", 0.08, "fal")
+            probe = ziel.with_name(f"{name}_v{versuch}.png")
+            roh = lade_datei(r["images"][0]["url"], probe.with_suffix(".roh"))
+            if roh.read_bytes()[:300].lstrip().startswith((b"<svg", b"<?xml")):
+                subprocess.run(["rsvg-convert", "-w", "1400", "-b", "white", "-o", str(probe), str(roh)], check=True)
+            else:
+                ff("-i", str(roh), str(probe))
             roh.unlink()
-        print(f"Baustein {name} fertig", flush=True)
+            wert = pruefe(probe)
+            print(f"Baustein {name}, Versuch {versuch}: Rand frei zu {wert:.0%}", flush=True)
+            if wert > bester:
+                bester = wert
+                ziel.write_bytes(probe.read_bytes())
+            if wert >= 0.97:
+                break
+        if bester < 0:
+            sys.exit(f"Baustein {name}: kein Bild erzeugt")
 
 
 def stimme() -> None:
