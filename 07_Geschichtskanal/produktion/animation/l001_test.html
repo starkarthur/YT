@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>L001 Animationstest</title>
+<title>L001 Animation</title>
 <!-- 2,5D-Animation der L001-Bilder + realistische KI-Einschübe. Lokal: Vorschau mit Ton (Clips als Platzhalter).
      In der Cloud setzt render.mjs window.KONF (Pfade, Szenenzeiten, Clip-Bilder) und ruft zeige(t) Bild für Bild auf. -->
 <style>
@@ -20,7 +20,7 @@
 <body>
 <div id="buehne"><canvas id="c" width="1920" height="1080"></canvas></div>
 <canvas id="gl" width="1920" height="1080"></canvas>
-<div id="start"><div>▶ ABSPIELEN – 1-Minuten-Test (mit Ton)</div></div>
+<div id="start"><div>▶ ABSPIELEN – L001 mit Ton</div></div>
 <div id="info">lädt …</div>
 <video id="ton" src="../L001/medien/L001/L001_final.mp4" preload="auto" style="display:none"></video>
 <script>
@@ -118,16 +118,67 @@ const KONF = Object.assign({
   bilder: "../L001/bilder/",   // bild_NNN.png
   clips: null,                 // Ordner mit e1/0001.jpg … (null = Platzhalter)
   clipInfo: {},                // {"4": {"name": "e1", "frames": 150}, …}
-  // Szenenanfänge 1–14 + Ende (gemessen am 11.11.2026; die Cloud misst bei jedem Lauf neu)
+  // Szenenanfänge + Ende (gemessen am 11.11.2026 für die ersten 14 Szenen; die Cloud misst bei jedem Lauf neu)
   zeiten: [0, 1.6, 4.133, 9.4, 15.2, 19.0, 24.333, 28.467, 34.467, 40.2, 45.8, 50.0, 56.733, 63.0, 68.367],
 }, window.KONF || {});
-const Z = KONF.zeiten, ENDE = Z[Z.length - 1];
+const Z = KONF.zeiten; let ENDE = Z[Z.length - 1], ANZAHL = Z.length - 1;
+
+// ---------- Texturen bei Bedarf laden (93 Bilder passen nicht gleichzeitig in den Speicher) ----------
+const texLaden = new Map();
+async function texturBereit(n) {
+  if (n < 1 || n > ANZAHL || texturen[n]) return;
+  if (!texLaden.has(n)) texLaden.set(n, ladeBild(`${KONF.bilder}bild_${String(n).padStart(3, "0")}.png`).then(b => { texturen[n] = textur(b); }));
+  await texLaden.get(n);
+  for (const k of Object.keys(texturen)) if (Math.abs(k - n) > 3) { gl.deleteTexture(texturen[k]); delete texturen[k]; texLaden.delete(+k); }
+}
+
+// ---------- weitere Überlagerungen -----------------------------------------
+function bims(t, menge, seed = 5, gross = 1) { const r = zufall(seed);
+  for (let i = 0; i < menge; i++) { const sp = 260 + r() * 260, x = ((r() * W + t * 30 * (r() - .3)) % W + W) % W, y = (r() * H + t * sp) % (H + 40) - 20, s = (4 + r() * 9) * gross;
+    ctx.globalAlpha = .85; ctx.fillStyle = i % 3 ? "#e9e1d0" : "#c9c0ae"; ctx.beginPath(); ctx.ellipse(x, y, s, s * .8, t * 2 + i, 0, 7); ctx.fill(); } ctx.globalAlpha = 1; }
+function truemmer(t, menge, seed = 7) { const r = zufall(seed); ctx.fillStyle = FARBE.dunkel;
+  for (let i = 0; i < menge; i++) { const ph = (t * (.5 + r() * .5) + r()) % 1, x = r() * W, y = ph * ph * H * 1.1; ctx.globalAlpha = .7 * (1 - ph * .5);
+    ctx.save(); ctx.translate(x, y); ctx.rotate(t * 3 + i); ctx.fillRect(-4, -3, 8 + r() * 8, 6); ctx.restore(); } ctx.globalAlpha = 1; }
+function sterne(t, menge = 60, seed = 11) { const r = zufall(seed); ctx.fillStyle = "#fff6dc";
+  for (let i = 0; i < menge; i++) { const x = r() * W, y = r() * H * .45, a = .25 + .75 * Math.abs(Math.sin(t * (1 + r() * 2) + i)); ctx.globalAlpha = a; ctx.fillRect(x, y, 3, 3); } ctx.globalAlpha = 1; }
+function funken(x, y, t, menge = 40, seed = 13) { const r = zufall(seed);
+  for (let i = 0; i < menge; i++) { const ph = (t * (.4 + r() * .4) + r()) % 1, xx = x + (r() - .5) * 260 * ph + Math.sin(t * 3 + i) * 10, yy = y - ph * 380;
+    ctx.globalAlpha = (1 - ph); ctx.fillStyle = r() > .5 ? FARBE.glut : FARBE.gold; ctx.beginPath(); ctx.arc(xx, yy, 2 + r() * 3, 0, 7); ctx.fill(); } ctx.globalAlpha = 1; }
+function dunkel(a) { if (a <= 0) return; ctx.fillStyle = `rgba(20,14,22,${a})`; ctx.fillRect(0, 0, W, H); }
+function blitz(t, seed = 3) { const r = zufall(seed + Math.floor(t / 1.3)), ph = t % 1.3; if (ph > .18 || r() > .6) return;
+  ctx.fillStyle = `rgba(255,250,235,${.35 * (1 - ph / .18)})`; ctx.fillRect(0, 0, W, H);
+  let x = 300 + r() * 1300, y = 0; ctx.strokeStyle = "#fff6dc"; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x, y);
+  while (y < H * .55) { x += (r() - .5) * 120; y += 50 + r() * 60; ctx.lineTo(x, y); } ctx.stroke(); }
+function surge(t, d, seite = "l", deckung = .85) { // dunkle Glutwolke rollt ins Bild
+  const p = ease(t / d), r = zufall(19);
+  const front = -150 + p * W * .8;                       // Vorderkante der Wolke
+  for (let i = 0; i < 110; i++) { const u = r(), rr = 70 + r() * 150, ry = H * .3 + r() * H * .75 + Math.sin(t * 1.2 + i) * 12;
+    const vor = u * (front + 200) - 200 + Math.sin(t * 1.5 + i) * 25, roll = (1 - u) * 40 * Math.sin(t * 2 + i);
+    const x = seite === "l" ? vor : W - vor; ctx.globalAlpha = deckung * (.55 + r() * .45); ctx.fillStyle = i % 3 ? FARBE.rauch : "#2a2230";
+    ctx.beginPath(); ctx.arc(x, ry - roll, rr * (.6 + .4 * u), 0, 7); ctx.fill(); } ctx.globalAlpha = 1; }
+function windstriche(t, menge = 14, seed = 23) { const r = zufall(seed); ctx.strokeStyle = "rgba(255,248,230,.5)"; ctx.lineWidth = 4; ctx.lineCap = "round";
+  for (let i = 0; i < menge; i++) { const y = 80 + r() * H * .6, x = ((r() * W + t * (380 + r() * 200)) % (W + 400)) - 200, l = 80 + r() * 140;
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + l, y + Math.sin(t + i) * 6); ctx.stroke(); } }
+function ringe(x, y, t, rmax = 260) { for (let k = 0; k < 3; k++) { const ph = (t * .6 + k / 3) % 1; ctx.globalAlpha = (1 - ph) * .55; ctx.strokeStyle = "#f7f0e0"; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.ellipse(x, y, 20 + ph * rmax, (20 + ph * rmax) * .35, 0, 0, 7); ctx.stroke(); } ctx.globalAlpha = 1; }
+function puls(x, y, t, farbe = FARBE.glut, r0 = 18) { for (let k = 0; k < 2; k++) { const ph = (t * .8 + k / 2) % 1; ctx.globalAlpha = (1 - ph) * .75; ctx.strokeStyle = farbe; ctx.lineWidth = 6;
+  ctx.beginPath(); ctx.arc(x, y, r0 + ph * 90, 0, 7); ctx.stroke(); } ctx.globalAlpha = 1; }
+function scan(t, d) { const x = ((t / Math.max(d, 1)) * 1.2 - .1) * W; const g = ctx.createLinearGradient(x - 120, 0, x + 120, 0);
+  g.addColorStop(0, "rgba(255,250,230,0)"); g.addColorStop(.5, "rgba(255,250,230,.16)"); g.addColorStop(1, "rgba(255,250,230,0)"); ctx.fillStyle = g; ctx.fillRect(x - 120, 0, 240, H); }
+function dampf(x, y, t, breite = 300, seed = 31) { const r = zufall(seed);
+  for (let i = 0; i < 22; i++) { const ph = (t * .32 + r()) % 1, xx = x + (r() - .5) * breite + Math.sin(t * 1.3 + i) * 26 * ph, yy = y - ph * 340;
+    ctx.globalAlpha = .3 * Math.sin(ph * Math.PI); ctx.fillStyle = "#fff8ea"; ctx.beginPath(); ctx.arc(xx, yy, 14 + ph * 46, 0, 7); ctx.fill(); } ctx.globalAlpha = 1; }
+function gasblasen(t, seed = 41) { const r = zufall(seed);
+  for (let i = 0; i < 30; i++) { const ph = (t * (.25 + r() * .2) + r()) % 1, x = W * (.35 + r() * .3) + Math.sin(t * 2 + i) * 18, y = H - ph * H * .8;
+    ctx.globalAlpha = .45 * Math.sin(ph * Math.PI); ctx.strokeStyle = "#fff6dc"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, y, 6 + r() * 10, 0, 7); ctx.stroke(); } ctx.globalAlpha = 1; }
+function wolken(t, y = 80, farbe = "#fbf3e2", s = .7, n = 3) { for (let i = 0; i < n; i++) wolke(((i * 760 + t * 26) % 2400) - 220, y + (i % 2) * 50, s, farbe, .9); }
 
 // ---------- Realistischer Einschub ------------------------------------------
+const ECHT = new Set([4, 10, 13, 25, 33, 47, 54, 60, 85]);
 const clipCache = new Map();
 function clipBildNr(nr, t, d) {
   const info = KONF.clipInfo[nr]; if (!info) return null;
-  const rate = Math.min(1, (info.frames / FPS - .05) / d);          // länger als der Clip → leicht verlangsamt
+  const rate = Math.max(.75, Math.min(1, (info.frames / FPS - .05) / d));   // höchstens auf 75 % verlangsamt
   return { info, k: Math.min(info.frames, 1 + Math.floor(t * rate * FPS)) };
 }
 async function clipLaden(nr, t, d) {
@@ -137,97 +188,213 @@ async function clipLaden(nr, t, d) {
   clipCache.set(key, await ladeBild(`${KONF.clips}${key}.jpg`));
   if (clipCache.size > 12) clipCache.delete(clipCache.keys().next().value);
 }
-function echt(nr, t, d, ersatzBild) {
+function echt(nr, t, d) {
   const c = clipBildNr(nr, t, d);
   const img = c && clipCache.get(`${c.info.name}/${String(c.k).padStart(4, "0")}`);
-  const s = 1.02 + .05 * ease(t / d);                               // langsames Hineinfahren
+  const s = 1.02 + .05 * ease(t / d);
   if (img) {
     ctx.save(); ctx.filter = "saturate(.86) contrast(1.07) sepia(.14)";
     ctx.translate(W / 2, H / 2); ctx.scale(s, s); ctx.drawImage(img, -W / 2, -H / 2, W, H); ctx.restore();
-    ctx.fillStyle = "rgba(70,40,60,.10)"; ctx.fillRect(0, 0, W, H); // Farbstimmung an die Illustrationen angleichen
-  } else {                                                          // lokale Vorschau ohne Clip
-    ebene(ersatzBild, t, { zoom: 1.08 }); ctx.fillStyle = "rgba(0,0,0,.55)"; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "rgba(70,40,60,.10)"; ctx.fillRect(0, 0, W, H);
+  } else {
+    ebene(nr, t, { zoom: 1.08 }); ctx.fillStyle = "rgba(0,0,0,.55)"; ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = FARBE.creme; ctx.font = "700 54px Montserrat, 'Segoe UI', sans-serif"; ctx.textAlign = "center";
     ctx.fillText(`REALER KI-CLIP (Szene ${nr})`, W / 2, H / 2);
   }
-  korn(t * 1.3); korn(t * 1.3 + .5);                                // etwas mehr Korn auf dem Realbild
+  korn(t * 1.3); korn(t * 1.3 + .5);
 }
 
-// ---------- Szenen (Nummer = Szene/Bild aus L001) ----------------------------
-const SZ = {
+// ---------- Szenen 1–14 von Hand (Animationstest vom 11.11.) ------------------
+const HAND = {
   1(t, d) { ebene(1, t, { zoom: 1.22 - .14 * ease(t / .55), kx: .02 * t, tiefe: 1.4 });
-    schwarm(t, 1180, 190, 120, 6, .8); staub(t, 40); wort("POMPEII", t - .15, d - .15); },
+    schwarm(t, 1180, 190, 120, 6, .8); staub(t, 40); },
   2(t, d) { ebene(2, t, { zoom: 1.08, kx: -.012 * t, ky: .004 * t, tiefe: 1, wind: [.06, .05, .36, .62], windS: 1.4 });
     for (let i = 0; i < 4; i++) wolke(((300 + i * 420 + t * 34) % 2200) - 150, 60 + (i % 2) * 40, .55, "#f7e9cf", .9);
     strahlen(1500, -80, t, 5, .1); staub(t, 70, 9); },
   3(t, d) { ebene(3, t, { zoom: 1.06 + .01 * t, kx: .01 * t, tiefe: 1.3, wind: [.62, .45, .9, .9], windS: .5 });
     for (let i = 0; i < 4; i++) wolke(((i * 560 + t * 28) % 2300) - 200, 120 + (i % 2) * 70, .9, "#fbf3e2", .95);
     schwarm(t, -200, 250, 160, 7, .7); },
-  4: { echt: true, f(t, d) { echt(4, t, d, 4); asche(t, Math.floor(260 * clamp((t - .5) / 2)), 9, 30); wort("BURIED", t - 1.2, d - 1.2); } },
+  4(t, d) { asche(t, Math.floor(260 * clamp((t - .5) / 2)), 9, 30); },
   5(t, d) { ebene(5, t, { zoom: 1.06, kx: .006 * t, tiefe: .6 });
     const cx = 492, cy = 548, r = 352, p = ease(t / 2.4);
     ctx.lineCap = "round"; ctx.strokeStyle = "rgba(232,106,44,.92)"; ctx.lineWidth = 34;
     ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * .75 * p); ctx.stroke();
     const z = -Math.PI / 2 + Math.PI * 2 * .75 * p; ctx.strokeStyle = FARBE.dunkel; ctx.lineWidth = 12;
     ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(z) * 250, cy + Math.sin(z) * 250); ctx.stroke();
-    glut(1555, 300, t * 1.5, 40); wort("18 HOURS", t - .3, d - .3); },
+    glut(1555, 300, t * 1.5, 40); },
   6(t, d) { ebene(6, t, { zoom: 1.12, kx: -.03 * ease(t / d), tiefe: 1.6, wind: [.0, .25, .32, .8], windS: 1.2 });
     asche(t, 90, 4, 60); wolke(((t * 40) % 2300) - 200, 90, .7, "#fbf3e2", .9); },
   7(t, d) { ebene(7, t, { zoom: 1.08 + .015 * t, ky: .004 * t, tiefe: 1.1, hitze: [.3, .3, .7, .5], hitzeS: .6 });
     const a = -.55 + .5 * ease(t / d); ctx.save(); ctx.translate(1120, 900); ctx.rotate(a); ctx.fillStyle = "rgba(20,24,32,.35)";
     ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-30, -420); ctx.lineTo(30, -420); ctx.fill(); ctx.restore();
     strahlen(1220, 300, t, 8, .08); staub(t, 50, 12); },
-  8(t, d) { // Karte: herauszoomen, Meer bewegt sich, Ortsmarke pulsiert, Entfernung
-    ebene(8, t, { zoom: 1.16 - .1 * ease(t / d), tiefe: .2, wind: [0, 0, .45, .3], windS: 1.6 });
+  8(t, d) { ebene(8, t, { zoom: 1.16 - .1 * ease(t / d), tiefe: .2, wind: [0, 0, .45, .3], windS: 1.6 });
     const z = 1.16 - .1 * ease(t / d), px = W / 2 + (1048 - W / 2) * z, py = H / 2 + (300 - H / 2) * z;
-    for (let k = 0; k < 3; k++) { const ph = (t * .7 + k / 3) % 1; ctx.globalAlpha = (1 - ph) * .8; ctx.strokeStyle = FARBE.glut; ctx.lineWidth = 6;
-      ctx.beginPath(); ctx.arc(px, py, 20 + ph * 120, 0, 7); ctx.stroke(); } ctx.globalAlpha = 1;
-    glut(px, py, t, 26); wort("6 MILES", t - .8, d - .8); },
-  9(t, d) { // Menge: Köpfe wiegen sich, Lichtkegel schwenkt, Staub im Licht
-    ebene(9, t, { zoom: 1.07 + .02 * ease(t / d), kx: .006 * t, tiefe: .8, wind: [0, .3, 1, 1], windS: 1.1 });
-    ctx.save(); ctx.globalCompositeOperation = "lighter"; strahlen(720 + Math.sin(t * .8) * 60, -120, t, 3, .05); ctx.restore();
-    staub(t, 60, 21); wort("10–15,000 PEOPLE", t - .6, d - .6); },
-  10: { echt: true, f(t, d) { echt(10, t, d, 10); staub(t, 30, 5); } },
-  11(t, d) { // Bäckerei: Dampf steigt, Ofen glüht, Hitze flimmert
-    ebene(11, t, { zoom: 1.06 + .05 * ease(t / d), kx: -.004 * t, tiefe: .7, hitze: [.18, .05, .55, .45], hitzeS: 1.4 });
-    const r = zufall(31);
-    for (let i = 0; i < 26; i++) { const ph = (t * .32 + r()) % 1, x = 480 + r() * 440 + Math.sin(t * 1.3 + i) * 26 * ph, y = 450 - ph * 360;
-      ctx.globalAlpha = .32 * Math.sin(ph * Math.PI); ctx.fillStyle = "#fff8ea"; ctx.beginPath(); ctx.arc(x, y, 14 + ph * 46, 0, 7); ctx.fill(); }
-    ctx.globalAlpha = 1; glut(330, 930, t, 50); glut(560, 930, t + 1, 40); },
-  12(t, d) { // Amphitheater: aus der Höhe zurückziehen, Vögel, Wolken
-    ebene(12, t, { zoom: 1.15 - .09 * ease(t / d), ky: -.004 * t, tiefe: 1.1 });
-    for (let i = 0; i < 3; i++) wolke(((i * 760 + t * 30) % 2400) - 220, 70 + (i % 2) * 45, .6, "#fbf3e2", .9);
-    schwarm(t, 2000, 300, -150, 6, .6); staub(t, 40, 14); },
-  13: { echt: true, f(t, d) { echt(13, t, d, 13); } },
-  14(t, d) { // du schaust zum Vesuv: Baum im Wind, Wolken ziehen, langsam heran
-    ebene(14, t, { zoom: 1.05 + .06 * ease(t / d), tiefe: 1.2, wind: [.62, 0, 1, .7], windS: 1.3 });
-    for (let i = 0; i < 3; i++) wolke(((i * 700 + t * 22) % 2400) - 220, 110 + (i % 2) * 60, .8, "#fbf3e2", .95);
-    schwarm(t, -300, 330, 90, 4, .5); },
+    puls(px, py, t); glut(px, py, t, 26); },
+  9(t, d) { ebene(9, t, { zoom: 1.07 + .02 * ease(t / d), kx: .006 * t, tiefe: .8, wind: [0, .3, 1, 1], windS: 1.1 });
+    ctx.save(); ctx.globalCompositeOperation = "lighter"; strahlen(720 + Math.sin(t * .8) * 60, -120, t, 3, .05); ctx.restore(); staub(t, 60, 21); },
+  10(t, d) { staub(t, 30, 5); },
+  11(t, d) { ebene(11, t, { zoom: 1.06 + .05 * ease(t / d), kx: -.004 * t, tiefe: .7, hitze: [.18, .05, .55, .45], hitzeS: 1.4 });
+    dampf(700, 450, t, 440); glut(330, 930, t, 50); glut(560, 930, t + 1, 40); },
+  12(t, d) { ebene(12, t, { zoom: 1.15 - .09 * ease(t / d), ky: -.004 * t, tiefe: 1.1 });
+    wolken(t, 70, "#fbf3e2", .6); schwarm(t, 2000, 300, -150, 6, .6); staub(t, 40, 14); },
+  13(t, d) { },
+  14(t, d) { ebene(14, t, { zoom: 1.05 + .06 * ease(t / d), tiefe: 1.2, wind: [.62, 0, 1, .7], windS: 1.3 });
+    wolken(t, 110, "#fbf3e2", .8); schwarm(t, -300, 330, 90, 4, .5); },
 };
+
+// ---------- Szenen 15–93: Bewegung aus dem Schnittplan, Effekte je Bild ----------
+// Kamera laut Plan (bewegung), Effekte laut Bildinhalt (Stilbuch Abschnitt 2: mindestens ein lebendes Element).
+const PLAN = "15 statisch|16 zoom_raus|17 zoom_rein|18 schwenk_links|19 zoom_rein|20 statisch|21 zoom_rein|22 statisch|23 schwenk_rechts|24 schwenk_links|25 zoom_rein|26 zoom_raus|27 statisch|28 schwenk_links|29 zoom_rein|30 statisch|31 zoom_rein|32 schwenk_rechts|33 zoom_raus|34 statisch|35 schwenk_links|36 zoom_rein|37 zoom_raus|38 statisch|39 zoom_rein|40 schwenk_links|41 zoom_rein|42 zoom_raus|43 zoom_rein|44 statisch|45 schwenk_links|46 zoom_rein|47 zoom_raus|48 statisch|49 schwenk_rechts|50 statisch|51 zoom_rein|52 zoom_raus|53 statisch|54 schwenk_rechts|55 zoom_rein|56 statisch|57 schwenk_links|58 zoom_raus|59 statisch|60 zoom_rein|61 statisch|62 zoom_rein|63 schwenk_links|64 zoom_raus|65 statisch|66 zoom_raus|67 schwenk_rechts|68 schwenk_links|69 zoom_raus|70 schwenk_links|71 zoom_rein|72 schwenk_rechts|73 statisch|74 zoom_raus|75 statisch|76 schwenk_rechts|77 zoom_rein|78 statisch|79 schwenk_rechts|80 zoom_raus|81 zoom_rein|82 schwenk_rechts|83 statisch|84 zoom_rein|85 zoom_raus|86 statisch|87 schwenk_links|88 statisch|89 zoom_raus|90 statisch|91 zoom_rein|92 schwenk_rechts|93 zoom_raus"
+  .split("|").reduce((o, z) => { const [n, b] = z.split(" "); o[+n] = b; return o; }, {});
+const WORT = { 1: "POMPEII", 4: "BURIED", 5: "18 HOURS", 8: "6 MILES", 9: "10–15,000 PEOPLE", 16: "17 YEARS", 17: "62 AD", 19: "NOT A WARNING",
+  20: "RISING GROUND", 22: "VOLCANIC UNREST", 25: "ERUPTION", 27: "20 MILES HIGH", 28: "MISENUM", 29: "PINE TREE", 34: "DOWNWIND", 36: "STAY OR LEAVE",
+  39: "4–6 INCHES/HOUR", 41: "NOT VERY HOT", 42: "18 HOURS", 43: "ROOFS COLLAPSE", 45: "PILLOWS ON HEADS", 48: "ALL NIGHT", 49: "1.5 METERS",
+  51: "COLUMN COLLAPSE", 53: "PYROCLASTIC SURGE", 56: "300 DEGREES", 58: "MINUTES", 62: "DARKER THAN NIGHT", 64: "YOUR OPTIONS", 65: "OPTION 1",
+  67: "OPTION 2", 70: "OPTION 3", 71: "EARTHQUAKE", 73: "NO RESCUE", 75: "1,100 FOUND", 76: "MANY ESCAPED", 78: "TIMING", 80: "THE TWIST",
+  81: "NOBODY KNEW", 82: "24 HOURS A DAY", 83: "ALERT: GREEN", 84: "1944", 85: "700,000 PEOPLE", 86: "RED ZONE", 88: "72 HOURS",
+  91: "25 YEARS LATER", 93: "WHAT DO YOU DO?" };
+// Effekt-Kürzel: w=Wolken v=Vögel s=Staub a=Asche b=Bims t=Trümmer st=Sterne bl=Blitz ws=Windstriche
+const FX = {
+  15: { fx: "s", wind: [.6, .3, .9, .65], windS: 1.5 },
+  16: { fx: "s", beben: .5 },
+  17: { fx: "s t", beben: 1 },
+  18: { fx: "s", wind: [.3, .55, .8, 1], windS: 1.8 },
+  19: { fx: "s", beben: .4 },
+  20: { fx: "s", beben: .3, gas: 1 },
+  21: { fx: "s", ringe: [960, 560], beben: .25 },
+  22: { fx: "s", scan: 1 },
+  23: { fx: "st", rauch: [960, 170, 160, .35] },
+  24: { fx: "w v s", wind: [.0, .1, .2, .6], windS: 1.2 },
+  26: { fx: "a", rauch: [960, 330, 300, .9], beben: .4 },
+  27: { fx: "w s", tiefe: 1.3 },
+  28: { fx: "w", wind: [0, .65, 1, 1], windS: 1.6, rauch: [980, 310, 220, .7] },
+  29: { fx: "w s", wind: [.55, 0, .85, .6], windS: 1.3 },
+  30: { fx: "s", wind: [.7, .3, 1, .9], windS: 1 },
+  31: { fx: "w", wind: [0, .6, 1, 1], windS: 2, wogen: 1 },
+  32: { fx: "a", dunkel: .25, wind: [0, .5, .15, 1], windS: 1 },
+  34: { fx: "ws", wind: [0, .7, 1, 1], windS: 1.5, rauch: [960, 470, 200, .7] },
+  35: { fx: "b s", bims: 60 },
+  36: { fx: "b w", bims: 40, wind: [.0, .1, .12, .6], windS: 1 },
+  37: { fx: "b a", bims: 90, dunkel: .15 },
+  38: { fx: "s", glut: [[500, 280, 70]], beben: .15 },
+  39: { fx: "b", bims: 80 },
+  40: { fx: "b s", bims: 90 },
+  41: { fx: "s", schweben: 1 },
+  42: { fx: "b", bims: 140 },
+  43: { fx: "t s", beben: 1 },
+  44: { fx: "t s", beben: .7, glut: [[960, 120, 60]] },
+  45: { fx: "b", bims: 80, wind: [0, 0, .15, .5], windS: 1 },
+  46: { fx: "b", bims: 70 },
+  48: { fx: "s w", beben: .8 },
+  49: { fx: "b s", bims: 80 },
+  50: { fx: "a s", dunkel: .3 },
+  51: { fx: "a", rauch: [940, 320, 380, 1], glut: [[940, 330, 70]], funken: [940, 330], beben: .6 },
+  52: { fx: "a", surge: "l", beben: .6 },
+  53: { fx: "s", surge: "r", beben: .4 },
+  55: { fx: "a", dunkel: .3, surge: "r" },
+  56: { fx: "s", hitze: [0, 0, 1, 1], hitzeS: 1.6, dampf: [1225, 590], glut: [[1225, 600, 50]] },
+  57: { fx: "a", surge: "l", dunkel: .2 },
+  58: { fx: "s", puls: [[700, 380, FARBE.glut]] },
+  59: { fx: "a", surge: "beide" },
+  61: { fx: "a", dunkel: .25, wind: [0, .5, .15, 1], windS: 1 },
+  62: { fx: "a", dunkel: .6 },
+  63: { fx: "a", asche: 500, dunkel: .2 },
+  64: { fx: "w", wind: [0, .6, 1, .85], windS: 1.5 },
+  65: { fx: "s", glut: [[820, 740, 30]] },
+  66: { fx: "b", bims: 60, wind: [.75, .1, 1, .7], windS: 1.2 },
+  67: { fx: "w v", wind: [0, .55, 1, .8], windS: 1.5 },
+  68: { fx: "w", wind: [0, .4, 1, .9], windS: 2.2, wogen: 1 },
+  69: { fx: "w v", wind: [.4, .45, 1, .8], windS: 1.2 },
+  70: { fx: "b s", bims: 70 },
+  71: { fx: "s t", beben: 1 },
+  72: { fx: "s t", beben: .8 },
+  73: { fx: "w", wind: [0, .7, 1, 1], windS: 1.8, wogen: 1 },
+  74: { fx: "s", wind: [.0, .4, .6, .7], windS: 1.2 },
+  75: { fx: "s", scan: 1 },
+  76: { fx: "w v" },
+  77: { fx: "w s", glut: [[1500, 330, 60]] },
+  78: { fx: "s", strahlen: [960, 950] },
+  79: { fx: "s", wind: [.85, .1, 1, .6], windS: 1 },
+  80: { fx: "w s", strahlen: [960, 110] },
+  81: { fx: "st s" },
+  82: { fx: "s", scan: 1, puls: [[1300, 160, "#9fd8c8"]] },
+  83: { fx: "s", puls: [[1280, 330, "#7ccf7a"]] },
+  84: { fx: "s", rauch: [965, 240, 160, .6], glut: [[965, 250, 40]] },
+  86: { fx: "w", zone: [960, 620] },
+  87: { fx: "w s" },
+  88: { fx: "s", strahlen: [960, -60] },
+  89: { fx: "w v s" },
+  90: { fx: "s" },
+  91: { fx: "s", glut: [[1530, 560, 26]] },
+  92: { fx: "w v s" },
+  93: { fx: "w v s" },
+};
+function kamera(bew, t, d) { const p = ease(t / d);
+  switch (bew) {
+    case "zoom_rein": return { zoom: 1.06 + .05 * p };
+    case "zoom_raus": return { zoom: 1.14 - .08 * p };
+    case "schwenk_rechts": return { zoom: 1.1, kx: .03 * (p - .5) };
+    case "schwenk_links": return { zoom: 1.1, kx: -.03 * (p - .5) };
+    default: return { zoom: 1.07 + .015 * p, kx: .004 * Math.sin(t * .4) };
+  } }
+function generisch(n, t, d) {
+  const f = FX[n] || { fx: "s" }, k = kamera(PLAN[n], t, d), fx = (f.fx || "").split(" ");
+  let beben = 0; if (f.beben) beben = f.beben * clamp(t / .4) * (1 - clamp((t - d * .6) / (d * .4)));
+  const wog = f.wogen ? Math.sin(t * 1.6) * .006 : 0;
+  ebene(n, t, { zoom: k.zoom, kx: k.kx || 0, ky: wog, tiefe: f.tiefe ?? 1, wind: f.wind, windS: f.windS, hitze: f.hitze, hitzeS: f.hitzeS, beben });
+  if (f.strahlen) strahlen(f.strahlen[0], f.strahlen[1], t, 6, .08);
+  if (fx.includes("w")) wolken(t, 70);
+  if (fx.includes("st")) sterne(t);
+  if (f.rauch) { const [x, y, h, s] = f.rauch; rauchsaeule(x, y, t, h, s * ease(t / 1.2)); }
+  if (f.zone) { const ph = .5 + .5 * Math.sin(t * 2); ctx.globalAlpha = .18 + .12 * ph; ctx.fillStyle = "#d8402c"; ctx.beginPath(); ctx.ellipse(f.zone[0], f.zone[1], 620, 240, 0, 0, 7); ctx.fill(); ctx.globalAlpha = 1; }
+  if (f.surge) { if (f.surge === "beide") { surge(t, d * 1.6, "l", .8); surge(t, d * 1.6, "r", .8); } else surge(t, d * 1.2, f.surge); }
+  if (f.dampf) dampf(f.dampf[0], f.dampf[1], t);
+  if (f.gas) gasblasen(t);
+  if (f.ringe) ringe(f.ringe[0], f.ringe[1], t);
+  if (f.scan) scan(t, d);
+  (f.glut || []).forEach(([x, y, r]) => glut(x, y, t, r));
+  (f.puls || []).forEach(([x, y, c]) => puls(x, y, t, c));
+  if (f.funken) funken(f.funken[0], f.funken[1], t);
+  if (fx.includes("ws")) windstriche(t);
+  if (fx.includes("v")) schwarm(t, -300, 260, 110, 5, .6);
+  if (fx.includes("b")) bims(t, f.bims || 70, n);
+  if (fx.includes("t")) truemmer(t, 40, n);
+  if (fx.includes("a")) asche(t, f.asche || 220, n, 40);
+  if (fx.includes("s")) staub(t, 45, n);
+  if (f.dunkel) dunkel(f.dunkel * ease(t / d));
+}
 
 function szeneBei(t) { let n = 1; while (n < Z.length - 1 && t >= Z[n]) n++; return n; }
 function zeichne(t) {
-  const n = szeneBei(t), lt = t - Z[n - 1], d = Z[n] - Z[n - 1], s = SZ[n];
-  ctx.clearRect(0, 0, W, H); (s.f || s)(lt, d);
-  if (s.echt) { if (lt < .16) { ctx.fillStyle = `rgba(255,246,228,${(1 - lt / .16) * .7})`; ctx.fillRect(0, 0, W, H); } } // Blitz in den Realclip
+  const n = szeneBei(t), lt = t - Z[n - 1], d = Z[n] - Z[n - 1], istEcht = ECHT.has(n);
+  ctx.clearRect(0, 0, W, H);
+  if (istEcht) echt(n, lt, d);
+  if (HAND[n]) HAND[n](lt, d); else if (!istEcht) generisch(n, lt, d);
+  else { const f = FX[n]; if (f && f.fx && f.fx.includes("a")) asche(lt, 160, n, 40); }
+  if (n === 60 && istEcht) blitz(lt);
+  if (WORT[n]) wort(WORT[n], lt - (n === 1 ? .15 : .4), d - (n === 1 ? .15 : .4));
+  if (istEcht) { if (lt < .16) { ctx.fillStyle = `rgba(255,246,228,${(1 - lt / .16) * .7})`; ctx.fillRect(0, 0, W, H); } }
   else if (lt < .22) { ctx.fillStyle = `rgba(10,10,14,${(1 - lt / .22) * .9})`; ctx.fillRect(0, 0, W, H); }
   vignette(); korn(t);
   if (t > ENDE - .8) { ctx.fillStyle = `rgba(0,0,0,${clamp((t - ENDE + .8) / .8)})`; ctx.fillRect(0, 0, W, H); }
 }
-window.zeige = async t => { const n = szeneBei(t); if (SZ[n].echt) await clipLaden(n, t - Z[n - 1], Z[n] - Z[n - 1]); zeichne(t); };
-function schleife() { const t = ton.currentTime; zeichne(Math.min(t, ENDE - .01)); document.getElementById("info").textContent = t.toFixed(1) + " s";
-  if (t >= ENDE) { ton.pause(); document.getElementById("start").style.display = "grid"; return; } requestAnimationFrame(schleife); }
+window.zeige = async t => { const n = szeneBei(t); await texturBereit(n);
+  if (ECHT.has(n)) await clipLaden(n, t - Z[n - 1], Z[n] - Z[n - 1]); zeichne(t); texturBereit(n + 1); };
+let laeuft = false;
+async function schleife() { if (!laeuft) return; const t = ton.currentTime, n = szeneBei(t);
+  if (!texturen[n]) { ton.pause(); await texturBereit(n); ton.play(); }
+  zeichne(Math.min(t, ENDE - .01)); texturBereit(n + 1); document.getElementById("info").textContent = t.toFixed(1) + " s · Szene " + n;
+  if (t >= ENDE) { ton.pause(); laeuft = false; document.getElementById("start").style.display = "grid"; return; } requestAnimationFrame(schleife); }
 
 (async () => {
-  const nummern = Array.from({ length: 14 }, (_, i) => i + 1);
-  const bilder = await Promise.all(nummern.map(n => ladeBild(`${KONF.bilder}bild_${String(n).padStart(3, "0")}.png`)));
-  bilder.forEach((b, i) => texturen[i + 1] = textur(b));
   try { await document.fonts.load("900 100px Montserrat"); } catch (e) {}
-  const st = new URLSearchParams(location.search).get("t");
+  const q = new URLSearchParams(location.search), st = q.get("t");
+  if (q.get("zeiten")) { const z = await (await fetch(q.get("zeiten"))).json(); Z.splice(0, Z.length, ...z); ENDE = Z[Z.length - 1]; ANZAHL = Z.length - 1; }
   document.getElementById("info").textContent = "bereit";
   if (KONF.render || st !== null) { document.getElementById("start").style.display = "none"; document.getElementById("info").style.display = "none"; }
-  if (st !== null) await window.zeige(parseFloat(st)); else zeichne(.9);
-  document.getElementById("start").onclick = () => { document.getElementById("start").style.display = "none"; ton.currentTime = 0; ton.play(); schleife(); };
+  if (st !== null) await window.zeige(parseFloat(st)); else await window.zeige(.9);
+  document.getElementById("start").onclick = () => { document.getElementById("start").style.display = "none"; ton.currentTime = +(q.get("ab") || 0); ton.play(); laeuft = true; schleife(); };
   window.bereit = true;
 })();
 </script>

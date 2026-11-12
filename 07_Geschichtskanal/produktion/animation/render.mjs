@@ -27,26 +27,32 @@ const konf = { render: true, zeiten, clipInfo, bilder: `${BASIS}/arbeit/bilder/`
 const ausgabe = join(ARBEIT, "frames");
 mkdirSync(ausgabe, { recursive: true });
 
-const browser = await puppeteer.launch({
-  executablePath: process.env.CHROME || "/usr/bin/google-chrome",
-  headless: true,
-  // --no-sandbox: Ubuntu 24.04 auf GitHub erlaubt Chromes Sandbox nicht; geladen wird nur unsere eigene lokale Seite.
-  args: ["--no-sandbox", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--window-size=1920,1080", "--hide-scrollbars", "--mute-audio"],
-  defaultViewport: { width: 1920, height: 1080 },
-});
-const page = await browser.newPage();
-page.on("console", m => { if (m.type() === "error") console.log("Seite:", m.text()); });
-page.on("pageerror", e => { console.log("Seitenfehler:", e.message); process.exitCode = 1; });
-await page.evaluateOnNewDocument(k => { window.KONF = k; }, konf);
-await page.goto(`${BASIS}/seite/l001_test.html`, { waitUntil: "load" });
-await page.waitForFunction("window.bereit === true", { timeout: 120000 });
-
+// Mehrere Chrome-Instanzen rendern parallel je einen zusammenhängenden Block (Runner hat 4 Kerne).
+const WORKER = Math.max(1, +(process.env.WORKER || 4));
 const ende = zeiten[zeiten.length - 1], n = Math.round(ende * FPS), start = Date.now();
-for (let i = 0; i < n; i++) {
-  const url = await page.evaluate(async t => { await window.zeige(t); return document.getElementById("c").toDataURL("image/jpeg", 0.92); }, i / FPS);
-  writeFileSync(join(ausgabe, String(i + 1).padStart(5, "0") + ".jpg"), Buffer.from(url.split(",")[1], "base64"));
-  if (i % 150 === 0) console.log(`Bild ${i + 1}/${n} (${((Date.now() - start) / 1000).toFixed(0)} s)`);
+let fertig = 0;
+async function arbeiter(w) {
+  const von = Math.floor(n * w / WORKER), bis = Math.floor(n * (w + 1) / WORKER);
+  const browser = await puppeteer.launch({
+    executablePath: process.env.CHROME || "/usr/bin/google-chrome",
+    headless: true,
+    // --no-sandbox: Ubuntu 24.04 auf GitHub erlaubt Chromes Sandbox nicht; geladen wird nur unsere eigene lokale Seite.
+    args: ["--no-sandbox", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--window-size=1920,1080", "--hide-scrollbars", "--mute-audio"],
+    defaultViewport: { width: 1920, height: 1080 },
+  });
+  const page = await browser.newPage();
+  page.on("console", m => { if (m.type() === "error" && !m.text().includes("404")) console.log(`Seite ${w}:`, m.text()); });
+  page.on("pageerror", e => { console.log(`Seitenfehler ${w}:`, e.message); process.exitCode = 1; });
+  await page.evaluateOnNewDocument(k => { window.KONF = k; }, konf);
+  await page.goto(`${BASIS}/seite/l001_test.html`, { waitUntil: "load" });
+  await page.waitForFunction("window.bereit === true", { timeout: 180000 });
+  for (let i = von; i < bis; i++) {
+    const url = await page.evaluate(async t => { await window.zeige(t); return document.getElementById("c").toDataURL("image/jpeg", 0.9); }, i / FPS);
+    writeFileSync(join(ausgabe, String(i + 1).padStart(5, "0") + ".jpg"), Buffer.from(url.split(",")[1], "base64"));
+    if (++fertig % 600 === 0) console.log(`Bild ${fertig}/${n} (${((Date.now() - start) / 1000).toFixed(0)} s)`);
+  }
+  await browser.close();
 }
-await browser.close();
+await Promise.all(Array.from({ length: WORKER }, (_, w) => arbeiter(w)));
 server.close();
-console.log(`fertig: ${n} Bilder in ${((Date.now() - start) / 1000).toFixed(0)} s`);
+console.log(`fertig: ${n} Bilder in ${((Date.now() - start) / 1000).toFixed(0)} s mit ${WORKER} Chrome-Instanzen`);
