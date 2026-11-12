@@ -102,8 +102,11 @@ jobs:
         if: always()
         run: |
           python3 -c "import json;e=[json.loads(z) for z in open('arbeit/kostenbuch.jsonl')];print(f'Kosten: {sum(x[\"usd\"] for x in e):.2f} USD')" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
-      - uses: actions/upload-artifact@v4
+      - name: Ergebnis sichern
+        id: ergebnis1
         if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
         with:
           name: animtest-ergebnis
           path: |
@@ -114,3 +117,38 @@ jobs:
             arbeit/fehler.jsonl
           retention-days: 14
           if-no-files-found: warn
+      # GitHub-Störung am 11.11.2026 hat das fertige Video verloren: bei Fehler nach Pause noch zweimal versuchen
+      - name: Pause vor zweitem Versuch
+        if: always() && steps.ergebnis1.outcome == 'failure'
+        run: sleep 120
+      - name: Ergebnis sichern (2. Versuch)
+        id: ergebnis2
+        if: always() && steps.ergebnis1.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: animtest-ergebnis
+          path: |
+            arbeit/ergebnis/*
+            arbeit/zeiten.json
+            arbeit/clips.json
+            arbeit/kostenbuch.jsonl
+            arbeit/fehler.jsonl
+          retention-days: 14
+          overwrite: true
+      - name: Pause vor drittem Versuch
+        if: always() && steps.ergebnis2.outcome == 'failure'
+        run: sleep 300
+      - name: Ergebnis sichern (3. Versuch)
+        if: always() && steps.ergebnis2.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: animtest-ergebnis
+          path: |
+            arbeit/ergebnis/*
+            arbeit/zeiten.json
+            arbeit/clips.json
+            arbeit/kostenbuch.jsonl
+            arbeit/fehler.jsonl
+          retention-days: 14
+          overwrite: true
