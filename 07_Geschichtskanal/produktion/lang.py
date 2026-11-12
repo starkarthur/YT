@@ -301,12 +301,21 @@ def stiltest() -> Path:
                        "Roman in a beige tunic standing on a street in the foreground",
               "saeule": "a gigantic dark eruption column rising from Mount Vesuvius into the sky, tiny town below, "
                         "ash clouds spreading, dramatic warm light"}
+    text = LK.get("stiltest_text", LK["stil_text"])
     for stil in LK["stiltest_stile"]:
         for name, m in motive.items():
-            kosten.buchen("stiltest", f"{stil}_{name}", LK["bild_preis_usd"], "fal")
-            r = fal._lauf(LK["bild_modell"], {"prompt": f"{m}. {LK['stil_text']}", "image_size": "landscape_16_9",
+            preis = 0.08 if stil.startswith("vector") else LK["bild_preis_usd"]   # Vektorbilder kosten bei Recraft das Doppelte
+            kosten.buchen("stiltest", f"{stil}_{name}", preis, "fal")
+            r = fal._lauf(LK["bild_modell"], {"prompt": f"{m}. {text}", "image_size": "landscape_16_9",
                                               "style": stil, "colors": LK.get("farben", [])})
-            lade_datei(r["images"][0]["url"], arbeit / f"{stil.replace('/', '_')}_{name}.webp")
+            roh = lade_datei(r["images"][0]["url"], arbeit / f"{stil.replace('/', '_')}_{name}.roh")
+            ziel = roh.with_suffix(".png")
+            if roh.read_bytes()[:200].lstrip().startswith((b"<svg", b"<?xml")):   # Vektorstile liefern SVG
+                subprocess.run(["rsvg-convert", "-w", str(B), "-o", str(ziel), str(roh)], check=True)
+                roh.replace(roh.with_suffix(".svg"))
+            else:
+                subprocess.run(["ffmpeg", "-y", "-i", str(roh), str(ziel)], capture_output=True, check=True)
+                roh.unlink()
     return arbeit
 
 

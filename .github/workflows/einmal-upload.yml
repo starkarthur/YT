@@ -12,7 +12,7 @@ on:
         description: "Name des Artefakts"
         required: true
       short:
-        description: "Short-Nummer für die Texte (Kanal/NNN.json)"
+        description: "Nummer für die Texte (Kanal/NNN.json, Langvideo Kanal/LNNN.json)"
         required: true
         default: "001"
 permissions:
@@ -26,7 +26,7 @@ jobs:
   youtube:
     runs-on: ubuntu-24.04
     environment: veroeffentlichung-pruefung
-    timeout-minutes: 20
+    timeout-minutes: 40
     env:
       SHORT: ${{ inputs.short }}
     steps:
@@ -37,7 +37,7 @@ jobs:
         run: |
           [[ "$RUN_ID" =~ ^[0-9]{5,15}$ ]] || { echo "run_id ungültig"; exit 1; }
           [[ "$ARTEFAKT" =~ ^[A-Za-z0-9_.-]{1,80}$ ]] || { echo "Artefaktname ungültig"; exit 1; }
-          [[ "$SHORT" =~ ^[0-9]{3}$ ]] || { echo "Short ungültig"; exit 1; }
+          [[ "$SHORT" =~ ^L?[0-9]{3}$ ]] || { echo "Nummer ungültig (001 oder L001)"; exit 1; }
       - uses: actions/checkout@v4
         with:
           ref: main
