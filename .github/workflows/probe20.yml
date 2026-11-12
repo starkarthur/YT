@@ -1,0 +1,76 @@
+# 20-Sekunden-Probe für ein neues Thema (Stimme + Schwarz-Weiß-Clips + Musik). Nur von Hand startbar, OHNE Upload.
+# Kosten: ca. 4,60 USD (Grenze im Skript 6 USD). Mit clips_lauf werden vorhandene Clips übernommen.
+# Ziel im Repo: .github/workflows/probe20.yml
+name: probe20
+on:
+  workflow_dispatch:
+    inputs:
+      clips_lauf:
+        description: "Optional: Lauf-Nummer eines früheren probe20-Laufs, dessen Clips übernommen werden"
+        required: false
+        default: ""
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: probe20
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    if: vars.GK_PAUSE != 'ja'
+    runs-on: ubuntu-24.04
+    environment: produktion
+    timeout-minutes: 45
+    env:
+      GK_ARBEIT: ${{ github.workspace }}/arbeit
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Eingaben prüfen
+        env:
+          CLIPS_LAUF: ${{ inputs.clips_lauf }}
+        run: |
+          [[ -z "$CLIPS_LAUF" || "$CLIPS_LAUF" =~ ^[0-9]{6,15}$ ]] || { echo "Lauf-Nummer ungültig"; exit 1; }
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Clips eines früheren Laufs übernehmen
+        if: inputs.clips_lauf != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: probe20-clips
+          path: arbeit/probe20
+          run-id: ${{ inputs.clips_lauf }}
+          github-token: ${{ github.token }}
+      - name: Probe bauen
+        working-directory: 07_Geschichtskanal/produktion
+        env:
+          FAL_KEY: ${{ secrets.FAL_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENKEY }}
+        run: python probe20.py
+      - name: Clips sichern (auch bei Fehlern)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: probe20-clips
+          path: |
+            arbeit/probe20/clip_*.mp4
+            arbeit/probe20/clip_*_start.png
+          retention-days: 30
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: probe20-ergebnis
+          path: |
+            arbeit/probe20/cotard_probe_20s.mp4
+            arbeit/probe20/kontaktbogen.jpg
+            arbeit/probe20/info.json
+            arbeit/kostenbuch.jsonl
+            arbeit/fehler.jsonl
+          retention-days: 14
+          if-no-files-found: warn
