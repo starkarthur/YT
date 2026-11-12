@@ -1,10 +1,17 @@
-# Animationstest L001 (ca. 1 Minute): 2,5D-Animation der vorhandenen L001-Bilder + 3 realistische KI-Einschübe (Wan 3.0).
-# Nur von Hand startbar, OHNE Upload. Kosten: höchstens ca. 3,50 USD (Grenze im Skript 6 USD), mit clips_lauf 0 USD.
+# Animiertes L001: 2,5D-Animation der vorhandenen L001-Bilder + realistische KI-Einschübe (Wan 3.0).
+# umfang=test: Szenen 1–14 (ca. 1 Minute, 3 Clips, Grenze 6 USD); umfang=voll: ganzes Video (93 Szenen, 9 Clips, Grenze 12 USD).
+# Nur von Hand startbar, OHNE Upload. Mit clips_lauf werden vorhandene Clips übernommen und nicht neu bezahlt.
 # Ziel im Repo: .github/workflows/animtest.yml
 name: animtest
 on:
   workflow_dispatch:
     inputs:
+      umfang:
+        description: "test (1 Minute) | voll (ganzes Video)"
+        required: true
+        type: choice
+        options: [test, voll]
+        default: test
       l001_lauf:
         description: "Lauf-Nummer (run id) des Langvideo-Laufs von L001 (Bilder + fertiges Video)"
         required: true
@@ -24,9 +31,10 @@ jobs:
     if: vars.GK_PAUSE != 'ja'
     runs-on: ubuntu-24.04
     environment: produktion
-    timeout-minutes: 90
+    timeout-minutes: 170
     env:
       GK_ARBEIT: ${{ github.workspace }}/arbeit
+      UMFANG: ${{ inputs.umfang }}
     steps:
       - uses: actions/checkout@v4
         with:
