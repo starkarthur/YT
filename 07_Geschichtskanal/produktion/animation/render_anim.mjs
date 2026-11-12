@@ -1,0 +1,59 @@
+// Rendert anim.html Bild für Bild mit Headless Chrome (puppeteer-core) nach $GK_ARBEIT/frames/%05d.jpg.
+// Aufruf: node render.mjs   (Umgebung: GK_ARBEIT, CHROME = Pfad zu Chrome)
+import { mkdirSync, readFileSync, writeFileSync, createReadStream, existsSync, statSync } from "node:fs";
+import { createServer } from "node:http";
+import { join, resolve, dirname, normalize, extname } from "node:path";
+import { fileURLToPath } from "node:url";
+import puppeteer from "puppeteer-core";
+
+const HIER = dirname(fileURLToPath(import.meta.url));
+const ARBEIT = resolve(process.env.GK_ARBEIT || "arbeit");
+const FPS = 30;
+const ANIM = join(ARBEIT, process.env.ANIM || "anim");
+const animKonf = JSON.parse(readFileSync(join(ANIM, "konf.json"), "utf8"));
+const zeiten = animKonf.zeiten;
+// Kleiner Server nur auf 127.0.0.1 (gleicher Ursprung, damit Canvas/WebGL die Bilder lesen dürfen)
+const WURZELN = { seite: HIER, arbeit: ANIM };
+const TYP = { ".html": "text/html", ".png": "image/png", ".jpg": "image/jpeg", ".mjs": "text/javascript" };
+const server = createServer((req, res) => {
+  const [, wurzel, ...rest] = decodeURIComponent(req.url.split("?")[0]).split("/");
+  const basis = WURZELN[wurzel], pfad = basis && normalize(join(basis, ...rest));
+  if (!pfad || !pfad.startsWith(basis) || !existsSync(pfad) || !statSync(pfad).isFile()) { res.writeHead(404); return res.end(); }
+  res.writeHead(200, { "Content-Type": TYP[extname(pfad)] || "application/octet-stream" });
+  createReadStream(pfad).pipe(res);
+}).listen(0, "127.0.0.1");
+await new Promise(r => server.once("listening", r));
+const BASIS = `http://127.0.0.1:${server.address().port}`;
+const konf = { ...animKonf, render: true, bilder: `${BASIS}/arbeit/bilder/` };
+const ausgabe = join(ANIM, "frames");
+mkdirSync(ausgabe, { recursive: true });
+
+// Mehrere Chrome-Instanzen rendern parallel je einen zusammenhängenden Block (Runner hat 4 Kerne).
+const WORKER = Math.max(1, +(process.env.WORKER || 4));
+const ende = zeiten[zeiten.length - 1], n = Math.round(ende * FPS), start = Date.now();
+let fertig = 0;
+async function arbeiter(w) {
+  const von = Math.floor(n * w / WORKER), bis = Math.floor(n * (w + 1) / WORKER);
+  const browser = await puppeteer.launch({
+    executablePath: process.env.CHROME || "/usr/bin/google-chrome",
+    headless: true,
+    // --no-sandbox: Ubuntu 24.04 auf GitHub erlaubt Chromes Sandbox nicht; geladen wird nur unsere eigene lokale Seite.
+    args: ["--no-sandbox", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--window-size=1920,1080", "--hide-scrollbars", "--mute-audio"],
+    defaultViewport: { width: 1920, height: 1080 },
+  });
+  const page = await browser.newPage();
+  page.on("console", m => { if (m.type() === "error" && !m.text().includes("404")) console.log(`Seite ${w}:`, m.text()); });
+  page.on("pageerror", e => { console.log(`Seitenfehler ${w}:`, e.message); process.exitCode = 1; });
+  await page.evaluateOnNewDocument(k => { window.KONF = k; }, konf);
+  await page.goto(`${BASIS}/seite/anim.html`, { waitUntil: "load" });
+  await page.waitForFunction("window.bereit === true", { timeout: 180000 });
+  for (let i = von; i < bis; i++) {
+    const url = await page.evaluate(async t => { await window.zeige(t); return document.getElementById("c").toDataURL("image/jpeg", 0.9); }, i / FPS);
+    writeFileSync(join(ausgabe, String(i + 1).padStart(5, "0") + ".jpg"), Buffer.from(url.split(",")[1], "base64"));
+    if (++fertig % 600 === 0) console.log(`Bild ${fertig}/${n} (${((Date.now() - start) / 1000).toFixed(0)} s)`);
+  }
+  await browser.close();
+}
+await Promise.all(Array.from({ length: WORKER }, (_, w) => arbeiter(w)));
+server.close();
+console.log(`fertig: ${n} Bilder in ${((Date.now() - start) / 1000).toFixed(0)} s mit ${WORKER} Chrome-Instanzen`);
