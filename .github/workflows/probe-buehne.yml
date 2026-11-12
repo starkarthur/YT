@@ -1,0 +1,82 @@
+# Probe nach dem Baukasten-Prinzip: ein Raum, wiederkehrende Figuren, Infografik per Code (buehne.html).
+# Nur von Hand startbar, OHNE Upload. Kosten: höchstens 0,50 USD (Grenze im Skript 1 USD).
+# Ziel im Repo: .github/workflows/probe-buehne.yml
+name: probe-buehne
+on:
+  workflow_dispatch:
+    inputs:
+      einstieg_lauf:
+        description: "Lauf-Nummer des probe20-Laufs mit dem Einstieg (Artefakt probe20-ergebnis)"
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: probe-buehne
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    if: vars.GK_PAUSE != 'ja'
+    runs-on: ubuntu-24.04
+    environment: produktion
+    timeout-minutes: 40
+    env:
+      GK_ARBEIT: ${{ github.workspace }}/arbeit
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Eingaben prüfen
+        env:
+          LAUF: ${{ inputs.einstieg_lauf }}
+        run: |
+          [[ "$LAUF" =~ ^[0-9]{6,15}$ ]] || { echo "Lauf-Nummer ungültig"; exit 1; }
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-montserrat librsvg2-bin
+      - name: Renderer installieren
+        working-directory: 07_Geschichtskanal/produktion/animation
+        run: npm install --no-save --no-audit --no-fund puppeteer-core@23.11.1
+      - name: Einstieg übernehmen
+        uses: actions/download-artifact@v4
+        with:
+          name: probe20-ergebnis
+          path: arbeit/einstieg
+          run-id: ${{ inputs.einstieg_lauf }}
+          github-token: ${{ github.token }}
+      - name: Bausteine
+        working-directory: 07_Geschichtskanal/produktion
+        env:
+          FAL_KEY: ${{ secrets.FAL_KEY }}
+        run: python probe_buehne.py bausteine
+      - name: Stimme
+        working-directory: 07_Geschichtskanal/produktion
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENKEY }}
+        run: python probe_buehne.py stimme
+      - name: Animation rendern
+        working-directory: 07_Geschichtskanal/produktion/animation
+        env:
+          ANIM: buehne
+          SEITE: buehne.html
+        run: node render_anim.mjs
+      - name: Zusammensetzen
+        working-directory: 07_Geschichtskanal/produktion
+        run: python probe_buehne.py mix
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: probe-buehne-ergebnis
+          path: |
+            arbeit/ergebnis/*
+            arbeit/buehne/bilder/*
+            arbeit/buehne/konf.json
+            arbeit/kostenbuch.jsonl
+          retention-days: 14
+          if-no-files-found: warn
