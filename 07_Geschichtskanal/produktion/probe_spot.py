@@ -99,7 +99,10 @@ class Spot:
     # --- Bilder --------------------------------------------------------------
     def bild_dateien(self, name: str) -> list[Path]:
         b = self.spec["bilder"][name]
-        kennung = kurz(b.get("prompt", ""), b.get("url", ""), b.get("format", "16:9"))
+        inhalt = ""
+        if "datei" in b:
+            inhalt = hashlib.sha1((Path(__file__).parent / b["datei"]).read_bytes()).hexdigest()
+        kennung = kurz(b.get("prompt", ""), b.get("url", ""), b.get("format", "16:9"), inhalt)
         return [self.arbeit / f"bild_{name}_{kennung}_{n}.png" for n in range(1, int(b.get("anzahl", 1)) + 1)]
 
     def bilder(self) -> None:
@@ -115,6 +118,11 @@ class Spot:
             elif "url" in b:
                 urls = [b["url"]]
                 lade_datei(b["url"], dateien[0])
+            elif "datei" in b:                      # fertiges Bild aus dem Repo, wird nur hochgeladen
+                quelle = Path(__file__).parent / b["datei"]
+                dateien[0].write_bytes(quelle.read_bytes())
+                urls = [self.hochladen(quelle)]
+                print(f"Bild {name}: {b['datei']} hochgeladen", flush=True)
             else:
                 if len(dateien) not in (1, 4):
                     sys.exit(f"Bild {name}: anzahl muss 1 oder 4 sein")
@@ -150,7 +158,8 @@ class Spot:
         von = c["von"]
         herkunft = self.clip_datei(von.removeprefix("ende:")).name if von.startswith("ende:") else \
             self.bild_ref(von)[0].name
-        return self.arbeit / f"clip_{name}_{self.aufl}_{kurz(c['prompt'], c['dauer'], herkunft, c.get('take', 1))}.mp4"
+        return self.arbeit / f"clip_{name}_{self.aufl}_{kurz(c['prompt'], c['dauer'], herkunft, c.get('take', 1),
+                                                           self.bild_ref(c['bis'])[0].name if c.get('bis') else '')}.mp4"
 
     def start_url(self, von: str) -> str:
         if von.startswith("bild:"):
@@ -161,10 +170,17 @@ class Spot:
             return self.zustand[schluessel]
         jpg = quelle.with_suffix(".ende.jpg")
         ff("-sseof", "-0.12", "-i", str(quelle), "-frames:v", "1", "-update", "1", "-q:v", "2", str(jpg))
+        url = self.hochladen(jpg)
+        self.merken(schluessel, url)
+        return url
+
+    @staticmethod
+    def hochladen(datei: Path) -> str:
+        """Lädt ein Bild zu Higgsfield hoch und gibt die öffentliche Adresse zurück (für image_url)."""
+        art = "image/png" if datei.suffix.lower() == ".png" else "image/jpeg"
         kopf = {"Authorization": f"Key {_schluessel('HIGGSFIELD_KEY')}"}
-        r = http_json("POST", f"{Higgsfield.BASIS}/files/generate-upload-url", kopf, {"content_type": "image/jpeg"})
-        _http("PUT", r["upload_url"], dict(r.get("upload_headers") or {"Content-Type": "image/jpeg"}), jpg.read_bytes())
-        self.merken(schluessel, r["public_url"])
+        r = http_json("POST", f"{Higgsfield.BASIS}/files/generate-upload-url", kopf, {"content_type": art})
+        _http("PUT", r["upload_url"], dict(r.get("upload_headers") or {"Content-Type": art}), datei.read_bytes())
         return r["public_url"]
 
     def clips(self) -> None:
@@ -184,6 +200,8 @@ class Spot:
                     continue
                 eingabe = {"image_url": self.start_url(c["von"]), "prompt": c["prompt"], "duration": int(c["dauer"]),
                            "resolution": self.aufl, "generate_audio": True}
+                if c.get("bis"):
+                    eingabe["end_image_url"] = self.bild_ref(c["bis"])[1]
                 self.zahlen(ziel.stem, VIDEO_USD_S * c["dauer"] * FAKTOR[self.aufl])
                 auftraege.append((n, ziel, eingabe))
             if auftraege:
