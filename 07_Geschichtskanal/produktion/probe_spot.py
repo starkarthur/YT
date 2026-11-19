@@ -33,7 +33,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import lauf
-from anbieter import Higgsfield, _http, _schluessel, http_json, lade_datei
+from anbieter import AnbieterFehler, Higgsfield, _http, _schluessel, http_json, lade_datei
 
 BILD_MODELL = "higgsfield-ai/soul/v2/standard"
 VIDEO_MODELL = "bytedance/seedance-2.5/image-to-video"
@@ -207,7 +207,14 @@ class Spot:
             if auftraege:
                 def machen(a):
                     n, ziel, eingabe = a
-                    r = Higgsfield()._lauf(VIDEO_MODELL, eingabe, max_warten_s=1500)
+                    for versuch in (1, 2, 3):      # Fehlalarme der Inhaltsprüfung und Ausfälle: neu würfeln
+                        try:
+                            r = Higgsfield()._lauf(VIDEO_MODELL, eingabe, max_warten_s=1500)
+                            break
+                        except AnbieterFehler as ex:
+                            print(f"Clip {n}: Versuch {versuch} abgelehnt ({lauf.maskiere(str(ex))[:90]})", flush=True)
+                            if versuch == 3:
+                                raise
                     lade_datei(r["video"]["url"], ziel)
                     print(f"Clip {n} fertig", flush=True)
                 with ThreadPoolExecutor(max_workers=4) as pool:
