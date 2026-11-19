@@ -54,7 +54,8 @@ jobs:
         working-directory: 07_Geschichtskanal/produktion
         env:
           SHORT: ${{ steps.wahl.outputs.short }}
-          FAL_KEY: ${{ secrets.FAL_KEY }}
+          HIGGSFIELD_KEY: ${{ secrets.HIGGSFIELD_KEY }}   # Format Key-ID:Key-Secret (Bild und Video, seit 19.11.2026)
+          FAL_KEY: ${{ secrets.FAL_KEY }}                 # nur noch Sichtprüfung
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENKEY }}   # Secret heißt in GitHub ELEVENKEY
         run: python lauf.py produziere "$SHORT"
       - name: Nur Ergebnis weitergeben (Video, fertig.json, Bücher)

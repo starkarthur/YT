@@ -43,6 +43,7 @@ jobs:
           [[ "$SHORT" =~ ^[0-9]{3}$ ]] || { echo "Short-Nummer ungültig"; exit 1; }
       - working-directory: 07_Geschichtskanal/produktion
         env:
+          HIGGSFIELD_KEY: ${{ secrets.HIGGSFIELD_KEY }}
           FAL_KEY: ${{ secrets.FAL_KEY }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENKEY }}
         run: python lauf.py test "$SHORT" --modell "$MODELL"

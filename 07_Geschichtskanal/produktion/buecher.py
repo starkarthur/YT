@@ -103,7 +103,7 @@ class Fehlerbuch:
                                 "fehler": maskiere(fehler)[:300]})
 
 
-GEHEIM_VARIABLEN = ("FAL_KEY", "ELEVENLABS_API_KEY", "YT_CLIENT_SECRET", "YT_REFRESH_TOKEN",
+GEHEIM_VARIABLEN = ("HIGGSFIELD_KEY", "FAL_KEY", "ELEVENLABS_API_KEY", "YT_CLIENT_SECRET", "YT_REFRESH_TOKEN",
                     "TIKTOK_CLIENT_SECRET", "TIKTOK_REFRESH_TOKEN", "IG_ACCESS_TOKEN")
 
 
@@ -114,8 +114,9 @@ def maskiere(text: str) -> str:
     t = str(text)
     for n in GEHEIM_VARIABLEN:
         w = os.environ.get(n)
-        if w and len(w) >= 6:
-            t = t.replace(w, "***")
+        for teil in ([w] + w.split(":") if w else []):  # HIGGSFIELD_KEY = ID:Secret, beide Teile einzeln
+            if len(teil) >= 6:
+                t = t.replace(teil, "***")
     return re.sub(r"(access_token=|Bearer |Key |key=)[^\s&'\"]+", r"\1***", t)
 
 

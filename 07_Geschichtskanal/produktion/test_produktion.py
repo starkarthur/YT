@@ -283,6 +283,54 @@ class TestLauf(unittest.TestCase):
         v = Fal.video_eingabe("fal-ai/veo3.1/lite/image-to-video", "https://x/b.png", "p", 5)
         self.assertEqual((v["image_url"], v["duration"], v["aspect_ratio"]), ("https://x/b.png", "6s", "9:16"))
 
+    def test_higgsfield_eingaben(self):
+        from anbieter import AnbieterFehler, Fal, Higgsfield, bild_video_dienst
+        k = Higgsfield.video_eingabe("kling-video/v3.0/pro/image-to-video", "https://x/b.png", "p", 5)
+        self.assertEqual(k, {"image_url": "https://x/b.png", "prompt": "p", "duration": 5, "sound": "off"})
+        self.assertEqual(Higgsfield.video_eingabe("kling-video/v3.0/pro/image-to-video", "u", "p", 2)["duration"], 3)
+        w = Higgsfield.video_eingabe("alibaba/wan-3.0/image-to-video", "u", "p", 5)
+        self.assertEqual((w["aspect_ratio"], w["resolution"], w["generate_audio"]), ("9:16", "1080p", False))
+        s = Higgsfield.video_eingabe("bytedance/seedance-2.5/image-to-video", "u", "p", 3)
+        self.assertEqual((s["duration"], s["generate_audio"]), (4, False))
+        self.assertNotIn("aspect_ratio", s)
+        b = Higgsfield.bild_eingabe("higgsfield-ai/soul/cinema", "p", "1080p")
+        self.assertEqual((b["aspect_ratio"], b["resolution"], b["batch_size"]), ("9:16", "1080p", 1))
+        self.assertIsInstance(bild_video_dienst("higgsfield", True), Higgsfield)
+        self.assertIsInstance(bild_video_dienst("fal", True), Fal)
+        with self.assertRaises(AnbieterFehler):
+            bild_video_dienst("unbekannt")
+
+    def test_higgsfield_ablauf(self):
+        """Auftrag → Status → Ausgabe, ohne Netz: fremde Status-Adresse und Fehlstatus werden abgelehnt."""
+        import anbieter
+        from anbieter import AnbieterFehler, Higgsfield
+        alt, os.environ["HIGGSFIELD_KEY"] = anbieter.http_json, "kennung1:geheim123"
+        aufrufe = []
+        try:
+            def gut(methode, url, kopf, body=None, zeit=120):
+                aufrufe.append((methode, url, kopf["Authorization"]))
+                if methode == "POST":
+                    return {"status": "queued", "request_id": "r1",
+                            "status_url": "https://api.higgsfield.ai/requests/r1/status"}
+                return {"status": "completed", "video": {"url": "https://cdn.example/v.mp4"}}
+            anbieter.http_json = gut
+            r = Higgsfield()._lauf("kling-video/v3.0/pro/image-to-video", {"prompt": "p"})
+            self.assertEqual(r["video"]["url"], "https://cdn.example/v.mp4")
+            self.assertEqual(aufrufe[0], ("POST", "https://api.higgsfield.ai/kling-video/v3.0/pro/image-to-video",
+                                          "Key kennung1:geheim123"))
+            anbieter.http_json = lambda m, u, k, b=None, zeit=120: (
+                {"request_id": "r1", "status_url": "https://boese.example/s"} if m == "POST" else {})
+            with self.assertRaises(AnbieterFehler):
+                Higgsfield()._lauf("x/y", {})
+            anbieter.http_json = lambda m, u, k, b=None, zeit=120: (
+                {"request_id": "r1"} if m == "POST" else {"status": "nsfw"})
+            with self.assertRaises(AnbieterFehler):
+                Higgsfield()._lauf("x/y", {})
+            self.assertNotIn("geheim123", maskiere("Fehler mit geheim123 und kennung1"))
+        finally:
+            anbieter.http_json = alt
+            del os.environ["HIGGSFIELD_KEY"]
+
     def test_balken_erkennung(self):
         log = "[Parsed_cropdetect] x1:0 crop=1080:608:0:656"
         self.assertTrue(lauf.balken_aus_log(log, 1080, 1920))
