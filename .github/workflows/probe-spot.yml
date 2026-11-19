@@ -1,0 +1,103 @@
+# Werbespot aus einem Storyboard (Soul 2 + Seedance 2.5 über Higgsfield). Nur von Hand startbar, OHNE Upload.
+# Entwürfe in 480p, Endfassung erst am Schluss. Mit material_lauf wird nur neu erzeugt, was sich geändert hat.
+# Grenze im Storyboard (limit_usd). Mit probe=true entstehen keine Kosten (Platzhalter, nur Technik).
+# Ziel im Repo: .github/workflows/probe-spot.yml
+name: probe-spot
+on:
+  workflow_dispatch:
+    inputs:
+      aufloesung:
+        description: "480p = Entwurf, 1080p = Endfassung"
+        type: choice
+        options: [480p, 720p, 1080p]
+        default: 480p
+      nur_bilder:
+        description: "Nur die Bilder erzeugen (Auswahlbogen), keine Clips"
+        type: boolean
+        default: false
+      material_lauf:
+        description: "Optional: Lauf-Nummer, deren Bilder und Clips übernommen werden"
+        required: false
+        default: ""
+      spec:
+        description: "Optional: Storyboard als JSON-Text (leer = spot_pentest.json im Repo)"
+        required: false
+        default: ""
+      probe:
+        description: "Nur Technik testen, ohne Higgsfield und ohne Kosten"
+        type: boolean
+        default: false
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: probe-spot
+  cancel-in-progress: false
+
+jobs:
+  spot:
+    if: vars.GK_PAUSE != 'ja'
+    runs-on: ubuntu-24.04
+    environment: produktion
+    timeout-minutes: 60
+    env:
+      GK_ARBEIT: ${{ github.workspace }}/arbeit
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Eingaben prüfen
+        env:
+          LAUF: ${{ inputs.material_lauf }}
+        run: |
+          [[ -z "$LAUF" || "$LAUF" =~ ^[0-9]{6,15}$ ]] || { echo "Lauf-Nummer ungültig"; exit 1; }
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core
+      - name: Material eines früheren Laufs übernehmen
+        if: inputs.material_lauf != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: probe-spot-material
+          path: arbeit/spot
+          run-id: ${{ inputs.material_lauf }}
+          github-token: ${{ github.token }}
+      - name: Spot bauen
+        working-directory: 07_Geschichtskanal/produktion
+        env:
+          HIGGSFIELD_KEY: ${{ secrets.HIGGSFIELD_KEY }}
+          SPOT_SPEC: ${{ inputs.spec }}
+          AUFLOESUNG: ${{ inputs.aufloesung }}
+          NUR_BILDER: ${{ inputs.nur_bilder }}
+          PROBE: ${{ inputs.probe }}
+        run: |
+          args=(spot_pentest.json --aufloesung "$AUFLOESUNG")
+          [[ "$NUR_BILDER" == "true" ]] && args+=(--nur-bilder)
+          [[ "$PROBE" == "true" ]] && args+=(--probe)
+          python probe_spot.py "${args[@]}"
+      - name: Material sichern (auch bei Fehlern)
+        if: always() && inputs.probe != true
+        uses: actions/upload-artifact@v4
+        with:
+          name: probe-spot-material
+          path: |
+            arbeit/spot/bild_*.png
+            arbeit/spot/clip_*.mp4
+            arbeit/spot/zustand.json
+          retention-days: 30
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: probe-spot-ergebnis
+          path: |
+            arbeit/spot/auswahl_*.jpg
+            arbeit/spot/spot_*.mp4
+            arbeit/spot/spot_*_bogen.jpg
+            arbeit/spot/info.json
+            arbeit/kostenbuch.jsonl
+            arbeit/fehler.jsonl
+          retention-days: 14
+          if-no-files-found: warn
