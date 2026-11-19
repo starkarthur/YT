@@ -18,21 +18,23 @@
     "fps": 30
   },
   "bild": {
-    "anbieter": "fal",
-    "modell": "fal-ai/nano-banana-pro",
-    "preis_usd": 0.15,
+    "anbieter": "higgsfield",
+    "modell": "higgsfield-ai/soul/cinema",
+    "preis_usd": 0.01,
+    "_preis_hinweis": "Listenpreis Soul Cinema 0,0032 $/Bild (Higgsfield-Blog 16.09.2026), für 1080p nicht bestätigt, deshalb vorsichtig 0,01 angesetzt. Nach dem ersten echten Lauf mit der Konsole abgleichen.",
     "versuche": 2,
     "stil": "cinematic historical film still, dramatic natural light, 35mm film grain, rich muted colours, vertical 9:16 composition, upright camera, level horizon, no text, no captions, no watermark",
-    "aufloesung": "2K"
+    "aufloesung": "1080p",
+    "_modell_hinweis": "Soul Cinema (Higgsfield) seit 19.11.2026 auf Wunsch des Nutzers: kino-realistischer Look. Vorher fal-ai/nano-banana-pro (0,15 $, Auflösung 2K)."
   },
   "video": {
-    "anbieter": "fal",
-    "modell": "alibaba/wan-3.0/image-to-video",
-    "preis_usd_pro_s": 0.2,
+    "anbieter": "higgsfield",
+    "modell": "kling-video/v3.0/pro/image-to-video",
+    "preis_usd_pro_s": 0.112,
     "clip_s": 5,
     "versuche": 1,
     "_versuche_hinweis": "1 = fehlerhafte Clips (Querformat, Balken) werden nicht neu bezahlt, sondern durch Standbild mit Kamerafahrt ersetzt (Nutzerwunsch 08.11.2026).",
-    "_modell_hinweis": "Wan 3.0 auf Wunsch des Nutzers (08.11.2026), 1080p $0.20/s laut fal.ai-FAQ; Kling 3.0 Pro bleibt als test_modelle.kling_pro verfügbar."
+    "_modell_hinweis": "Kling 3.0 Pro über Higgsfield seit 19.11.2026 (Nutzerwunsch: kino-realistisch, Qualität vor Preis). 0,112 $/s laut Higgsfield-Blog 16.09.2026. Vorher Wan 3.0 über fal (0,20 $/s), weiter als test_modelle.wan_3 verfügbar."
   },
   "stimme": {
     "anbieter": "elevenlabs",
@@ -72,19 +74,38 @@
   "_quelle_modelle": "fal.ai-Modellseiten gelesen am 07.11.2026: Kling 3.0 Pro I2V (start_image_url, duration '3'-'15', Seitenverhältnis aus dem Bild, $0.112-0.14/s), Nano Banana Pro (aspect_ratio 9:16, $0.15/Bild). Veo 3.1 auf fal laut Seite ab 17.11.2026 entfernt.",
   "test_modelle": {
     "kling_pro": {
+      "anbieter": "fal",
       "modell": "fal-ai/kling-video/v3/pro/image-to-video",
       "preis_usd_pro_s": 0.14
     },
     "veo_lite": {
+      "anbieter": "fal",
       "modell": "fal-ai/veo3.1/lite/image-to-video",
       "preis_usd_pro_s": 0.1,
       "_hinweis": "Preis auf fal nicht bestätigt, vorsichtig angesetzt; Modell laut fal ab 17.11.2026 entfernt"
     },
     "wan_3": {
+      "anbieter": "fal",
+      "modell": "alibaba/wan-3.0/image-to-video",
+      "preis_usd_pro_s": 0.2
+    },
+    "hf_kling_std": {
+      "anbieter": "higgsfield",
+      "modell": "kling-video/v3.0/std/image-to-video",
+      "preis_usd_pro_s": 0.084
+    },
+    "hf_seedance": {
+      "anbieter": "higgsfield",
+      "modell": "bytedance/seedance-2.5/image-to-video",
+      "preis_usd_pro_s": 0.0738
+    },
+    "hf_wan_3": {
+      "anbieter": "higgsfield",
       "modell": "alibaba/wan-3.0/image-to-video",
       "preis_usd_pro_s": 0.2
     }
   },
+  "_quelle_higgsfield": "docs.higgsfield.ai gelesen am 19.11.2026 (Pfade und Felder je Modell). Preise aus dem Higgsfield-Blog vom 16.09. und 13.10.2026; die Doku selbst nennt keine Preise.",
   "_plattformen_hinweis": "TikTok/Instagram aus, bis die Schnittstellen eingerichtet sind; bis dahin lädt der Chef-Agent dort von Hand hoch (09.11.2026).",
   "filmkorn": {
     "staerke": 6,

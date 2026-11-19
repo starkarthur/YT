@@ -1,7 +1,8 @@
-"""Anbindung der KI-Dienste: Bild und Video (fal.ai Queue-API), Stimme mit Wortzeiten (ElevenLabs).
+"""Anbindung der KI-Dienste: Bild und Video (Higgsfield, seit 19.11.2026; fal.ai bleibt für die
+Sichtprüfung, die Langvideos und als Testmodelle), Stimme mit Wortzeiten (ElevenLabs).
 
 Nur Standardbibliothek (urllib). Schlüssel kommen aus Umgebungsvariablen:
-  FAL_KEY, ELEVENLABS_API_KEY
+  HIGGSFIELD_KEY (Format Key-ID:Key-Secret), FAL_KEY, ELEVENLABS_API_KEY
 Im Probelauf (probe=True) wird nichts aufgerufen und nichts bezahlt. Es entstehen nur Platzhalter.
 """
 from __future__ import annotations
@@ -145,6 +146,89 @@ class Fal:
         r = self._lauf(modell, self.video_eingabe(modell, bild_url, prompt, dauer_s), max_warten_s=600)
         return lade_datei(r["video"]["url"], ziel)
 
+
+# --- Higgsfield ---------------------------------------------------------
+class Higgsfield:
+    """Bild und Video über die Higgsfield-API (docs.higgsfield.ai, gelesen am 19.11.2026).
+
+    Das Modell steht im Pfad (z. B. higgsfield-ai/soul/cinema), nicht im Body.
+    Schlüssel: HIGGSFIELD_KEY im Format <Key-ID>:<Key-Secret>.
+    Ablauf: POST → status_url abfragen, bis completed. Fehlgeschlagene Aufträge kosten laut Doku nichts.
+    """
+    BASIS = "https://api.higgsfield.ai"
+    ENDE_SCHLECHT = ("failed", "nsfw", "canceled")
+
+    def __init__(self, probe: bool = False):
+        self.probe = probe
+
+    def _lauf(self, modell: str, eingabe: dict, max_warten_s: int = 300) -> dict:
+        kopf = {"Authorization": f"Key {_schluessel('HIGGSFIELD_KEY')}"}
+        auftrag = http_json("POST", f"{self.BASIS}/{modell.strip('/')}", kopf, eingabe)
+        status_url = auftrag.get("status_url") or f"{self.BASIS}/requests/{auftrag['request_id']}/status"
+        if not status_url.startswith(self.BASIS + "/"):
+            raise AnbieterFehler("higgsfield: fremde Status-Adresse abgelehnt")
+        ende = time.time() + max_warten_s
+        while time.time() < ende:
+            s = http_json("GET", status_url, kopf)
+            status = s.get("status")
+            if status == "completed":
+                return s.get("payload") or s  # Webhook-Form hat die Ausgabe unter payload
+            if status in self.ENDE_SCHLECHT:
+                raise AnbieterFehler(f"higgsfield {modell}: {status} {str(s.get('error', ''))[:200]}")
+            time.sleep(5)
+        raise AnbieterFehler(f"higgsfield {modell}: Zeitüberschreitung")
+
+    def bild(self, modell: str, prompt: str, ziel: Path, aufloesung: str = "1080p") -> tuple[Path, str]:
+        """Gibt (lokale Datei, Higgsfield-URL) zurück. Die URL nutzt der Videoschritt direkt."""
+        if self.probe:
+            ziel.parent.mkdir(parents=True, exist_ok=True)
+            ziel.write_bytes(b"PROBE-BILD " + prompt[:40].encode())
+            return ziel, "https://probe.invalid/bild.png"
+        r = self._lauf(modell, self.bild_eingabe(modell, prompt, aufloesung))
+        url = r["images"][0]["url"]
+        return lade_datei(url, ziel), url
+
+    @staticmethod
+    def bild_eingabe(modell: str, prompt: str, aufloesung: str) -> dict:
+        if "recraft" in modell:  # nur 1k, keine Stückzahl
+            return {"prompt": prompt, "aspect_ratio": "9:16", "output_format": "png"}
+        # Soul 2 / Soul Cinema: 720p oder 1080p, batch_size 1 oder 4
+        return {"prompt": prompt, "aspect_ratio": "9:16", "resolution": aufloesung,
+                "batch_size": 1, "enhance_prompt": False}
+
+    @staticmethod
+    def video_eingabe(modell: str, bild_url: str, prompt: str, dauer_s: int) -> dict:
+        """Feldnamen je Modell laut den Schema-Seiten der Higgsfield-Doku (19.11.2026). Ton ist immer aus."""
+        d = int(dauer_s)
+        if "kling-video" in modell:   # 3–15 s; Seitenverhältnis kommt aus dem Startbild
+            return {"image_url": bild_url, "prompt": prompt[:2500], "duration": min(15, max(3, d)), "sound": "off"}
+        if "wan-3.0" in modell:       # 2–30 s
+            return {"image_url": bild_url, "prompt": prompt, "duration": max(2, d), "resolution": "1080p",
+                    "aspect_ratio": "9:16", "generate_audio": False}
+        if "seedance" in modell:      # 4–30 s; kein Feld für das Seitenverhältnis
+            return {"image_url": bild_url, "prompt": prompt, "duration": max(4, d), "resolution": "1080p",
+                    "generate_audio": False}
+        if "minimax" in modell:       # 5–15 s; nur 2K
+            return {"image_url": bild_url, "prompt": prompt, "duration": min(15, max(5, d)), "resolution": "2K",
+                    "aspect_ratio": "9:16"}
+        return {"image_url": bild_url, "prompt": prompt, "duration": d}
+
+    def video(self, modell: str, bild_url: str, prompt: str, dauer_s: int, ziel: Path) -> Path:
+        if self.probe:
+            ziel.parent.mkdir(parents=True, exist_ok=True)
+            ziel.write_bytes(b"PROBE-VIDEO " + prompt[:40].encode())
+            return ziel
+        r = self._lauf(modell, self.video_eingabe(modell, bild_url, prompt, dauer_s), max_warten_s=600)
+        return lade_datei(r["video"]["url"], ziel)
+
+
+def bild_video_dienst(name: str, probe: bool = False):
+    """Dienst für Bild oder Video nach konfig.json (bild.anbieter / video.anbieter)."""
+    if name == "higgsfield":
+        return Higgsfield(probe)
+    if name == "fal":
+        return Fal(probe)
+    raise AnbieterFehler(f"unbekannter Anbieter {name!r}")
 
 
 # --- ElevenLabs ---------------------------------------------------------

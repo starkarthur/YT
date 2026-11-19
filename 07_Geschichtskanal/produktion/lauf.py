@@ -27,7 +27,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from anbieter import ElevenLabs, Fal  # noqa: E402
+from anbieter import ElevenLabs, Fal, bild_video_dienst  # noqa: E402
 from buecher import Fehlerbuch, Kostenbuch, Quarantaene, Veroeffentlichungsbuch, maskiere, sha256  # noqa: E402
 from plan_schema import PlanFehler, lade_metadaten, lade_plan, stufe  # noqa: E402
 import schnitt  # noqa: E402
@@ -300,7 +300,9 @@ def produziere(sid: str, probe: bool, test: bool = False, test_modell: str | Non
     vorpruefung(sid, plan, kosten, buch, probe or test, konto, test)
     bezahlt = False
     try:
-        st, fal = KONF["stimme"], Fal(probe)
+        st, fal = KONF["stimme"], Fal(probe)  # fal nur noch für die Sichtprüfung
+        bild_name, video_name = KONF["bild"].get("anbieter", "fal"), video_konf.get("anbieter", "fal")
+        bild_dienst, video_dienst = bild_video_dienst(bild_name, probe), bild_video_dienst(video_name, probe)
         text = " ".join(e["text"] for e in plan["einstellungen"])
         if not probe:
             kosten.buchen(konto, "stimme", len(text) / 1000 * st["preis_usd_pro_1000_zeichen"], "elevenlabs")
@@ -311,12 +313,12 @@ def produziere(sid: str, probe: bool, test: bool = False, test_modell: str | Non
         for n, (e, (a, z)) in enumerate(zip(plan["einstellungen"], zeiten), 1):
             prompt = f"{e['bild_prompt']}. {KONF['bild']['stil']}"
             if not probe:
-                kosten.buchen(konto, f"bild_{n}", KONF["bild"]["preis_usd"], "fal")
+                kosten.buchen(konto, f"bild_{n}", KONF["bild"]["preis_usd"], bild_name)
             for bv in range(1, max(1, KONF["bild"].get("versuche", 2)) + 1):
                 if not probe and bv > 1:
-                    kosten.buchen(konto, f"bild_{n}_v{bv}", KONF["bild"]["preis_usd"], "fal")
-                bild, bild_url = fal.bild(KONF["bild"]["modell"], prompt, arbeit / f"bild_{n:02d}.png",
-                                          KONF["bild"].get("aufloesung", "2K"))
+                    kosten.buchen(konto, f"bild_{n}_v{bv}", KONF["bild"]["preis_usd"], bild_name)
+                bild, bild_url = bild_dienst.bild(KONF["bild"]["modell"], prompt, arbeit / f"bild_{n:02d}.png",
+                                                  KONF["bild"].get("aufloesung", "2K"))
                 bild_probleme = sicht_pruefen(fal, bild, kosten, konto, f"sicht_bild_{n}_v{bv}", fehler, sid)
                 if not bild_probleme:
                     break
@@ -328,10 +330,10 @@ def produziere(sid: str, probe: bool, test: bool = False, test_modell: str | Non
                 clip = None
                 for versuch in range(1, max(1, video_konf.get("versuche", 2)) + 1):
                     if not probe:
-                        kosten.buchen(konto, f"video_{n}_v{versuch}", d * video_konf["preis_usd_pro_s"], "fal")
-                    kandidat = fal.video(video_konf["modell"], bild_url,
-                                         f"{e['bewegung'].replace('_', ' ')}. {e.get('video_prompt', '')}. {VIDEO_ZUSATZ}",
-                                         d, arbeit / f"clip_{n:02d}_v{versuch}.mp4")
+                        kosten.buchen(konto, f"video_{n}_v{versuch}", d * video_konf["preis_usd_pro_s"], video_name)
+                    kandidat = video_dienst.video(video_konf["modell"], bild_url,
+                                                  f"{e['bewegung'].replace('_', ' ')}. {e.get('video_prompt', '')}. {VIDEO_ZUSATZ}",
+                                                  d, arbeit / f"clip_{n:02d}_v{versuch}.mp4")
                     probleme = [] if probe else clip_pruefen(kandidat)
                     if not probleme:
                         probleme = sicht_pruefen(fal, kandidat, kosten, konto, f"sicht_clip_{n}_v{versuch}",
