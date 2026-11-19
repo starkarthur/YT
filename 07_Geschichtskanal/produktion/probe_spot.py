@@ -223,7 +223,12 @@ class Spot:
            "-map", "[v]", "-map", "[a]", "-t", str(d), *KODIEREN, ziel.name, cwd=self.arbeit)
 
     def teil_standbild(self, i: int, s: dict, ziel: Path) -> None:
-        bild = self.bild_ref(s["standbild"])[0]
+        if s["standbild"].startswith("ende:"):      # letztes Bild eines Clips als Standbild
+            quelle = self.clip_datei(s["standbild"].removeprefix("ende:"))
+            bild = quelle.with_suffix(".stand.png")
+            ff("-sseof", "-0.12", "-i", str(quelle), "-frames:v", "1", "-update", "1", str(bild))
+        else:
+            bild = self.bild_ref(s["standbild"])[0]
         d = float(s["dauer"])
         z0, z1 = s.get("zoom", [1.0, 1.1])
         n = int(d * FPS)
@@ -233,7 +238,8 @@ class Spot:
         if s.get("schild"):                       # Schild liegt auf dem Standbild und zoomt mit
             t = self.text_datei(f"schild_{i}.txt", s["schild"])
             x, y, w, h = s.get("schild_feld", [0.30, 0.50, 0.40, 0.14])
-            vor += (f",drawbox=x=iw*{x}:y=ih*{y}:w=iw*{w}:h=ih*{h}:color=white@0.96:t=fill,"
+            vor += (f",drawbox=x=iw*{x}+14:y=ih*{y}+16:w=iw*{w}:h=ih*{h}:color=black@0.45:t=fill,"   # Schatten
+                    f"drawbox=x=iw*{x}:y=ih*{y}:w=iw*{w}:h=ih*{h}:color=0xE9E6DC@0.97:t=fill,"
                     f"drawbox=x=iw*{x}:y=ih*{y}:w=iw*{w}:h=ih*{h}:color=0xC00000:t=14,"
                     f"drawtext=fontfile={FETT}:textfile={t}:fontsize=h*{h}*0.52:fontcolor=0xC00000:"
                     f"x=w*{x}+(w*{w}-text_w)/2:y=h*{y}+(h*{h}-text_h)/2")
