@@ -1,23 +1,40 @@
-# 10-Sekunden-Werbetest (Soul Cinema + Seedance 2.5 über Higgsfield). Nur von Hand startbar, OHNE Upload.
-# Kosten: etwa 1 USD (Grenze im Skript 4 USD). Mit probe=true entstehen keine Kosten (Platzhalter, nur Schnitt).
-# Mit clips_lauf werden Startbild und Clips eines früheren Laufs übernommen (neu schneiden ohne neue Kosten).
+# 10-Sekunden-Werbetest (Soul 2 + Seedance 2.5 über Higgsfield), in Stufen. Nur von Hand startbar, OHNE Upload.
+#   stufe=bilder  vier Startbilder zur Auswahl (wenige Cent)
+#   stufe=video   Clips vom gewählten Bild: erst 480p als Entwurf, dann 1080p. Braucht bilder_lauf.
+# Grenze im Skript 5 USD. Mit probe=true entstehen keine Kosten (Platzhalter, nur Schnitt).
 # Ziel im Repo: .github/workflows/probe-werbung.yml
 name: probe-werbung
 on:
   workflow_dispatch:
     inputs:
-      probe:
-        description: "Nur Schnitt testen, ohne Higgsfield und ohne Kosten"
-        type: boolean
-        default: false
-      einblendung:
-        description: "Warnzeile 'RANSOMWARE – ALLE DATEN VERSCHLÜSSELT' ab Sekunde 2 einblenden"
-        type: boolean
-        default: false
-      clips_lauf:
-        description: "Optional: Lauf-Nummer eines früheren Laufs, dessen Clips übernommen werden"
+      stufe:
+        description: "bilder = vier Startbilder, video = Clips und Schnitt"
+        type: choice
+        options: [bilder, video]
+        default: bilder
+      bilder_lauf:
+        description: "Für video: Lauf-Nummer der Stufe bilder (oder eines früheren video-Laufs)"
         required: false
         default: ""
+      bild:
+        description: "Für video: Nummer des gewählten Startbilds"
+        type: choice
+        options: ["1", "2", "3", "4"]
+        default: "1"
+      aufloesung:
+        description: "Für video: 480p = Entwurf, 1080p = Endfassung"
+        type: choice
+        options: [480p, 720p, 1080p]
+        default: 480p
+      takes:
+        description: "Für video: Fassungen je Clip"
+        type: choice
+        options: ["1", "2"]
+        default: "1"
+      probe:
+        description: "Nur Technik testen, ohne Higgsfield und ohne Kosten"
+        type: boolean
+        default: false
 permissions:
   contents: read
   actions: read
@@ -40,42 +57,44 @@ jobs:
           persist-credentials: false
       - name: Eingaben prüfen
         env:
-          CLIPS_LAUF: ${{ inputs.clips_lauf }}
+          LAUF: ${{ inputs.bilder_lauf }}
         run: |
-          [[ -z "$CLIPS_LAUF" || "$CLIPS_LAUF" =~ ^[0-9]{6,15}$ ]] || { echo "Lauf-Nummer ungültig"; exit 1; }
+          [[ -z "$LAUF" || "$LAUF" =~ ^[0-9]{6,15}$ ]] || { echo "Lauf-Nummer ungültig"; exit 1; }
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
-      - name: Clips eines früheren Laufs übernehmen
-        if: inputs.clips_lauf != ''
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core
+      - name: Material eines früheren Laufs übernehmen
+        if: inputs.bilder_lauf != ''
         uses: actions/download-artifact@v4
         with:
-          name: probe-werbung-clips
+          name: probe-werbung-material
           path: arbeit/werbung
-          run-id: ${{ inputs.clips_lauf }}
+          run-id: ${{ inputs.bilder_lauf }}
           github-token: ${{ github.token }}
       - name: Werbetest bauen
         working-directory: 07_Geschichtskanal/produktion
         env:
           HIGGSFIELD_KEY: ${{ secrets.HIGGSFIELD_KEY }}
+          STUFE: ${{ inputs.stufe }}
+          BILD: ${{ inputs.bild }}
+          AUFLOESUNG: ${{ inputs.aufloesung }}
+          TAKES: ${{ inputs.takes }}
           PROBE: ${{ inputs.probe }}
-          EINBLENDUNG: ${{ inputs.einblendung }}
         run: |
-          args=()
+          args=("$STUFE")
+          if [[ "$STUFE" == "video" ]]; then args+=(--bild "$BILD" --aufloesung "$AUFLOESUNG" --takes "$TAKES"); fi
           [[ "$PROBE" == "true" ]] && args+=(--probe)
-          [[ "$EINBLENDUNG" == "true" ]] && args+=(--einblendung)
           python probe_werbung.py "${args[@]}"
-      - name: Clips sichern (auch bei Fehlern)
+      - name: Material sichern (auch bei Fehlern)
         if: always() && inputs.probe != true
         uses: actions/upload-artifact@v4
         with:
-          name: probe-werbung-clips
+          name: probe-werbung-material
           path: |
-            arbeit/werbung/clip_a.mp4
-            arbeit/werbung/clip_b.mp4
-            arbeit/werbung/start.png
-            arbeit/werbung/start_url.txt
+            arbeit/werbung/start_*.png
+            arbeit/werbung/start_urls.json
+            arbeit/werbung/clip_*.mp4
           retention-days: 30
           if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
@@ -83,8 +102,9 @@ jobs:
         with:
           name: probe-werbung-ergebnis
           path: |
-            arbeit/werbung/pentest_experts_10s.mp4
-            arbeit/werbung/kontaktbogen.jpg
+            arbeit/werbung/auswahl.jpg
+            arbeit/werbung/pentest_experts_*.mp4
+            arbeit/werbung/pentest_experts_*_bogen.jpg
             arbeit/werbung/info.json
             arbeit/kostenbuch.jsonl
             arbeit/fehler.jsonl
