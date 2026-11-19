@@ -31,6 +31,18 @@ on:
         type: choice
         options: ["1", "2"]
         default: "1"
+      bild_prompt:
+        description: "Optional: eigener Prompt für die Startbilder (leer = Standard im Skript)"
+        required: false
+        default: ""
+      clip_a_prompt:
+        description: "Optional: eigener Prompt für Clip A (Schreck)"
+        required: false
+        default: ""
+      clip_b_prompt:
+        description: "Optional: eigener Prompt für Clip B (Schluck)"
+        required: false
+        default: ""
       probe:
         description: "Nur Technik testen, ohne Higgsfield und ohne Kosten"
         type: boolean
@@ -81,6 +93,9 @@ jobs:
           AUFLOESUNG: ${{ inputs.aufloesung }}
           TAKES: ${{ inputs.takes }}
           PROBE: ${{ inputs.probe }}
+          WERBUNG_BILD: ${{ inputs.bild_prompt }}
+          WERBUNG_CLIP_A: ${{ inputs.clip_a_prompt }}
+          WERBUNG_CLIP_B: ${{ inputs.clip_b_prompt }}
         run: |
           args=("$STUFE")
           if [[ "$STUFE" == "video" ]]; then args+=(--bild "$BILD" --aufloesung "$AUFLOESUNG" --takes "$TAKES"); fi

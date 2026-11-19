@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -44,16 +45,18 @@ VIDEO_USD_S = 0.0738   # Listenpreis 1080p laut Higgsfield-Blog; die Preisabfrag
 BILD_USD = 0.01
 ANZAHL_BILDER = 4
 
-BILD = ("Candid documentary photograph inside a real software company office in the early evening, not staged, not a stock "
-        "photo. Three male software developers at a shared row of desks. In the foreground, seen from the side in a "
-        "medium shot: a developer in his mid thirties with a short beard, glasses and a grey hoodie, headphones around his "
-        "neck, sitting slightly slouched, his right hand holding a plain dark coffee mug by its handle, half raised above "
-        "the desk, his left hand resting on a mechanical keyboard. In front of him two monitors showing a dark code editor "
-        "with small coloured lines of code, too small to read. Behind him two colleagues in t-shirts, one with headphones "
-        "on, both typing and looking at their own screens. Slightly messy desks: cables, sticky notes, a water bottle, an "
-        "energy drink can, a laptop with stickers. Ordinary ceiling light mixed with cool monitor glow, ordinary people "
-        "with normal skin and tired eyes, natural asymmetry, slight image noise, shot handheld on a 35mm lens at eye "
-        "level, 16:9. No readable text, no logos, no watermark.")
+BILD = ("Candid documentary photograph inside a real software company office at night, not staged, not a stock photo. "
+        "Dim room, warm yellowish ceiling light, dark desks, the monitors are the brightest things in the frame. Three male "
+        "software developers at a shared row of dark desks. In the foreground, seen from the side in a medium shot: a "
+        "developer in his mid thirties with a short beard, glasses and a light grey hoodie, headphones around his neck, "
+        "leaning forward with both forearms resting on the desk edge. His left hand lies on a mechanical keyboard. His "
+        "right hand holds a dark ceramic coffee mug with a clearly visible handle, his fingers hooked through the handle, "
+        "the mug resting low at chest height just above the desk surface, well below his chin, as if between two sips. "
+        "In front of him two monitors showing a dark code editor with small coloured lines of code, too small to read. "
+        "Behind him two colleagues in t-shirts, one wearing headphones, both typing and looking at their own laptops. "
+        "Messy desks: tangled cables, yellow sticky notes, a plastic water bottle, an energy drink can, laptops with "
+        "stickers. Ordinary people with normal skin and tired eyes, natural asymmetry, slight image noise, slightly "
+        "underexposed, shot handheld on a 35mm lens at eye level, 16:9. No readable text, no logos, no watermark.")
 CLIP_A = ("One continuous handheld documentary shot with subtle natural camera movement, no cuts. Seconds 0 to 2: quiet "
           "concentration, the developer in the foreground keeps holding his coffee mug by the handle and brings it towards "
           "his mouth, the two colleagues type. At second 2: every monitor in the room switches at the same instant to a "
@@ -67,6 +70,9 @@ CLIP_B = ("One continuous handheld documentary shot with subtle natural camera m
           "coffee mug by the handle, takes a slow relaxed sip and breathes out, the two colleagues keep typing. Realistic "
           "natural motion, hands stay anatomically correct. Sound: quiet keyboard typing, soft office ambience. "
           "No subtitles, no captions, no watermark.")
+BILD = os.environ.get("WERBUNG_BILD", "").strip() or BILD
+CLIP_A = os.environ.get("WERBUNG_CLIP_A", "").strip() or CLIP_A
+CLIP_B = os.environ.get("WERBUNG_CLIP_B", "").strip() or CLIP_B
 A_S, B_S = 5, 4          # erzeugte Längen (Seedance: 4 bis 30 s)
 RUECK_VON, RUECK_S = 1.5, 1.5    # Rücklauf zeigt Clip A von 5,0 s zurück bis 1,5 s, zusammengedrückt auf 1,5 s
 B_AB, B_TEMPO, B_ZEIG = 0.3, 1.6, 1.5
