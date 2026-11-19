@@ -299,7 +299,7 @@ class Spot:
             if not datei.exists():
                 print(f"Hinweis: Tondatei fehlt, ausgelassen: {datei.name}")
                 continue
-            k = len(eing) // 2
+            k = n + len(marken) - 1          # Nummer dieses Eingangs: nach den n Schnitt-Teilen
             eing += ["-stream_loop", "-1", "-i", str(datei)]
             lang = max(0.3, bis - von)
             graph += (f";[{k}:a]{TONF},atrim=duration={lang:.2f},volume={db}dB,afade=t=in:st=0:d=0.25,"
