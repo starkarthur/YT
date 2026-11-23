@@ -68,6 +68,7 @@ jobs:
         working-directory: 07_Geschichtskanal/produktion
         env:
           HIGGSFIELD_KEY: ${{ secrets.HIGGSFIELD_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENKEY }}   # nur für komponierte Musik (musik[].plan)
           SPOT_SPEC: ${{ inputs.spec }}
           AUFLOESUNG: ${{ inputs.aufloesung }}
           NUR_BILDER: ${{ inputs.nur_bilder }}
@@ -85,6 +86,7 @@ jobs:
           path: |
             arbeit/spot/bild_*.png
             arbeit/spot/clip_*.mp4
+            arbeit/spot/musik_*.mp3
             arbeit/spot/zustand.json
           retention-days: 30
           if-no-files-found: ignore
