@@ -1,0 +1,39 @@
+# Stimmproben (3 ElevenLabs-Stimmen, derselbe kurze Text). Nur von Hand startbar, OHNE Upload.
+# Ziel im Repo: .github/workflows/stimmprobe.yml
+name: stimmprobe
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: stimmprobe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    if: vars.GK_PAUSE != 'ja'
+    runs-on: ubuntu-24.04
+    environment: produktion
+    timeout-minutes: 10
+    env:
+      GK_ARBEIT: ${{ github.workspace }}/arbeit
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Stimmproben
+        working-directory: 07_Geschichtskanal/produktion
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENKEY }}
+        run: python stimmprobe.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stimmprobe-ergebnis
+          path: arbeit/stimmprobe/*
+          retention-days: 7
+          if-no-files-found: warn
