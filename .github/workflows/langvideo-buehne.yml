@@ -1,0 +1,63 @@
+# L004 Molasse im Bausteine-Stil: Stimme (ElevenLabs), Bilder per Code, Ton-Mix mit ffmpeg. Nur von Hand startbar, OHNE Upload.
+# Ziel im Repo: .github/workflows/langvideo-buehne.yml
+name: langvideo-buehne
+on:
+  workflow_dispatch:
+    inputs:
+      aufloesung:
+        description: "480p oder 4k"
+        required: true
+        default: "4k"
+permissions:
+  contents: read
+concurrency:
+  group: langvideo-buehne
+  cancel-in-progress: false
+
+jobs:
+  render:
+    if: vars.GK_PAUSE != 'ja'
+    runs-on: ubuntu-24.04
+    environment: produktion
+    timeout-minutes: 90
+    env:
+      GK_ARBEIT: ${{ github.workspace }}/arbeit
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Eingaben prüfen
+        env:
+          AUFL: ${{ inputs.aufloesung }}
+        run: |
+          [[ "$AUFL" == "480p" || "$AUFL" == "4k" ]] || { echo "Auflösung ungültig"; exit 1; }
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-montserrat fonts-dejavu-core
+      - run: pip install numpy==2.2.6 pillow==11.2.1
+      - name: Stimme
+        working-directory: 07_Geschichtskanal/produktion
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENKEY }}
+        run: python buehne_l004.py stimme
+      - name: Bilder
+        working-directory: 07_Geschichtskanal/produktion
+        env:
+          AUFL: ${{ inputs.aufloesung }}
+        run: python buehne_l004.py bilder "$AUFL"
+      - name: Ton mischen
+        working-directory: 07_Geschichtskanal/produktion
+        env:
+          AUFL: ${{ inputs.aufloesung }}
+        run: python buehne_l004.py mix "$AUFL"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: langvideo-buehne-ergebnis
+          path: |
+            arbeit/l004/ergebnis/*
+            arbeit/l004/wortzeiten.json
+          retention-days: 14
+          if-no-files-found: warn
