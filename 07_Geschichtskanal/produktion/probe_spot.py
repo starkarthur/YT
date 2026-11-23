@@ -1,7 +1,7 @@
 """Werbespot aus einem Storyboard (JSON): Bilder, Clips mit Anschluss, Schnitt. Über Higgsfield, kein Upload.
 
 Aufruf: python probe_spot.py <storyboard.json> [--aufloesung 480p|720p|1080p] [--nur-bilder] [--probe]
-Umgebung: HIGGSFIELD_KEY, GK_ARBEIT. Optional SPOT_SPEC (JSON-Text) ersetzt die Datei.
+Umgebung: HIGGSFIELD_KEY, GK_ARBEIT, für komponierte Musik ELEVENLABS_API_KEY. Optional SPOT_SPEC (JSON-Text) ersetzt die Datei.
 
 Arbeitsweise (Gedaechtnis/Higgsfield-Arbeitsweise.md):
   - Erst Bilder (Soul 2, je Motiv 1 oder 4 Varianten), dann Clips (Seedance 2.5 Bild-zu-Video).
@@ -19,7 +19,10 @@ Storyboard:
    "schnitt": [{"clip": "ruhe", "ab": 0, "dauer": 4, "tempo": 1.0, "band": "TEXT", "band_ab": 2.0},
                {"standbild": "bild:haus#1", "dauer": 4, "zoom": [1.0, 1.12], "duester": true, "schild": "ZU VERMIETEN"},
                {"rueck": true, "dauer": 3},
-               {"karte": ["MARKE", "Spruch"], "dauer": 3}]}
+               {"karte": ["MARKE", "Spruch"], "dauer": 3}],
+   "musik": [{"datei": "stueck.mp3", "von": 0, "bis": 30, "db": -16} |
+             {"name": "score", "db": -9, "plan": {"chunks": [{"text": "[Intro]", "duration_ms": 6500,
+              "positive_styles": ["..."], "negative_styles": ["vocals"], "context_adherence": "high"}]}}]}
 """
 from __future__ import annotations
 
@@ -40,6 +43,8 @@ VIDEO_MODELL = "bytedance/seedance-2.5/image-to-video"
 VIDEO_USD_S = 0.0738        # Listenpreis 1080p (Higgsfield-Blog); 480p und 720p grob geschätzt
 FAKTOR = {"480p": 0.35, "720p": 0.6, "1080p": 1.0}
 BILD_USD = 0.006
+MUSIK_MODELL = "music_v2_5"   # ElevenLabs Music, Abschnittsdauern werden eingehalten
+MUSIK_USD_MIN = 0.15          # Listenpreis API je Minute
 B, H, FPS = 1920, 1080, 30
 FETT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 NORMAL = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
@@ -84,13 +89,13 @@ class Spot:
         self.hf = Higgsfield()
 
     # --- Kosten und Zustand ------------------------------------------------
-    def zahlen(self, posten: str, usd: float) -> None:
+    def zahlen(self, posten: str, usd: float, anbieter: str = "higgsfield") -> None:
         if self.probe:
             return
         if self.summe + usd > self.limit:
             sys.exit(f"Grenze {self.limit} USD: {posten} würde {usd:.2f} USD kosten, bisher {self.summe:.2f} USD")
         self.summe += usd
-        self.buch.buchen(self.sid, posten, usd, "higgsfield")
+        self.buch.buchen(self.sid, posten, usd, anbieter)
 
     def merken(self, schluessel: str, wert) -> None:
         self.zustand[schluessel] = wert
@@ -225,6 +230,32 @@ class Spot:
     def fertig(p: Path) -> bool:
         return p.exists() and p.stat().st_size > 20_000
 
+    # --- Musik ---------------------------------------------------------------
+    def musik_datei(self, m: dict) -> Path:
+        """Fertige Datei aus musik/ ("datei") oder eigens komponiertes Stück ("plan", ElevenLabs Music)."""
+        if "plan" not in m:
+            return Path(__file__).parent / "musik" / m["datei"]
+        kennung = kurz(json.dumps(m["plan"], sort_keys=True), m.get("modell", MUSIK_MODELL), m.get("take", 1))
+        return self.arbeit / f"musik_{m.get('name', 'stueck')}_{kennung}.mp3"
+
+    def musik(self) -> None:
+        """Komponiert fehlende Stücke passend zum Schnitt: Abschnitte mit fester Dauer (chunks, je 3–120 s)."""
+        for m in self.spec.get("musik", []):
+            ziel = self.musik_datei(m)
+            if "plan" not in m or (ziel.exists() and ziel.stat().st_size > 20_000):
+                continue
+            sek = sum(int(c["duration_ms"]) for c in m["plan"]["chunks"]) / 1000
+            if self.probe:
+                ff("-f", "lavfi", "-i", f"sine=f=220:d={sek}", "-c:a", "libmp3lame", "-b:a", "128k", str(ziel))
+                continue
+            self.zahlen(ziel.stem, MUSIK_USD_MIN * sek / 60, "elevenlabs")
+            _, _, roh = _http("POST", "https://api.elevenlabs.io/v1/music?output_format=mp3_44100_192",
+                              {"xi-api-key": _schluessel("ELEVENLABS_API_KEY"), "Content-Type": "application/json"},
+                              json.dumps({"composition_plan": m["plan"],
+                                          "model_id": m.get("modell", MUSIK_MODELL)}).encode(), zeit=900)
+            ziel.write_bytes(roh)
+            print(f"Musik {ziel.name}: {dauer(ziel):.1f} s (geplant {sek:.1f} s)", flush=True)
+
     # --- Schnitt ---------------------------------------------------------------
     def text_datei(self, name: str, text: str) -> str:
         (self.arbeit / name).write_text(text, encoding="utf-8")
@@ -324,7 +355,7 @@ class Spot:
                                float(s.get("geraeusch_db", -8))))
             start += float(s["dauer"])
         for m in self.spec.get("musik", []):
-            spuren.append((ordner / m["datei"], float(m.get("von", 0)), float(m.get("bis", start)), float(m.get("db", -16))))
+            spuren.append((self.musik_datei(m), float(m.get("von", 0)), float(m.get("bis", start)), float(m.get("db", -16))))
         marken = ["[a0]"]
         for datei, von, bis, db in spuren:
             if not datei.exists():
@@ -362,6 +393,7 @@ def main() -> int:
     spot.bilder()
     if not a.nur_bilder:
         spot.clips()
+        spot.musik()
         spot.schnitt()
     (spot.arbeit / "info.json").write_text(json.dumps({"id": spot.sid, "aufloesung": a.aufloesung,
                                                        "usd": round(spot.summe, 2), "probe": a.probe}))
