@@ -1,7 +1,7 @@
 """Stimmproben für ein Langvideo: derselbe kurze Text mit mehreren ElevenLabs-Stimmen.
 Aufruf (nur im Workflow stimmprobe): python stimmprobe.py
 Ergebnis: $GK_ARBEIT/stimmprobe/<name>.mp3 und stimmen.txt (verfügbare Stimmen des Kontos, nur Name/ID/Kategorie).
-Kosten: ca. 3 × 330 Zeichen aus dem ElevenLabs-Abo, kein Upload.
+Kosten: ca. 330 Zeichen je Stimme aus dem ElevenLabs-Abo, kein Upload.
 """
 from __future__ import annotations
 
@@ -23,9 +23,7 @@ TEXT = ("Picture this. It's lunchtime on Commercial Street, Boston, January 1919
         "Behind you is a steel tank, five stories tall. In a few seconds, the steel will tear open. "
         "And a brown wave, reportedly as tall as a two-story house, will come down this street toward you.")
 STIMMEN = {
-    "1_langvideo_bisher": "j3VVEWUzmXMcWPJl9xAg",   # Langvideo-Stimme seit 11.11.2026 (Pompeji)
-    "2_cotard_probe": "pJGEjsYXKNeCU49MF7cD",      # für L002 Cotard vorgesehen
-    "3_george_ruhig": "JBFqnCBsd6RMkjVDRZzb",      # ElevenLabs-Standardstimme «George» (ruhiger Erzähler)
+    "l004_mysterstimme": "eBpY9CYcMHfCjbmwwKKB",   # vom Nutzer gewählt am 23.11.2026 («MysterStimmeMenschenEcht»)
 }
 MAX_ZEICHEN = 400
 
